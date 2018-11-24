@@ -1,0 +1,17 @@
+<div id="example1"></div>
+<div id="example2"></div>
+<div id="example3"></div>
+<div id="example4"></div>
+<div id="example5"></div>
+
+<script src="liveExample/example.js"></script>
+<script>
+  var style = document.createElement('link');
+  style.setAttribute('href','liveExample/bundle.css');
+  style.setAttribute('type','text/css');
+  style.setAttribute('rel','stylesheet');
+  document.head.appendChild(style);
+  if(liveExampleCode && liveExampleCode.render){
+    liveExampleCode.render();
+  }
+</script>

@@ -1,0 +1,11 @@
+{
+  "prompt" :{
+    "src" : {
+      "publish" : false
+    }
+  },
+  "npm": {
+    "publish": false
+  },
+  "buildCommand" : "npm run build"
+}
