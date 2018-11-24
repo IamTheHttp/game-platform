@@ -10,6 +10,7 @@ import GameCanvas from 'lib/GameCanvas/GameCanvas';
  *  2. OnClick in mainView - Handle click detection against rects and circles
  *  3. Document we only support squares and circles
  *  4. Move handleMapMouseUp to be the same function, it's currently duplicated
+ *  5. We need to draw the select box selection on the canvas itself
  */
 
 let gameCanvas = new GameCanvas({
@@ -23,7 +24,6 @@ let gameCanvas = new GameCanvas({
     // I think we should, to be fair...
   },
   onViewMapMove : (...args) => {
-    console.log('On View Map Mouse Move', args);
   }
   // onMiniMapClick : (...args) => {
   //   console.log('On Mini Map Click', args);
@@ -32,22 +32,20 @@ let gameCanvas = new GameCanvas({
 
 let mainMap = gameCanvas.generateMapCanvas((API) => {
   console.log('Main Map Done');
-  API.addRect({
+  API.addCircle({
     id:'foo',
     x:50,
     y:50,
-    width:100,
-    height:100,
+    radius: 10,
     strokeStyle: 'green',
     lineWidth:3
   });
 
-  API.addRect({
+  API.addCircle({
     id:'bar',
     x:150,
     y:150,
-    width:100,
-    height:100,
+    radius: 20,
     strokeStyle: 'red',
     lineWidth:3
   });

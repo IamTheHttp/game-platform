@@ -1,6 +1,8 @@
 import React from 'react';
 import CanvasAPI from 'lib/CanvasAPI/CanvasAPI';
 import SelectedBox from './SelectedBox/SelectedBox';
+import getShapesFromClick from './selectionUtils/getShapesFromClick';
+import getShapesInSelectionBox from './selectionUtils/getShapesInSelectionBox';
 
 class GameCanvas {
   constructor(options) {
@@ -63,36 +65,32 @@ class GameCanvas {
   handleMapTouchEnd() {
     this.isMouseDown = false;
 
-    this.mapAPI.shapes.forEach((data, shapeID) => {
-      console.log(shapeID, data);
-    });
+    let selectedData = this.selectedBox.getData();
+
+    let hits = [];
+    // if a single click...
+    if (selectedData.end.x === selectedData.start.x) {
+      let x = selectedData.end.x;
+      let y = selectedData.end.y;
+      hits = getShapesFromClick(this.mapAPI.shapes, x, y);
+    } else {
+      hits = getShapesInSelectionBox(this.mapAPI.shapes, selectedData);
+    }
 
     this.onViewMapClick({
       x: this.viewMapX,
       y: this.viewMapY,
       isMouseDown: this.isMouseDown,
       dbClick: this.dbTap,
-      selectedBox: this.selectedBox.getData()
+      selectedBox: selectedData,
+      hits
     });
     this.selectedBox.reset();
   }
 
   handleMapMouseUp() {
     if (!this.lastTap) {
-      this.isMouseDown = false;
-
-      this.mapAPI.shapes.forEach((data, shapeID) => {
-        console.log(shapeID, data);
-      });
-
-      this.onViewMapClick({
-        x: this.viewMapX,
-        y: this.viewMapY,
-        isMouseDown: this.isMouseDown,
-        dbClick: this.dbClick,
-        selectedBox: this.selectedBox.getData()
-      });
-      this.selectedBox.reset();
+      this.handleMapTouchEnd();
     }
   }
 

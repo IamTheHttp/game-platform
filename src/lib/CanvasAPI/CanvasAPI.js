@@ -58,14 +58,14 @@ class CanvasAPI {
         width, height); // size in canvas
       ctx.restore();
       ctx.closePath();
-    }), {
+    }, {
       id,
       type: 'image',
       x,
       y,
       height,
       width
-    });
+    }));
   }
 
   addRect({id, x, y, width, height, strokeStyle, lineWidth}) {
@@ -106,13 +106,13 @@ class CanvasAPI {
       }
       ctx.stroke();
       ctx.closePath();
-    }), {
+    }, {
       id,
       type: 'circle',
       x,
       y,
       radius
-    });
+    }));
   }
 
   /**
