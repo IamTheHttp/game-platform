@@ -3,7 +3,6 @@
 /* global expect */
 /* global beforeEach */
 import GameCanvas from 'lib/GameCanvas/GameCanvas';
-import CanvasAPI from 'lib/CanvasAPI/CanvasAPI';
 describe('Tests Game canvas', () => {
   let gameCanvas;
   beforeEach(() => {
@@ -20,6 +19,16 @@ describe('Tests Game canvas', () => {
       onViewMapMove,
       onMiniMapClick
     });
+
+    gameCanvas.mapAPI = {
+      addRect:() => {},
+      shapes: new Map()
+    };
+
+    gameCanvas.miniMapAPI = {
+      addRect:() => {},
+      shapes: new Map()
+    };
   });
 
   it('renders', () => {

@@ -10,9 +10,7 @@ function getShapesInSelectionBox(shapes, selectedData) {
     let shapeMetaData = shape.metaData;
     let shapeX      = shapeMetaData.x;
     let shapeY      = shapeMetaData.y;
-    let radius = shapeMetaData.radius;
     let type   = shapeMetaData.type;
-
 
     if (type === 'circle') {
       let centerX = shapeX;
@@ -20,6 +18,8 @@ function getShapesInSelectionBox(shapes, selectedData) {
       if (centerX >= minX && centerX <= maxX && centerY >= minY && centerY <= maxY) {
         hits.push(id);
       }
+    } else {
+      console.log(`Unimplemented shape ${type} , CANNOT SELECT`); // TODO remove or implement this part
     }
   });
 

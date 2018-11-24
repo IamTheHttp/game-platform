@@ -46,7 +46,19 @@ class GameCanvas {
   handleMapMouseMove() {
     if (this.isMouseDown) {
       this.selectedBox.setEnd(this.viewMapX, this.viewMapY);
+
+      let data = this.selectedBox.getData();
+
+      this.mapAPI.addRect({
+        id: 'selectedBox',
+        x: data.start.x,
+        y: data.start.y,
+        width: data.width,
+        height: data.height,
+        strokeStyle: 'blue' // TODO remove hardcoded
+      });
     }
+
     this.onViewMapMove({
       x: this.viewMapX,
       y: this.viewMapY,
@@ -76,6 +88,14 @@ class GameCanvas {
     } else {
       hits = getShapesInSelectionBox(this.mapAPI.shapes, selectedData);
     }
+
+    this.mapAPI.addRect({
+      id: 'selectedBox',
+      x: 0,
+      y: 0,
+      width: 0,
+      height: 0
+    });
 
     this.onViewMapClick({
       x: this.viewMapX,
@@ -109,7 +129,7 @@ class GameCanvas {
 
   getNewCanvasPairs({getMapRef, getMiniRef}) {
     return {
-      map: this.GenerateMapCanvas(getMapRef),
+      map: this.generateMapCanvas(getMapRef),
       minimap: this.generateMiniMapCanvas(getMiniRef)
     };
   }
@@ -131,10 +151,13 @@ class GameCanvas {
 
     this.mapAPI.pan(-calcPanX, -calcPanY);
 
-    console.log('Not too bad?');
     // draw the minimap square box
     // TODO - This has to be configurable
     // TODO conditional render it, and allow for some configuration options
+    this.updateMiniMapSquare();
+  }
+
+  updateMiniMapSquare() {
     this.miniMapAPI.addRect({
       id: 'currentMap',
       x: -this.mapAPI.getPan().panX,
@@ -255,6 +278,8 @@ class GameCanvas {
           document.addEventListener('mousemove', this.updateMiniMapCursorPosition);
 
           this.miniMapAPI = new CanvasAPI(el.getContext('2d'));
+          // inits the minimap square
+          this.updateMiniMapSquare();
           getRef(this.miniMapAPI, el);
         }}
         height={this.mapHeight}
