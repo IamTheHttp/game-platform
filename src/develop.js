@@ -7,9 +7,11 @@ import GameCanvas from 'lib/GameCanvas/GameCanvas';
 /**
  *  TODO
  *  1. Document GameCanvas properly
- *  2. OnClick in mainView, return a collection of "hits"
- *
+ *  2. OnClick in mainView - Handle click detection against rects and circles
+ *  3. Document we only support squares and circles
+ *  4. Move handleMapMouseUp to be the same function, it's currently duplicated
  */
+
 let gameCanvas = new GameCanvas({
   mapHeight: 4000,
   mapWidth : 4000,
@@ -40,15 +42,23 @@ let mainMap = gameCanvas.generateMapCanvas((API) => {
     lineWidth:3
   });
 
-  setInterval(() => {
-    API.draw();
-  }, 16);
+  API.addRect({
+    id:'bar',
+    x:150,
+    y:150,
+    width:100,
+    height:100,
+    strokeStyle: 'red',
+    lineWidth:3
+  });
+
+  API.draw();
 });
 
 let miniMap = gameCanvas.generateMiniMapCanvas((API) => {
-  setInterval(() => {
-    API.draw();
-  }, 16);
+  // setInterval(() => {
+  //   API.draw();
+  // }, 16);
 });
 
 render(<div>

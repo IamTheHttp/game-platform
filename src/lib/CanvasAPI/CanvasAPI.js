@@ -4,6 +4,15 @@
  * Provides abstraction for some common shapes in Canvas
  */
 
+
+
+class Shape {
+  constructor(draw, metaData) {
+    this.draw = draw;
+    this.metaData = metaData;
+  }
+}
+
 class CanvasAPI {
   constructor(ctx, strokeStyle = 'white') {
     this.ctx = ctx;
@@ -38,7 +47,7 @@ class CanvasAPI {
     rotation // in radians
   }) {
     let ctx = this.ctx;
-    this.shapes.set(id, () => {
+    this.shapes.set(id, new Shape(() => {
       ctx.beginPath();
       ctx.save();
       ctx.translate(x + width / 2, y + height / 2);
@@ -49,12 +58,19 @@ class CanvasAPI {
         width, height); // size in canvas
       ctx.restore();
       ctx.closePath();
+    }), {
+      id,
+      type: 'image',
+      x,
+      y,
+      height,
+      width
     });
   }
 
   addRect({id, x, y, width, height, strokeStyle, lineWidth}) {
     let ctx = this.ctx;
-    this.shapes.set(id, () => {
+    this.shapes.set(id, new Shape(() => {
       ctx.strokeStyle = strokeStyle;
       ctx.lineWidth = lineWidth;
       ctx.beginPath();
@@ -66,12 +82,19 @@ class CanvasAPI {
       );
       ctx.stroke();
       ctx.closePath();
-    });
+    }, {
+      id,
+      type: 'rect',
+      x,
+      y,
+      height,
+      width
+    }));
   }
 
   addCircle({id, x, y, radius, strokeStyle, lineWidth, fillColor}) {
     let ctx = this.ctx;
-    this.shapes.set(id, () => {
+    this.shapes.set(id, new Shape(() => {
       ctx.strokeStyle = strokeStyle;
       ctx.lineWidth = lineWidth;
       ctx.moveTo(x, y);
@@ -83,6 +106,12 @@ class CanvasAPI {
       }
       ctx.stroke();
       ctx.closePath();
+    }), {
+      id,
+      type: 'circle',
+      x,
+      y,
+      radius
     });
   }
 
@@ -103,14 +132,18 @@ class CanvasAPI {
   }
 
   write({id, text, x, y, font, textBaseline, fillStyle}) {
-    this.shapes.set(id, () => {
+    this.shapes.set(id, new Shape(() => {
       this.ctx.beginPath();
       this.ctx.font = font;
       this.ctx.textBaseline = textBaseline;
       this.ctx.fillStyle = fillStyle;
       this.ctx.fillText(text, x, y);
       this.ctx.closePath();
-    });
+    }, {
+      id,
+      x,
+      y
+    }));
   }
 
   draw() {
@@ -120,7 +153,7 @@ class CanvasAPI {
     this.ctx.restore();
 
     for (let shape of this.shapes.values()) {
-      shape();
+      shape.draw();
       this.ctx.strokeStyle = this.defaultStrokeStyle;
     }
   }

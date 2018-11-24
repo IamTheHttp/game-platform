@@ -62,6 +62,11 @@ class GameCanvas {
 
   handleMapTouchEnd() {
     this.isMouseDown = false;
+
+    this.mapAPI.shapes.forEach((data, shapeID) => {
+      console.log(shapeID, data);
+    });
+
     this.onViewMapClick({
       x: this.viewMapX,
       y: this.viewMapY,
@@ -75,6 +80,11 @@ class GameCanvas {
   handleMapMouseUp() {
     if (!this.lastTap) {
       this.isMouseDown = false;
+
+      this.mapAPI.shapes.forEach((data, shapeID) => {
+        console.log(shapeID, data);
+      });
+
       this.onViewMapClick({
         x: this.viewMapX,
         y: this.viewMapY,
