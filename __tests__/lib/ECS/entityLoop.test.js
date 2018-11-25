@@ -16,7 +16,7 @@ describe('Tests the entity loop', () => {
     expect(runs).toBe(0);
   });
 
-  it ('does not crash when empty', () => {
+  it ('Loops on Entity arrays', () => {
     let foo = new Entity();
 
     foo.addComponent({

@@ -6,13 +6,13 @@ import getShapesInSelectionBox from './selectionUtils/getShapesInSelectionBox';
 
 class GameCanvas {
   constructor(options) {
+    this.selectedBoxColor = options.selectedBoxColor || 'blue';
     this.mapHeight = options.mapHeight;
     this.mapWidth = options.mapWidth;
     this.viewHeight = options.viewHeight;
     this.viewWidth = options.viewWidth;
     this.onViewMapClick = options.onViewMapClick;
     this.onViewMapMove = options.onViewMapMove;
-    // this.onMiniMapClick = options.onMiniMapClick;
     this.lastClick = 0;
     this.dbClick = false;
     this.lastTap = 0;
@@ -55,7 +55,7 @@ class GameCanvas {
         y: data.start.y,
         width: data.width,
         height: data.height,
-        strokeStyle: 'blue' // TODO remove hardcoded
+        strokeStyle: this.selectedBoxColor
       });
     }
 
@@ -152,8 +152,6 @@ class GameCanvas {
     this.mapAPI.pan(-calcPanX, -calcPanY);
 
     // draw the minimap square box
-    // TODO - This has to be configurable
-    // TODO conditional render it, and allow for some configuration options
     this.updateMiniMapSquare();
   }
 
@@ -209,7 +207,6 @@ class GameCanvas {
 
   handleTouchMove(e) {
     e.preventDefault();
-    // REFACTOR this code seems very similar to the onMinimapClick!
     let {x, y} = this.updateCursorPosition(e.touches[0], this.viewMapCanvas, this.mapAPI);
 
     let calcPanX;
@@ -246,7 +243,6 @@ class GameCanvas {
           this.viewMapCanvas = el;
           document.removeEventListener('mousemove', this.updateViewMapCursorPosition);
           document.addEventListener('mousemove', this.updateViewMapCursorPosition);
-          // REFACTOR move to regular events?
           el.removeEventListener('touchmove', this.handleTouchMove, false);
           el.addEventListener('touchmove', this.handleTouchMove, false);
 

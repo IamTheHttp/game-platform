@@ -1,5 +1,6 @@
 /**
- * TODO what does this do exactly?
+ * Class that represents the current selected area by the user
+ * Populated when the user click, holds and move the mouse
  */
 class SelectedBox {
   constructor() {

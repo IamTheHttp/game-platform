@@ -1,23 +1,19 @@
-
-// TODO - Total isn't implemented here..
 class ObjectPool {
-  constructor(PooledClass) {
+  constructor(PooledClass, incrementWhenEmpty = 10) {
     this.type = PooledClass;
     this.freePool = [];
     this.stats = {
       free: 0,
-      used: 0,
-      total: 0
+      used: 0
     };
-    this.incrementWhenEmpty = 10;
+    this.incrementWhenEmpty = incrementWhenEmpty;
   }
 
   reset() {
     this.freePool = [];
     this.stats = {
       free: 0,
-      used: 0,
-      total: 0
+      used: 0
     };
   }
   // for starting up - we can generate what we need.

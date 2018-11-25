@@ -123,7 +123,11 @@ describe('Tests for entities', () => {
   it('Entity can destroy itself', () => {
     let e = new Entity();
     let comp1 = {name:'test1', foo:'bar'};
+
     e.addComponent(comp1);
+    // always returns a collection
+    expect(Entity.getByComps(['test1'])[0]).toBe(e);
+
     e.destroy();
     expect(Entity.entities[e.id]).toBeUndefined();
 
