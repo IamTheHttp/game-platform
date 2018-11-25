@@ -10,6 +10,7 @@
 [ ] Add a Game Grid to the common utilities
 [ ] Add configuration to disable click detection
 [ ] Add configuration to disable selection box
+[ ] Ensure React is not bundled in the dist file
 
 ### Features
 #### Game Canvas (Both Main Map and Mini Map) with click detection on what shape was clicked

@@ -101,7 +101,7 @@ class GameCanvas {
       x: this.viewMapX,
       y: this.viewMapY,
       isMouseDown: this.isMouseDown,
-      dbClick: this.dbTap,
+      dbClick: this.dbTap || this.dbClick,
       selectedBox: selectedData,
       hits
     });
@@ -275,7 +275,16 @@ class GameCanvas {
 
           this.miniMapAPI = new CanvasAPI(el.getContext('2d'));
           // inits the minimap square
-          this.updateMiniMapSquare();
+          // so this assumes that there's ALREADy a mapAPI
+          // bad assumption....
+
+          let key = setInterval(() => {
+            if (this.mapAPI) {
+              this.updateMiniMapSquare();
+              clearInterval(key);
+            }
+          }, 100);
+
           getRef(this.miniMapAPI, el);
         }}
         height={this.mapHeight}
