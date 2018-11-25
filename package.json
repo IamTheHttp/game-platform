@@ -28,8 +28,7 @@
   },
   "main": "dist",
   "dependencies": {
-    "canvas-prebuilt": "^1.6.5-prerelease.1",
-    "memoizee": "^0.4.12"
+    "canvas-prebuilt": "^1.6.5-prerelease.1"
   },
   "jsnext:main": "src",
   "module": "src"
