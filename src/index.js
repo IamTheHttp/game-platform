@@ -3,7 +3,7 @@ import entityLoop from 'lib/ECS/util/entityLoop';
 import ObjectPool from 'lib/ObjectPool/ObjectPool';
 import GameCanvas from 'lib/GameCanvas/GameCanvas';
 
-export {
+export default {
   Entity,
   entityLoop,
   ObjectPool,
