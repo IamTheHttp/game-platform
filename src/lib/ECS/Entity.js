@@ -1,10 +1,10 @@
 import Group from './Group';
 import entityLoop from './util/entityLoop';
 
-let spliceOne = function(arr, index) {
+export let spliceOne = function(arr, index = 0) {
   let idx = index;
   let len = arr.length;
-  if (!len) {
+  if (!len || idx >= len) {
     return;
   }
 

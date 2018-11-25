@@ -11,6 +11,7 @@ describe('Tests the entity loop', () => {
     let runs = 0;
     entityLoop(Entity.getByComps('lol'), (ent) => {
       runs++;
+      return true;
     });
     expect(runs).toBe(0);
   });
@@ -23,10 +24,27 @@ describe('Tests the entity loop', () => {
     });
 
     let runs = 0;
-    entityLoop(Entity.getByComps('lol'), (ent) => {
+    let ents = entityLoop(Entity.getByComps('lol'), (ent) => {
       runs++;
       expect(ent).not.toBeUndefined();
+      return true;
     });
+
+    expect(ents.length).toBe(1);
+    expect(runs).toBe(1);
+  });
+
+  it('works on objects', () => {
+    new Entity();
+
+    let runs = 0;
+    let ents = entityLoop(Entity.entities, (ent) => {
+      runs++;
+      expect(ent).not.toBeUndefined();
+      return true;
+    });
+
+    expect(ents.length).toBe(1);
     expect(runs).toBe(1);
   });
 });

@@ -22,6 +22,14 @@ describe('is a position inside a circle tests', () => {
       radius: 5
     }));
 
+    shapes.set('bar22', new Shape(() => {}, {
+      id: 'bar22',
+      type: 'UNSUPPORTED TYPE',
+      x : 20,
+      y : 20,
+      radius: 5
+    }));
+
     expect(getShapesFromClick(shapes, 15, 15).length).toBe(1);
     expect(getShapesFromClick(shapes, 18, 18).length).toBe(2);
     expect(getShapesFromClick(shapes, 20, 20).length).toBe(1);

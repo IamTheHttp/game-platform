@@ -3,15 +3,55 @@
 /* global expect */
 /* global beforeEach */
 
-import Entity from 'lib/ECS/Entity';
+import Entity, {spliceOne} from 'lib/ECS/Entity';
 describe('Tests for entities', () => {
   beforeEach(() => {
     Entity.reset();
   });
+
+  it('tests the internal splice method', () => {
+    let arr = [1, 2, 3];
+    // no index defaults to index 0
+    spliceOne(arr);
+    expect(arr.length).toBe(2);
+    expect(arr[0]).toBe(2);
+
+
+    // out of bound index shouldn't change anything
+    arr = [1, 2, 3];
+    spliceOne(arr, 55);
+    expect(arr.length).toBe(3);
+    expect(arr[0]).toBe(1);
+
+    // out of bound index shouldn't change anything
+    arr = [1, 2, 3];
+    spliceOne(arr, 1);
+    expect(arr.length).toBe(2);
+    expect(arr[1]).toBe(3);
+
+    // empty arr shouldn't crash
+    arr = [];
+    spliceOne(arr);
+    expect(arr.length).toBe(0);
+  });
+
   it('Creates a new entity', () => {
     let e = new Entity();
     expect(e.id).not.toBeUndefined();
     expect(e.components).toEqual({});
+  });
+
+  it('Tests that internal groups are created correctly', () => {
+    let e = new Entity();
+    let comp = {name:'test', foo:'bar'};
+    let e2 = new Entity();
+    let comp2 = {name:'foo', foo:'test'};
+
+    e.addComponent(comp);
+    e2.addComponent(comp2);
+    expect(e.components.test).toBe(comp);
+    e.removeComponent(comp);
+    expect(e.components.test).toBeUndefined();
   });
 
   it('Adds and removes components', () => {
@@ -30,9 +70,11 @@ describe('Tests for entities', () => {
     let comp2 = {name:'test2', foo:'bar'};
     e.addComponent(comp2);
 
+    expect(e.hasComponents('test1')).toBe(true);
     expect(e.hasComponents(['test1'])).toBe(true);
     expect(e.hasComponents(['test1', 'test2'])).toBe(true);
     expect(e.hasComponents(['anotherComp'])).toBe(false);
+    expect(e.hasComponents('anotherComp')).toBe(false);
     expect(e.hasComponents()).toBe(true);
   });
 

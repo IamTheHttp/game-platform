@@ -18,7 +18,7 @@ function getShapesFromClick(shapes, x, y) {
     if (type === 'circle' && isPosInsideCircle(x, y, shapeX, shapeY, radius)) {
       hits.push(id);
     } else if (type !== 'circle') {
-      console.log(`Unimplemented shape ${type} , CANNOT SELECT`); // TODO remove or implement this part
+      // do nothing, no support for non circles
     }
   });
 
