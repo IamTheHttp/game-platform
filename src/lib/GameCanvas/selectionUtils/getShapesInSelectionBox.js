@@ -18,7 +18,7 @@ function getShapesInSelectionBox(shapes, selectedData) {
       if (centerX >= minX && centerX <= maxX && centerY >= minY && centerY <= maxY) {
         hits.push(id);
       }
-    } else {
+    } else if (type !== 'circle') {
       console.log(`Unimplemented shape ${type} , CANNOT SELECT`); // TODO remove or implement this part
     }
   });

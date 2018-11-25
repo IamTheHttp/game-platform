@@ -14,9 +14,10 @@ function getShapesFromClick(shapes, x, y) {
     let radius = shapeMetaData.radius;
     let type   = shapeMetaData.type;
 
+
     if (type === 'circle' && isPosInsideCircle(x, y, shapeX, shapeY, radius)) {
       hits.push(id);
-    } else {
+    } else if (type !== 'circle') {
       console.log(`Unimplemented shape ${type} , CANNOT SELECT`); // TODO remove or implement this part
     }
   });

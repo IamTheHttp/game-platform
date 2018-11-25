@@ -20,7 +20,7 @@
     "karma": "NODE_ENV=karma npm run lint && karma start",
     "karma:watch": "NODE_ENV=karma npm run lint && karma start --autoWatch=true --singleRun=false",
     "cssnano": "if test -e ./dist/bundle.css; then cssnano ./dist/bundle.css ./dist/bundle.css; else echo 'no css file to minify'; fi",
-    "lint": "eslint -c=./.eslint ./src __tests__ __karma__ mocks",
+    "lint": "eslint --fix -c=./.eslint ./src __tests__ __karma__ mocks",
     "build:dist:raw": "NODE_ENV=production RAW_FILE=1 webpack --config=node_modules/jarb/webpack/webpackConfig.js && npm run cssnano",
     "build:dll": "NODE_ENV=dll webpack --config=node_modules/jarb/webpack/webpackConfig.js"
   },

@@ -6,7 +6,7 @@
 
 
 
-class Shape {
+export class Shape {
   constructor(draw, metaData) {
     this.draw = draw;
     this.metaData = metaData;
