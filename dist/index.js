@@ -1455,7 +1455,7 @@ var GameCanvas = function () {
         x: this.viewMapX,
         y: this.viewMapY,
         isMouseDown: this.isMouseDown,
-        dbClick: this.dbTap,
+        dbClick: this.dbTap || this.dbClick,
         selectedBox: selectedData,
         hits: hits
       });
@@ -1661,7 +1661,16 @@ var GameCanvas = function () {
 
           _this2.miniMapAPI = new _CanvasAPI2.default(el.getContext('2d'));
           // inits the minimap square
-          _this2.updateMiniMapSquare();
+          // so this assumes that there's ALREADy a mapAPI
+          // bad assumption....
+
+          var key = setInterval(function () {
+            if (_this2.mapAPI) {
+              _this2.updateMiniMapSquare();
+              clearInterval(key);
+            }
+          }, 100);
+
           getRef(_this2.miniMapAPI, el);
         },
         height: this.mapHeight,
