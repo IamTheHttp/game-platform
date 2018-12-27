@@ -1,6 +1,6 @@
 {
   "name": "game-platform",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Common utilitie for Canvas games",
   "scripts": {
     "init": "npm install && jarb init",
@@ -24,7 +24,7 @@
     "build:dll": "NODE_ENV=dll webpack --config=node_modules/jarb/webpack/webpackConfig.js"
   },
   "peerDependencies": {
-    "react" : "15.5.4"
+    "react": "15.5.4"
   },
   "devDependencies": {
     "jarb": "1.0.5"
