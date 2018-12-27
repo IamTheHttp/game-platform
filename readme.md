@@ -1,8 +1,3 @@
-### Before first release
-[X] Document all exported properties
-[X] Remove ALL TODOs and REFACTORS
-[ ] Performance tests
-
 ### Roadmap
 [ ] OnClick in mainView - Handle click detection against rects
 [ ] Add a background layer as a third canvas
@@ -10,7 +5,14 @@
 [ ] Add a Game Grid to the common utilities
 [ ] Add configuration to disable click detection
 [ ] Add configuration to disable selection box
-[ ] Ensure React is not bundled in the dist file
+
+
+###Changelog
+[V] Ensure React is not bundled in the dist file
+[V] Document all exported properties
+[V] Remove ALL TODOs and REFACTORS
+
+27/12/2018
 
 ### Features
 #### Game Canvas (Both Main Map and Mini Map) with click detection on what shape was clicked
