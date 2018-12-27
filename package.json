@@ -23,6 +23,9 @@
     "build:dist:raw": "NODE_ENV=production RAW_FILE=1 webpack --config=node_modules/jarb/webpack/webpackConfig.js && npm run cssnano",
     "build:dll": "NODE_ENV=dll webpack --config=node_modules/jarb/webpack/webpackConfig.js"
   },
+  "peerDependencies": {
+    "react" : "15.5.4"
+  },
   "devDependencies": {
     "jarb": "1.0.5"
   },

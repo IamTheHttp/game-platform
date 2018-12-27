@@ -11,6 +11,9 @@ module.exports = function(config){
     }
   });
 
+  config.externals = {
+    'react': 'react'
+  };
   config.plugins = plugins;
   return config;
 };
