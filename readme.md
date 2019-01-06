@@ -6,13 +6,17 @@
 [ ] Add configuration to disable click detection
 [ ] Add configuration to disable selection box
 
-
 ###Changelog
+
+06/01/2019
+[V] Updated jarb to 1.0.8
+
+27/12/2018
+VERSION 0.0.6 RELEASE
 [V] Ensure React is not bundled in the dist file
 [V] Document all exported properties
 [V] Remove ALL TODOs and REFACTORS
 
-27/12/2018
 
 ### Features
 #### Game Canvas (Both Main Map and Mini Map) with click detection on what shape was clicked
