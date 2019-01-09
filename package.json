@@ -1,6 +1,6 @@
 {
   "name": "game-platform",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Common utilitie for Canvas games",
   "scripts": {
     "init": "npm install && jarb init",

@@ -730,12 +730,13 @@ var ObjectPool = function () {
         used: 0
       };
     }
-    // for starting up - we can generate what we need.
+
+    // Ensures the pool has at least $amount of free objects
 
   }, {
     key: "generate",
     value: function generate(amount) {
-      var count = amount;
+      var count = amount - this.stats.free > 0 ? amount - this.stats.free : 0;
       // generate a gazzilion fighters?
       while (count > 0) {
         this.freePool.push(new this.type());
