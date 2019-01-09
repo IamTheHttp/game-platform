@@ -16,9 +16,10 @@ class ObjectPool {
       used: 0
     };
   }
-  // for starting up - we can generate what we need.
+
+  // Ensures the pool has at least $amount of free objects
   generate(amount) {
-    let count = amount;
+    let count = amount - this.stats.free > 0 ? amount - this.stats.free : 0;
     // generate a gazzilion fighters?
     while (count > 0) {
       this.freePool.push(new this.type());

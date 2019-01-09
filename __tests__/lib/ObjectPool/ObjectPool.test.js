@@ -29,6 +29,13 @@ describe('Tests a component', () => {
     expect(pool.stats.free).toBe(100);
   });
 
+  it('Generate should create UP TO the number provided', () => {
+    pool.generate(100);
+    pool.generate(100);
+    pool.generate(100);
+    expect(pool.stats.free).toBe(100);
+  });
+
   it('Acquires more than allocated amount', () => {
     expect(pool.stats.free).toBe(0);
     let obj = pool.acquire();

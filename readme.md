@@ -8,6 +8,10 @@
 
 ###Changelog
 
+09/01/2019
+Release version 0.0.7
+[ ] Fix ObjectPool.generate(amount) to generate UP TO $amount of free objects
+
 06/01/2019
 [V] Updated jarb to 1.0.8
 
