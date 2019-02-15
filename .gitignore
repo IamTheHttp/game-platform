@@ -5,3 +5,5 @@ coverage
 npm-debug.log
 karmaCoverage
 .DS_Store
+stats.json
+report.html

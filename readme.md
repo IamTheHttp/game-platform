@@ -7,10 +7,12 @@
 [ ] Add configuration to disable selection box
 
 ###Changelog
+15/02/2019
+[V] Updated JARB to 2.0.0-beta.2
 
 09/01/2019
 Release version 0.0.7
-[ ] Fix ObjectPool.generate(amount) to generate UP TO $amount of free objects
+[V] Fix ObjectPool.generate(amount) to generate UP TO $amount of free objects
 
 06/01/2019
 [V] Updated jarb to 1.0.8

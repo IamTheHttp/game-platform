@@ -34,6 +34,16 @@ describe('Tests a component', () => {
     pool.generate(100);
     pool.generate(100);
     expect(pool.stats.free).toBe(100);
+
+    let i = 0;
+    while (i < 500) {
+      i++;
+      let obj = pool.acquire();
+      expect(obj.isAlive).toBe(true);
+    }
+    expect(pool.stats.free).toBe(0);
+    pool.generate(100);
+    expect(pool.stats.free).toBe(100);
   });
 
   it('Acquires more than allocated amount', () => {
