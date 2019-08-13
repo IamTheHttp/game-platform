@@ -76,7 +76,9 @@ let miniMap = gameCanvas.generateMiniMapCanvas((API) => {
 
 // We render our new canvas react elements with React
 render(<div>
+  <h1>Main Map</h1>
   {mainMap}
+  <h1>Mini Map - Click to move around the map</h1>
   {miniMap}
 </div>, document.getElementById('app'), () => {
   apis.main.addRect({

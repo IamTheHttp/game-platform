@@ -8,6 +8,7 @@
 
 ###Changelog
 15/02/2019
+Release version 0.0.8 
 [V] Updated JARB to 2.0.0-beta.2
 
 09/01/2019
