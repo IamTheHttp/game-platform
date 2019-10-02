@@ -7,7 +7,7 @@
 [ ] Add configuration to disable selection box  
 
 ###Changelog
-**15/02/2019**  
+**02/10/2019**  
 Release version 0.0.9   
 [V] Updated JARB to 3.0.6  
 [V] Updated Canvas to 2.6.0 and removed canvas prebuilt.  
