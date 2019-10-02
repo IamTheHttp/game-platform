@@ -1,12 +1,19 @@
 ### Roadmap
-[ ] OnClick in mainView - Handle click detection against rects
-[ ] Add a background layer as a third canvas
-[ ] Provide some basic SCSS that can be imported
-[ ] Add a Game Grid to the common utilities
-[ ] Add configuration to disable click detection
-[ ] Add configuration to disable selection box
+[ ] OnClick in mainView - Handle click detection against rects  
+[ ] Add a background layer as a third canvas  
+[ ] Provide some basic SCSS that can be imported  
+[ ] Add a Game Grid to the common utilities  
+[ ] Add configuration to disable click detection  
+[ ] Add configuration to disable selection box  
 
 ###Changelog
+**15/02/2019**  
+Release version 0.0.9   
+[V] Updated JARB to 3.0.6  
+[V] Updated Canvas to 2.6.0 and removed canvas prebuilt.  
+[V] These changes now enable support for node 12.x
+  
+
 15/02/2019
 Release version 0.0.8 
 [V] Updated JARB to 2.0.0-beta.2

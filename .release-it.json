@@ -1,11 +1,5 @@
 {
-  "prompt" :{
-    "src" : {
-      "publish" : false
-    }
-  },
-  "npm": {
-    "publish": false
-  },
-  "buildCommand" : "npm run build"
+  "scripts" : {
+    "beforeStart" : "npm run test && npm run build"
+  }
 }

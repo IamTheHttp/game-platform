@@ -4,24 +4,25 @@
   "description": "Common utilitie for Canvas games",
   "scripts": {
     "init": "npm install && jarb init",
-    "start": "jarb devServer",
+    "start": "jarb devServer --env=develop",
     "build": "jarb build",
-    "analyze": "jarb analyze",
-    "test": "jarb test",
-    "tdd": "jarb tdd",
+    "analyze": "jarb analyze --analyzeBundle=1",
+    "test": "jarb test --coverage",
+    "tdd": "jarb test",
     "releasePatch": "release-it",
     "releaseMinor": "release-it minor",
-    "releaseMajor": "release-it major"
+    "releaseMajor": "release-it major",
+    "release": "jarb release"
   },
   "peerDependencies": {
     "react": "16.8.2"
   },
   "devDependencies": {
-    "jarb": "2.0.0-beta.2"
+    "jarb": "3.0.6"
   },
   "main": "dist",
   "dependencies": {
-    "canvas-prebuilt": "^1.6.5-prerelease.1",
+    "canvas": "2.6.0",
     "react": "16.8.2",
     "react-dom": "16.8.2"
   },
