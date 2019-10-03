@@ -1,13 +1,21 @@
 ### Roadmap
 [ ] OnClick in mainView - Handle click detection against rects  
-[ ] Add a background layer as a third canvas  
 [ ] Provide some basic SCSS that can be imported  
 [ ] Add a Game Grid to the common utilities  
 [ ] Add configuration to disable click detection  
 [ ] Add configuration to disable selection box  
 
 ###Changelog
-**02/10/2019**  
+**03/10/2019** - 
+Release version 0.1.0   
+[V] Added support for Layers.  
+[V] To use layers:  
+ - the canvas element must be positioned in a container element.   
+ - The container element must be positioned absolute with a set height and width
+ - The canvas elements must be positioned absolute (To enable layering) 
+
+
+**02/10/2019** - 
 Release version 0.0.9   
 [V] Updated JARB to 3.0.6  
 [V] Updated Canvas to 2.6.0 and removed canvas prebuilt.  

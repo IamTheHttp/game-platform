@@ -1,6 +1,6 @@
 import React from 'react';
 import {render} from 'react-dom';
-import 'index.scss';
+import './index.scss';
 
 import GameCanvas from 'lib/GameCanvas/GameCanvas';
 
@@ -77,7 +77,9 @@ let miniMap = gameCanvas.generateMiniMapCanvas((API) => {
 // We render our new canvas react elements with React
 render(<div>
   <h1>Main Map</h1>
-  {mainMap}
+  <div className='main-canvas-container'>
+    {mainMap}
+  </div>
   <h1>Mini Map - Click to move around the map</h1>
   {miniMap}
 </div>, document.getElementById('app'), () => {
@@ -117,14 +119,23 @@ render(<div>
     // Internally this deletes the entire canvas, and re-renders all the shapes.
     apis.main.draw();
     apis.mini.draw();
-  }, 16);
+  }, 500);
 });
 
+// all elements are absolute positioned.
+apis.main.addLayer('background');
+
+apis.main.addCircle({
+  id: 'ExampleID222', // needs to be unique per layer?
+  x:0,
+  y: 0,
+  radius: 15,
+  strokeStyle: 'red'
+}, 'background');
+
+apis.main.draw('background');
+apis.main.remove('ExampleID222', 'background');
 
 
 
-
-
-
-
-
+console.log(apis.main);

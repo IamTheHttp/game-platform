@@ -8,10 +8,10 @@ module.exports = function (jestConfig) {
   jestConfig.collectCoverageFrom.push("!src/liveExample.js");
   jestConfig.collectCoverageFrom.push("!src/index.js");
   jestConfig.collectCoverageFrom.push("!src/polyfill/*.*");
-
-  jestConfig.setupFiles = [
-    "<rootDir>/src/polyfill/rAF.js"
-  ];
+  
+  jestConfig.setupFiles = jestConfig.setupFiles || [];
+  jestConfig.setupFiles.push("<rootDir>/src/polyfill/rAF.js");
+  jestConfig.setupFiles.push("jest-canvas-mock");
 
   jestConfig.bail = true;
   jestConfig.coverageThreshold.global = {

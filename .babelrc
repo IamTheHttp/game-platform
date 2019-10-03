@@ -1,8 +1,13 @@
 {
-  "plugins": [
-    "transform-es3-member-expression-literals",
-    "@babel/plugin-transform-reserved-words",
-    "transform-es3-property-literals"
+  "presets": [
+    ["@babel/preset-env", {
+      "targets" : {
+        "browsers": "last 5 versions"
+      },
+    }],
+    "@babel/react"
   ],
-  "presets": ["@babel/preset-env", "@babel/react"]
+  "plugins" : [
+    ["@babel/plugin-transform-runtime", {"regenerator": true }]
+  ]
 }

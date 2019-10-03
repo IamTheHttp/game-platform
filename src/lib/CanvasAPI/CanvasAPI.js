@@ -15,27 +15,62 @@ export class Shape {
 
 class CanvasAPI {
   constructor(ctx, strokeStyle = 'white') {
-    this.ctx = ctx;
+    this.layers = {
+      initial: {
+        ctx,
+        shapes: new Map()
+      }
+    };
+    
     this.defaultStrokeStyle = strokeStyle;
     ctx.strokeStyle = strokeStyle;
-    this.shapes = new Map();
   }
-
+  
+  addLayer(name) {
+    if (!this.layers.initial.ctx) {
+      throw 'Cannot create layer, no initial context found';
+    } else {
+      let originCanvas = this.layers.initial.ctx.canvas;
+      
+      let parentNode = originCanvas.parentNode;
+      let newCanvas = originCanvas.cloneNode();
+  
+      parentNode.insertBefore(newCanvas, originCanvas);
+      
+      this.layers[name] = {
+        ctx: newCanvas.getContext('2d'),
+        shapes: new Map()
+      };
+    }
+  }
+  
   /**
    * Clears all the shapes
    */
-  clear() {
-    this.shapes = new Map();
+  // TODO should depend on layer
+  clear(layerName) {
+    let layer =  this.layers[layerName] || this.layers.initial;
+    let ctx = layer.ctx;
+    layer.shapes = new Map();
+  }
+  
+  clearAllLayers() {
+    for (let layerName in this.layers) {
+      this.clear(layerName);
+    }
   }
 
   /**
    * Removes a shape by its ID
    * @param id
+   * @param layerName
    */
-  remove(id) {
-    this.shapes.delete(id);
+  remove(id, layerName) {
+    let layer =  this.layers[layerName] || this.layers.initial;
+    let ctx = layer.ctx;
+    let shapes = layer.shapes;
+    shapes.delete(id);
   }
-
 
   /* istanbul ignore next */
   addImage({
@@ -45,9 +80,12 @@ class CanvasAPI {
     height, width,
     cropStartX, cropStartY, cropSizeX, cropSizeY,
     rotation // in radians
-  }) {
-    let ctx = this.ctx;
-    this.shapes.set(id, new Shape(() => {
+  }, layerName) {
+    let layer =  this.layers[layerName] || this.layers.initial;
+    let ctx = layer.ctx;
+    let shapes = layer.shapes;
+    
+    shapes.set(id, new Shape(() => {
       ctx.beginPath();
       ctx.save();
       ctx.translate(x + width / 2, y + height / 2);
@@ -68,9 +106,12 @@ class CanvasAPI {
     }));
   }
 
-  addRect({id, x, y, width, height, strokeStyle, lineWidth}) {
-    let ctx = this.ctx;
-    this.shapes.set(id, new Shape(() => {
+  addRect({id, x, y, width, height, strokeStyle, lineWidth}, layerName) {
+    let layer =  this.layers[layerName] || this.layers.initial;
+    let ctx = layer.ctx;
+    let shapes = layer.shapes;
+    
+    shapes.set(id, new Shape(() => {
       ctx.strokeStyle = strokeStyle;
       ctx.lineWidth = lineWidth;
       ctx.beginPath();
@@ -92,9 +133,12 @@ class CanvasAPI {
     }));
   }
 
-  addCircle({id, x, y, radius, strokeStyle, lineWidth, fillColor}) {
-    let ctx = this.ctx;
-    this.shapes.set(id, new Shape(() => {
+  addCircle({id, x, y, radius, strokeStyle, lineWidth, fillColor}, layerName) {
+    let layer =  this.layers[layerName] || this.layers.initial;
+    let ctx = layer.ctx;
+    let shapes = layer.shapes;
+    
+    shapes.set(id, new Shape(() => {
       ctx.strokeStyle = strokeStyle;
       ctx.lineWidth = lineWidth;
       ctx.moveTo(x, y);
@@ -121,7 +165,17 @@ class CanvasAPI {
   pan(x, y) {
     this.panX = x;
     this.panY = y;
-    this.ctx.setTransform(1, 0, 0, 1, x, y);
+    
+    for (let layerName in this.layers) {
+      let layer = this.layers[layerName];
+      let ctx = layer.ctx;
+      ctx.setTransform(1, 0, 0, 1, x, y);
+  
+      // non initial layers are drawn much less often, so we need a manual one here.
+      if (layerName !== 'initial') {
+        this.draw(layerName); // pan requires a draw to all non initial layers
+      }
+    }
   }
 
   getPan() {
@@ -130,31 +184,39 @@ class CanvasAPI {
       panY : this.panY || 0
     };
   }
-
-  write({id, text, x, y, font, textBaseline, fillStyle}) {
-    this.shapes.set(id, new Shape(() => {
-      this.ctx.beginPath();
-      this.ctx.font = font;
-      this.ctx.textBaseline = textBaseline;
-      this.ctx.fillStyle = fillStyle;
-      this.ctx.fillText(text, x, y);
-      this.ctx.closePath();
+  
+  write({id, text, x, y, font, textBaseline, fillStyle}, layerName) {
+    let layer =  this.layers[layerName] || this.layers.initial;
+    let ctx = layer.ctx;
+    let shapes = layer.shapes;
+  
+    shapes.set(id, new Shape(() => {
+      ctx.beginPath();
+      ctx.font = font;
+      ctx.textBaseline = textBaseline;
+      ctx.fillStyle = fillStyle;
+      ctx.fillText(text, x, y);
+      ctx.closePath();
     }, {
       id,
       x,
       y
     }));
   }
+  
+  draw(layerName) {
+    let layer =  this.layers[layerName] || this.layers.initial;
+    let ctx = layer.ctx;
+    let shapes = layer.shapes;
+  
+    ctx.save();
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    ctx.restore();
 
-  draw() {
-    this.ctx.save();
-    this.ctx.setTransform(1, 0, 0, 1, 0, 0);
-    this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
-    this.ctx.restore();
-
-    for (let shape of this.shapes.values()) {
+    for (let shape of shapes.values()) {
       shape.draw();
-      this.ctx.strokeStyle = this.defaultStrokeStyle;
+      ctx.strokeStyle = this.defaultStrokeStyle;
     }
   }
 }

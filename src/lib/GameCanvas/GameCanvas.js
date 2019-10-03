@@ -84,9 +84,9 @@ class GameCanvas {
     if (selectedData.end.x === selectedData.start.x) {
       let x = selectedData.end.x;
       let y = selectedData.end.y;
-      hits = getShapesFromClick(this.mapAPI.shapes, x, y);
+      hits = getShapesFromClick(this.mapAPI.layers.initial.shapes, x, y);
     } else {
-      hits = getShapesInSelectionBox(this.mapAPI.shapes, selectedData);
+      hits = getShapesInSelectionBox(this.mapAPI.layers.initial.shapes, selectedData);
     }
 
     this.mapAPI.addRect({
@@ -240,6 +240,11 @@ class GameCanvas {
           if (!el) {
             return null;
           }
+          
+          if (process.env.NODE_ENV === 'test' && !el.removeEventListener) {
+            el = el._reactInternalFiber.child.stateNode;
+          }
+
           this.viewMapCanvas = el;
           document.removeEventListener('mousemove', this.updateViewMapCursorPosition);
           document.addEventListener('mousemove', this.updateViewMapCursorPosition);
@@ -269,6 +274,11 @@ class GameCanvas {
           if (!el) {
             return null;
           }
+  
+          if (process.env.NODE_ENV === 'test' && !el.removeEventListener) {
+            el = el._reactInternalFiber.child.stateNode;
+          }
+          
           this.miniMapCanvas = el;
           document.removeEventListener('mousemove', this.updateMiniMapCursorPosition);
           document.addEventListener('mousemove', this.updateMiniMapCursorPosition);
