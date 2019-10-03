@@ -242,7 +242,7 @@ class GameCanvas {
           }
           
           if (process.env.NODE_ENV === 'test' && !el.removeEventListener) {
-            el = el._reactInternalFiber.child.stateNode;
+            el = el._reactInternalFiber.child.stateNode; // eslint-disable-line
           }
 
           this.viewMapCanvas = el;
@@ -276,7 +276,7 @@ class GameCanvas {
           }
   
           if (process.env.NODE_ENV === 'test' && !el.removeEventListener) {
-            el = el._reactInternalFiber.child.stateNode;
+            el = el._reactInternalFiber.child.stateNode; // eslint-disable-line
           }
           
           this.miniMapCanvas = el;
