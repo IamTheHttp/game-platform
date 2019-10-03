@@ -7,6 +7,10 @@
 
 ###Changelog
 **03/10/2019** - 
+Release version 0.1.1   
+[V] Added onMiniMapClick and onMiniMapView  
+ 
+**03/10/2019** - 
 Release version 0.1.0   
 [V] Added support for Layers.  
 [V] To use layers:  

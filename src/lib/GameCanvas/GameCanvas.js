@@ -13,6 +13,10 @@ class GameCanvas {
     this.viewWidth = options.viewWidth;
     this.onViewMapClick = options.onViewMapClick;
     this.onViewMapMove = options.onViewMapMove;
+  
+    this.onMiniMapClick = options.onMiniMapClick;
+    this.onMiniMapMove = options.onMiniMapMove;
+    
     this.lastClick = 0;
     this.dbClick = false;
     this.lastTap = 0;
@@ -23,6 +27,7 @@ class GameCanvas {
     this.handleMapMouseUp = this.handleMapMouseUp.bind(this);
     this.handleMapMouseDown = this.handleMapMouseDown.bind(this);
     this.handleMiniMapClick = this.handleMiniMapClick.bind(this);
+    this.handleMiniMapMove = this.handleMiniMapMove.bind(this);
     this.handleMapMouseMove = this.handleMapMouseMove.bind(this);
     this.handleMapMouseLeave = this.handleMapMouseLeave.bind(this);
     this.handleTouchMove = this.handleTouchMove.bind(this);
@@ -134,7 +139,11 @@ class GameCanvas {
     };
   }
 
-  handleMiniMapClick() {
+  handleMiniMapMove(event) {
+    this.onMiniMapMove(event);
+  }
+  
+  handleMiniMapClick(event) {
     let x = this.miniMapX;
     let y = this.miniMapY;
     // Handle negative overflows, both numbers should be positive
@@ -153,6 +162,7 @@ class GameCanvas {
 
     // draw the minimap square box
     this.updateMiniMapSquare();
+    this.onMiniMapClick(event);
   }
 
   updateMiniMapSquare() {
@@ -235,7 +245,7 @@ class GameCanvas {
   generateMapCanvas(getRef) {
     return (
       <canvas
-        className="viewMap"
+        className='viewMap'
         ref={(el) => {
           if (!el) {
             return null;
@@ -269,7 +279,7 @@ class GameCanvas {
   generateMiniMapCanvas(getRef) {
     return (
       <canvas
-        className="minimap"
+        className='minimap'
         ref={(el) => {
           if (!el) {
             return null;
@@ -284,10 +294,8 @@ class GameCanvas {
           document.addEventListener('mousemove', this.updateMiniMapCursorPosition);
 
           this.miniMapAPI = new CanvasAPI(el.getContext('2d'));
-          // inits the minimap square
-          // so this assumes that there's ALREADy a mapAPI
-          // bad assumption....
 
+          // TODO - what? why? is this needed?
           let key = setInterval(() => {
             if (this.mapAPI) {
               this.updateMiniMapSquare();
@@ -299,6 +307,7 @@ class GameCanvas {
         }}
         height={this.mapHeight}
         width={this.mapWidth}
+        onMouseMove={this.handleMiniMapMove}
         onMouseDown={this.handleMiniMapClick}
         onTouchStart={this.handleMiniMapTouchStart}
       ></canvas>

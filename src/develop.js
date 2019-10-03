@@ -14,6 +14,10 @@ let gameCanvas = new GameCanvas({
   mapWidth : 4000, // in pixels
   viewHeight : 400, // this is the what you actually see in the canvas
   viewWidth : 400, // this is the what you actually see in the canvas
+  onMiniMapClick:() => {
+  },
+  onMiniMapMove:() => {
+  },
   onViewMapClick : (...args) => {
     let mouseMoveDataInterface = {
       // The library only detects hits against circles, it ignores all other shapes
