@@ -35,6 +35,7 @@ class CanvasAPI {
       let parentNode = originCanvas.parentNode;
       let newCanvas = originCanvas.cloneNode();
   
+      newCanvas.id = name;
       parentNode.insertBefore(newCanvas, originCanvas);
       
       this.layers[name] = {
@@ -42,6 +43,14 @@ class CanvasAPI {
         shapes: new Map()
       };
     }
+  }
+  
+  removeLayer(name) {
+    let originCanvas = this.layers.initial.ctx.canvas;
+    let parentNode = originCanvas.parentNode;
+    
+    parentNode.querySelector(`#${name}`).remove();
+    delete this.layers[name];
   }
   
   /**

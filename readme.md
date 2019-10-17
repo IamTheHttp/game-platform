@@ -6,6 +6,10 @@
 [ ] Add configuration to disable selection box  
 
 ###Changelog
+**17/10/2019** - 
+Release version 0.1.2   
+[V] Added the abiliy to remove a layer (canvasAPI.removeLayer(name))
+
 **03/10/2019** - 
 Release version 0.1.1   
 [V] Added onMiniMapClick and onMiniMapView  

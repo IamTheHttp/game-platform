@@ -170,4 +170,17 @@ describe('Tests the CanvasAPI', () => {
     
     expect(canvasAPI.layers.otherLayer.shapes.size).toBe(1);
   });
+  
+  it('Can remove a layer once it was added', () => {
+    canvasAPI.addLayer('otherLayer');
+    canvasAPI.addCircle({
+      id: 'circle',
+      x: 5,
+      y: 5,
+      radius: 5
+    }, 'otherLayer');
+    canvasAPI.removeLayer('otherLayer');
+    
+    expect(canvasAPI.layers.otherLayer).toBeFalsy();
+  });
 });
