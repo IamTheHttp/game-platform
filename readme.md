@@ -6,9 +6,13 @@
 [ ] Add configuration to disable selection box  
 
 ###Changelog
-**17/10/2019** - 
+**22/10/2019** -
+Release version 0.2.0   
+[V] Added an Engine class to encapsulate rAF loop (start, stop, addSystem).
+
+**17/10/2019** -
 Release version 0.1.2   
-[V] Added the abiliy to remove a layer (canvasAPI.removeLayer(name))
+[V] Added the ability to remove a layer (canvasAPI.removeLayer(name))
 
 **03/10/2019** - 
 Release version 0.1.1   
@@ -48,11 +52,42 @@ VERSION 0.0.6 RELEASE
 [V] Remove ALL TODOs and REFACTORS
 
 
-### Features
-#### Game Canvas (Both Main Map and Mini Map) with click detection on what shape was clicked
-#### ECS Entity
-#### Utility to loop over entities
-#### Object Pool utility to pre-create most requires instances
+Features
+------------------
+- Engine
+- (React) Game Canvas (Both Main Map and Mini Map) with click detection on what shape was clicked
+- ECS Entity
+- Utility to loop over entities
+-  Object Pool utility to pre-create and manage instances of objects
+
+
+
+### Usage - Engine
+```javascript 
+
+  import {Engine} from 'game-platform/dist';
+  let engine = new Engine();
+  
+  engine.addSystem((systemArguments) => {
+     // run any system you want, order specified by order of insertion  
+  })
+  
+  engine.addSystem((systemArguments) => {
+     // run any system you want, order specified by order of insertion  
+  })
+  
+  
+  let systemArguments = {
+    // object that is passed to all systems
+    // alternatively it can also be a function that returns the object
+    // in case of a function, it's evaluated every frame, so keep it light!
+  }
+  
+  engine.run(systemArguments); // runs in a loop
+    
+  engine.stop(); // stops the loop completely
+```
+
 
 ### Usage - Game Canvas
 ```javascript
