@@ -6,6 +6,10 @@
 [ ] Add configuration to disable selection box  
 
 ###Changelog
+**24/10/2019** -
+Release version 0.2.1   
+[V] Added the addArc() method which enables drawing arcs.
+
 **22/10/2019** -
 Release version 0.2.0   
 [V] Added an Engine class to encapsulate rAF loop (start, stop, addSystem).
