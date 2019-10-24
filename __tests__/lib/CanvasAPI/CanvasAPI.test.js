@@ -183,4 +183,53 @@ describe('Tests the CanvasAPI', () => {
     
     expect(canvasAPI.layers.otherLayer).toBeFalsy();
   });
+
+  it('Adds an arc to the shapes', () => {
+    let {ctx} = canvasAPI.layers.initial;
+    let layer = canvasAPI.layers.initial;
+    let x = 100;
+    let y = 100;
+    let radius = 500;
+    let direction = 1;
+    let size = 1;
+    let fillColor = 'green';
+
+    canvasAPI.addArc({
+      id: 'myArc',
+      x,
+      y,
+      radius,
+      direction,
+      size,
+      fillColor
+    });
+
+    expect(layer.shapes.size).toBe(1);
+    canvasAPI.draw();
+    expect(ctx.arc.mock.calls[0]).toEqual([x, y, radius, (direction - size / 2) * Math.PI, (direction + size / 2)  * Math.PI]);
+    expect(ctx.fill.mock.calls[0]).toBeDefined();
+  });
+
+  it('Adds an arc without FillColor', () => {
+    let {ctx} = canvasAPI.layers.initial;
+    let layer = canvasAPI.layers.initial;
+    let x = 100;
+    let y = 100;
+    let radius = 500;
+    let direction = 1;
+    let size = 1;
+
+    canvasAPI.addArc({
+      id: 'myArc',
+      x,
+      y,
+      radius,
+      direction,
+      size
+    });
+
+    canvasAPI.draw();
+    expect(ctx.arc.mock.calls.length).toBeGreaterThan(0);
+    expect(ctx.fill.mock.calls[0]).toBeUndefined();
+  });
 });

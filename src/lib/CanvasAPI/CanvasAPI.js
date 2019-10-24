@@ -5,7 +5,6 @@
  */
 
 
-
 export class Shape {
   constructor(draw, metaData) {
     this.draw = draw;
@@ -21,48 +20,47 @@ class CanvasAPI {
         shapes: new Map()
       }
     };
-    
+
     this.defaultStrokeStyle = strokeStyle;
     ctx.strokeStyle = strokeStyle;
   }
-  
+
   addLayer(name) {
     if (!this.layers.initial.ctx) {
       throw 'Cannot create layer, no initial context found';
     } else {
       let originCanvas = this.layers.initial.ctx.canvas;
-      
+
       let parentNode = originCanvas.parentNode;
       let newCanvas = originCanvas.cloneNode();
-  
+
       newCanvas.id = name;
       parentNode.insertBefore(newCanvas, originCanvas);
-      
+
       this.layers[name] = {
         ctx: newCanvas.getContext('2d'),
         shapes: new Map()
       };
     }
   }
-  
+
   removeLayer(name) {
     let originCanvas = this.layers.initial.ctx.canvas;
     let parentNode = originCanvas.parentNode;
-    
+
     parentNode.querySelector(`#${name}`).remove();
     delete this.layers[name];
   }
-  
+
   /**
    * Clears all the shapes
    */
-  // TODO should depend on layer
-  clear(layerName) {
-    let layer =  this.layers[layerName] || this.layers.initial;
+  clear(layerName = 'initial') {
+    let layer = this.layers[layerName];
     let ctx = layer.ctx;
     layer.shapes = new Map();
   }
-  
+
   clearAllLayers() {
     for (let layerName in this.layers) {
       this.clear(layerName);
@@ -74,8 +72,8 @@ class CanvasAPI {
    * @param id
    * @param layerName
    */
-  remove(id, layerName) {
-    let layer =  this.layers[layerName] || this.layers.initial;
+  remove(id, layerName = 'initial') {
+    let layer = this.layers[layerName];
     let ctx = layer.ctx;
     let shapes = layer.shapes;
     shapes.delete(id);
@@ -89,11 +87,11 @@ class CanvasAPI {
     height, width,
     cropStartX, cropStartY, cropSizeX, cropSizeY,
     rotation // in radians
-  }, layerName) {
-    let layer =  this.layers[layerName] || this.layers.initial;
+  }, layerName = 'initial') {
+    let layer = this.layers[layerName];
     let ctx = layer.ctx;
     let shapes = layer.shapes;
-    
+
     shapes.set(id, new Shape(() => {
       ctx.beginPath();
       ctx.save();
@@ -115,11 +113,22 @@ class CanvasAPI {
     }));
   }
 
-  addRect({id, x, y, width, height, strokeStyle, lineWidth}, layerName) {
-    let layer =  this.layers[layerName] || this.layers.initial;
+  // TODO Finish this API
+  addShape({id, drawFn, layerName = 'initial'}) {
+    let layer = this.layers[layerName];
     let ctx = layer.ctx;
     let shapes = layer.shapes;
-    
+
+    shapes.set(id, new Shape(() => {
+      drawFn(ctx);
+    }));
+  }
+
+  addRect({id, x, y, width, height, strokeStyle, lineWidth}, layerName = 'initial') {
+    let layer = this.layers[layerName];
+    let ctx = layer.ctx;
+    let shapes = layer.shapes;
+
     shapes.set(id, new Shape(() => {
       ctx.strokeStyle = strokeStyle;
       ctx.lineWidth = lineWidth;
@@ -142,11 +151,34 @@ class CanvasAPI {
     }));
   }
 
-  addCircle({id, x, y, radius, strokeStyle, lineWidth, fillColor}, layerName) {
-    let layer =  this.layers[layerName] || this.layers.initial;
+  addArc({id, direction, size, color = 'black', fillColor, lineWidth = 1, x, y, radius, layerName = 'initial'}) {
+    let layer = this.layers[layerName];
     let ctx = layer.ctx;
     let shapes = layer.shapes;
-    
+
+    shapes.set(id, new Shape(() => {
+      ctx.strokeStyle = color;
+      ctx.lineWidth = lineWidth;
+
+      let startArc = direction - (size / 2);
+      let endArc = direction + (size / 2);
+
+      ctx.beginPath();
+      ctx.arc(x, y, radius, startArc * Math.PI, endArc * Math.PI);
+      if (fillColor) {
+        ctx.fillStyle = fillColor;
+        ctx.fill();
+      }
+      ctx.stroke();
+      ctx.closePath();
+    }));
+  }
+
+  addCircle({id, x, y, radius, strokeStyle, lineWidth, fillColor}, layerName = 'initial') {
+    let layer = this.layers[layerName];
+    let ctx = layer.ctx;
+    let shapes = layer.shapes;
+
     shapes.set(id, new Shape(() => {
       ctx.strokeStyle = strokeStyle;
       ctx.lineWidth = lineWidth;
@@ -174,12 +206,12 @@ class CanvasAPI {
   pan(x, y) {
     this.panX = x;
     this.panY = y;
-    
+
     for (let layerName in this.layers) {
       let layer = this.layers[layerName];
       let ctx = layer.ctx;
       ctx.setTransform(1, 0, 0, 1, x, y);
-  
+
       // non initial layers are drawn much less often, so we need a manual one here.
       if (layerName !== 'initial') {
         this.draw(layerName); // pan requires a draw to all non initial layers
@@ -189,16 +221,16 @@ class CanvasAPI {
 
   getPan() {
     return {
-      panX : this.panX || 0,
-      panY : this.panY || 0
+      panX: this.panX || 0,
+      panY: this.panY || 0
     };
   }
-  
-  write({id, text, x, y, font, textBaseline, fillStyle}, layerName) {
-    let layer =  this.layers[layerName] || this.layers.initial;
+
+  write({id, text, x, y, font, textBaseline, fillStyle}, layerName = 'initial') {
+    let layer = this.layers[layerName];
     let ctx = layer.ctx;
     let shapes = layer.shapes;
-  
+
     shapes.set(id, new Shape(() => {
       ctx.beginPath();
       ctx.font = font;
@@ -212,12 +244,12 @@ class CanvasAPI {
       y
     }));
   }
-  
-  draw(layerName) {
-    let layer =  this.layers[layerName] || this.layers.initial;
+
+  draw(layerName = 'initial') {
+    let layer = this.layers[layerName];
     let ctx = layer.ctx;
     let shapes = layer.shapes;
-  
+
     ctx.save();
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
@@ -233,6 +265,7 @@ class CanvasAPI {
 // adding an image causes segmentation fault for some reason :)
 /* istanbul ignore next */
 if (process.env.NODE_ENV === 'test') {
-  CanvasAPI.prototype.addImage = () => {};
+  CanvasAPI.prototype.addImage = () => {
+  };
 }
 export default CanvasAPI;

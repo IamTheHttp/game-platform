@@ -3,6 +3,7 @@ import {render} from 'react-dom';
 import './index.scss';
 
 import GameCanvas from 'lib/GameCanvas/GameCanvas';
+import Engine from 'lib/Engine/Engine';
 
 
 let gameCanvas = new GameCanvas({
@@ -11,14 +12,14 @@ let gameCanvas = new GameCanvas({
   // these are not CSS attributes, but rather canvas html properties
   // The library uses viewHeight for the main view, and mapWidth for the minimap
   mapHeight: 4000, // in pixels
-  mapWidth : 4000, // in pixels
-  viewHeight : 400, // this is the what you actually see in the canvas
-  viewWidth : 400, // this is the what you actually see in the canvas
-  onMiniMapClick:() => {
+  mapWidth: 4000, // in pixels
+  viewHeight: 400, // this is the what you actually see in the canvas
+  viewWidth: 400, // this is the what you actually see in the canvas
+  onMiniMapClick: () => {
   },
-  onMiniMapMove:() => {
+  onMiniMapMove: () => {
   },
-  onViewMapClick : (...args) => {
+  onViewMapClick: (...args) => {
     let mouseMoveDataInterface = {
       // The library only detects hits against circles, it ignores all other shapes
       // you can implement your own click detection system
@@ -29,19 +30,19 @@ let gameCanvas = new GameCanvas({
       // if mouse is not held down(no selection), these numbers will be set to 0
       selectedBox: {
         start: {
-          x:10,
-          y:0
+          x: 10,
+          y: 0
         },
         end: {
-          x:110,
-          y:75
+          x: 110,
+          y: 75
         },
         height: 75,
         width: 100
       }
     };
   },
-  onViewMapMove : (mouseMoveData) => {
+  onViewMapMove: (mouseMoveData) => {
     let mouseMoveDataInterface = {
       dbClick: true, // BOOL, true or false
       isMouseDown: true, // BOOL, true or false
@@ -49,12 +50,12 @@ let gameCanvas = new GameCanvas({
       // if mouse is not held down(no selection), these numbers will be set to 0
       selectedBox: {
         start: {
-          x:10,
-          y:0
+          x: 10,
+          y: 0
         },
         end: {
-          x:110,
-          y:75
+          x: 110,
+          y: 75
         },
         height: 75,
         width: 100
@@ -74,8 +75,8 @@ let miniMap = gameCanvas.generateMiniMapCanvas((API) => {
   apis.mini = API;
 });
 
-// Unfortunate, as we can only expose the APIs once the canvas context exists
-// but we also can't have the canvas context until we render
+// Unfortunate, as we can only expose the APIs once the canvas ctx exists
+// but we also can't have the canvas ctx until we render
 
 
 // We render our new canvas react elements with React
@@ -98,7 +99,7 @@ render(<div>
 
   apis.main.addCircle({
     id: 'ExampleID',
-    x:50,
+    x: 50,
     y: 50,
     radius: 15,
     strokeStyle: 'red'
@@ -108,22 +109,36 @@ render(<div>
   img.src = 'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png';
   img.onload = () => {
     apis.main.addImage({
-      id : 'my-image',
-      image:img, // the image to display
+      id: 'my-image',
+      image: img, // the image to display
       x: 100, y: 100, // pos for x,y..
       height: 100, width: 100,
-      cropStartX:0, cropStartY:0, cropSizeX:img.width, cropSizeY:img.height,
-      rotation : 0.2 // in radians
+      cropStartX: 0, cropStartY: 0, cropSizeX: img.width, cropSizeY: img.height,
+      rotation: 0.2 // in radians
     });
   };
 
   // in a game, you usually render in a loop, the API supports it by having deterministic draws
-  setInterval(() => {
-    // Once we have all our shapes in place, we use the internal CanvasAPI to draw them
-    // Internally this deletes the entire canvas, and re-renders all the shapes.
+
+  let eng = new Engine();
+  let direction = 0;
+
+  eng.addSystem(() => {
+    direction = direction + 0.01;
+    apis.main.addArc({
+      direction,
+      size: 0.75,
+      x: 100,
+      y: 100,
+      radius: 100
+    });
+
     apis.main.draw();
     apis.mini.draw();
-  }, 500);
+  });
+
+  // implements request animation frame internally
+  eng.run({});
 });
 
 // all elements are absolute positioned.
@@ -131,7 +146,7 @@ apis.main.addLayer('background');
 
 apis.main.addCircle({
   id: 'ExampleID222', // needs to be unique per layer?
-  x:0,
+  x: 0,
   y: 0,
   radius: 15,
   strokeStyle: 'red'
@@ -140,6 +155,38 @@ apis.main.addCircle({
 apis.main.draw('background');
 apis.main.remove('ExampleID222', 'background');
 
+
+apis.main.addShape({
+  id: '0 to 45deg',
+  drawFn: (ctx) => {
+    ctx.strokeStyle = 'green';
+    ctx.lineWidth = 1;
+
+    let radius = 100;
+    let x = 100;
+    let y = 100;
+    ctx.beginPath();
+    ctx.arc(x, y, radius, Math.PI * 0.0, Math.PI * 0.5);
+    ctx.stroke();
+    ctx.closePath();
+  }
+});
+
+apis.main.addShape({
+  id: '0 to 180',
+  drawFn: (ctx) => {
+    ctx.strokeStyle = 'black';
+    ctx.lineWidth = 1;
+
+    let radius = 90;
+    let x = 100;
+    let y = 100;
+    ctx.beginPath();
+    ctx.arc(x, y, radius, Math.PI * 0.5, Math.PI);
+    ctx.stroke();
+    ctx.closePath();
+  }
+});
 
 
 console.log(apis.main);
