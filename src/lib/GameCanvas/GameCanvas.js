@@ -6,17 +6,19 @@ import getShapesInSelectionBox from './selectionUtils/getShapesInSelectionBox';
 
 class GameCanvas {
   constructor(options) {
+    let noop = () => {
+    };
     this.selectedBoxColor = options.selectedBoxColor || 'blue';
     this.mapHeight = options.mapHeight;
     this.mapWidth = options.mapWidth;
     this.viewHeight = options.viewHeight;
     this.viewWidth = options.viewWidth;
-    this.onViewMapClick = options.onViewMapClick;
-    this.onViewMapMove = options.onViewMapMove;
-  
-    this.onMiniMapClick = options.onMiniMapClick;
-    this.onMiniMapMove = options.onMiniMapMove;
-    
+    this.onViewMapClick = options.onViewMapClick || noop;
+    this.onViewMapMove = options.onViewMapMove || noop;
+    this.onMiniMapClick = options.onMiniMapClick || noop;
+    this.onMiniMapMove = options.onMiniMapMove || noop;
+    this.enableSelectBox = options.enableSelectBox;
+
     this.lastClick = 0;
     this.dbClick = false;
     this.lastTap = 0;
@@ -50,18 +52,21 @@ class GameCanvas {
 
   handleMapMouseMove() {
     if (this.isMouseDown) {
-      this.selectedBox.setEnd(this.viewMapX, this.viewMapY);
+      if (this.enableSelectBox === false) {
+        return;
+      } else {
+        this.selectedBox.setEnd(this.viewMapX, this.viewMapY);
+        let data = this.selectedBox.getData();
 
-      let data = this.selectedBox.getData();
-
-      this.mapAPI.addRect({
-        id: 'selectedBox',
-        x: data.start.x,
-        y: data.start.y,
-        width: data.width,
-        height: data.height,
-        strokeStyle: this.selectedBoxColor
-      });
+        this.mapAPI.addRect({
+          id: 'selectedBox',
+          x: data.start.x,
+          y: data.start.y,
+          width: data.width,
+          height: data.height,
+          strokeStyle: this.selectedBoxColor
+        });
+      }
     }
 
     this.onViewMapMove({
@@ -89,6 +94,8 @@ class GameCanvas {
     if (selectedData.end.x === selectedData.start.x) {
       let x = selectedData.end.x;
       let y = selectedData.end.y;
+      // TODO if we wanted to support hit detection against all layers
+      // TODO this is where we'd intervene to loop over all layers
       hits = getShapesFromClick(this.mapAPI.layers.initial.shapes, x, y);
     } else {
       hits = getShapesInSelectionBox(this.mapAPI.layers.initial.shapes, selectedData);
@@ -142,7 +149,7 @@ class GameCanvas {
   handleMiniMapMove(event) {
     this.onMiniMapMove(event);
   }
-  
+
   handleMiniMapClick(event) {
     let x = this.miniMapX;
     let y = this.miniMapY;
@@ -188,6 +195,10 @@ class GameCanvas {
   }
 
   setSelectBox() {
+    if (this.enableSelectBox === false) {
+      return;
+    }
+
     this.selectedBox.setStart(this.viewMapX, this.viewMapY);
     this.selectedBox.setEnd(this.viewMapX, this.viewMapY);
   }
@@ -250,7 +261,7 @@ class GameCanvas {
           if (!el) {
             return null;
           }
-          
+
           if (process.env.NODE_ENV === 'test' && !el.removeEventListener) {
             el = el._reactInternalFiber.child.stateNode; // eslint-disable-line
           }
@@ -284,11 +295,11 @@ class GameCanvas {
           if (!el) {
             return null;
           }
-  
+
           if (process.env.NODE_ENV === 'test' && !el.removeEventListener) {
             el = el._reactInternalFiber.child.stateNode; // eslint-disable-line
           }
-          
+
           this.miniMapCanvas = el;
           document.removeEventListener('mousemove', this.updateMiniMapCursorPosition);
           document.addEventListener('mousemove', this.updateMiniMapCursorPosition);

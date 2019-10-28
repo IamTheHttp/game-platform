@@ -1,60 +1,73 @@
-### Roadmap
-[ ] OnClick in mainView - Handle click detection against rects  
-[ ] Provide some basic SCSS that can be imported  
-[ ] Add a Game Grid to the common utilities  
-[ ] Add configuration to disable click detection  
-[ ] Add configuration to disable selection box  
+# Roadmap
+[ ] Provide some basic SCSS that can be imported\
+[ ] Add a Game Grid to the common utilities\
+[ ] Add hit detection against rotated rects/images (currently only leveled rects are supported)  
 
-###Changelog
-**24/10/2019** -
-Release version 0.2.1   
+---
+#Changelog
+###28/10/2019
+Release version **0.3.0:**
+- Moved all layerName arguments into the objects for all functions (for functions that accept Objects)
+- Added a writeBubble() text function
+- Added click detection(for click and select box) against rect shapes (it was only circles)\
+- Added tests for click detection against rect\
+- onViewMapMove/click and onMinimapMove/click are now optional callbacks\
+- Add hit detection against Images\
+- Add configuration to disable selection box (options.enableSelectBox = false)\
+[ ] Added documentation to how writeBubble works\
+[ ] Updated docs that hit detection only works on 'initial' layer\
+
+---
+###24/10/2019
+Release version **0.2.1**   
 [V] Added the addArc() method which enables drawing arcs.
-
-**22/10/2019** -
+---
+###22/10/2019
 Release version 0.2.0   
 [V] Added an Engine class to encapsulate rAF loop (start, stop, addSystem).
-
-**17/10/2019** -
+---
+###17/10/2019
 Release version 0.1.2   
 [V] Added the ability to remove a layer (canvasAPI.removeLayer(name))
-
-**03/10/2019** - 
+---
+###03/10/2019 
 Release version 0.1.1   
 [V] Added onMiniMapClick and onMiniMapView  
- 
-**03/10/2019** - 
+ ---
+###03/10/2019 
 Release version 0.1.0   
 [V] Added support for Layers.  
 [V] To use layers:  
  - the canvas element must be positioned in a container element.   
  - The container element must be positioned absolute with a set height and width
  - The canvas elements must be positioned absolute (To enable layering) 
+---
 
-
-**02/10/2019** - 
+###02/10/2019 
 Release version 0.0.9   
 [V] Updated JARB to 3.0.6  
 [V] Updated Canvas to 2.6.0 and removed canvas prebuilt.  
 [V] These changes now enable support for node 12.x
   
-
-15/02/2019
-Release version 0.0.8 
+---
+###15/02/2019###  
+Release version 0.0.8   
 [V] Updated JARB to 2.0.0-beta.2
 
-09/01/2019
-Release version 0.0.7
+---
+###09/01/2019###  
+Release version 0.0.7   
 [V] Fix ObjectPool.generate(amount) to generate UP TO $amount of free objects
-
-06/01/2019
+---
+###06/01/2019###  
 [V] Updated jarb to 1.0.8
-
-27/12/2018
-VERSION 0.0.6 RELEASE
-[V] Ensure React is not bundled in the dist file
-[V] Document all exported properties
-[V] Remove ALL TODOs and REFACTORS
-
+---
+###27/12/2018###  
+VERSION 0.0.6 RELEASE  
+[V] Ensure React is not bundled in the dist file  
+[V] Document all exported properties  
+[V] Remove ALL TODOs and REFACTORS  
+---
 
 Features
 ------------------

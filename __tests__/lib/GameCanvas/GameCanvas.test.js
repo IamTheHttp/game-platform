@@ -45,6 +45,29 @@ describe('Tests Game canvas', () => {
     mount(map);
     mount(minimap);
   });
+
+  it('Tests optional arguments for click and move (No errors)', () => {
+    gameCanvas = new GameCanvas({
+      mapHeight: 100,
+      mapWidth: 100,
+      viewHeight: 50,
+      viewWidth: 50
+    });
+
+    let {map, minimap} = gameCanvas.getNewCanvasPairs({
+      getMapRef: (API) => {
+        apis.mapAPI = API;
+      },
+      getMiniRef: (API) => {
+        apis.minimapAPI = API;
+      }
+    });
+
+    mount(map);
+    mount(minimap);
+    gameCanvas.handleMiniMapMove();
+  });
+
   
   it('tests handleMapMouseMove', () => {
     gameCanvas.isMouseDown = true;

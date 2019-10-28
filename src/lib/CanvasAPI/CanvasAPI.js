@@ -14,6 +14,9 @@ export class Shape {
 
 class CanvasAPI {
   constructor(ctx, strokeStyle = 'white') {
+    if (!ctx) {
+      throw 'Cannot create layer, no initial context found';
+    }
     this.layers = {
       initial: {
         ctx,
@@ -26,22 +29,18 @@ class CanvasAPI {
   }
 
   addLayer(name) {
-    if (!this.layers.initial.ctx) {
-      throw 'Cannot create layer, no initial context found';
-    } else {
-      let originCanvas = this.layers.initial.ctx.canvas;
+    let originCanvas = this.layers.initial.ctx.canvas;
 
-      let parentNode = originCanvas.parentNode;
-      let newCanvas = originCanvas.cloneNode();
+    let parentNode = originCanvas.parentNode;
+    let newCanvas = originCanvas.cloneNode();
 
-      newCanvas.id = name;
-      parentNode.insertBefore(newCanvas, originCanvas);
+    newCanvas.id = name;
+    parentNode.insertBefore(newCanvas, originCanvas);
 
-      this.layers[name] = {
-        ctx: newCanvas.getContext('2d'),
-        shapes: new Map()
-      };
-    }
+    this.layers[name] = {
+      ctx: newCanvas.getContext('2d'),
+      shapes: new Map()
+    };
   }
 
   removeLayer(name) {
@@ -86,8 +85,9 @@ class CanvasAPI {
     x, y, // pos for x,y..
     height, width,
     cropStartX, cropStartY, cropSizeX, cropSizeY,
-    rotation // in radians
-  }, layerName = 'initial') {
+    rotation, // in radians
+    layerName = 'initial'
+  }) {
     let layer = this.layers[layerName];
     let ctx = layer.ctx;
     let shapes = layer.shapes;
@@ -124,7 +124,62 @@ class CanvasAPI {
     }));
   }
 
-  addRect({id, x, y, width, height, strokeStyle, lineWidth}, layerName = 'initial') {
+  writeBubble({
+    id,
+    text,
+    backgroundColor,
+    borderColor,
+    borderWidth,
+    fontSize,
+    fontColor,
+    x,
+    y,
+    fontFace,
+    height,
+    width,
+    paddingLeft = 10,
+    paddingTop = 10,
+    layerName = 'initial'
+  }) {
+    let longestTextWidth = 0;
+    let linesOfText = text.split('\n');
+    let fontPxSize = fontSize || this.layers.initial.ctx.font.split('px')[0];
+    let fontToUse = fontFace || this.layers.initial.ctx.font.split('px')[1];
+
+    // set it first for text-width calculations
+    this.layers.initial.ctx.font = `${fontPxSize}px ${fontToUse}`;
+
+    for (let i = 0; i < linesOfText.length; i++) {
+      let {width} = this.layers[layerName].ctx.measureText(linesOfText[i]);
+      longestTextWidth = width > longestTextWidth ? width : longestTextWidth;
+    }
+
+    this.addRect({
+      id: `${id}`,
+      x,
+      y,
+      height: Math.max(height, linesOfText.length * fontPxSize + paddingTop * 2),
+      width: Math.max(width, longestTextWidth + paddingLeft * 2 + borderWidth),
+      fillColor: backgroundColor,
+      lineWidth: borderWidth,
+      strokeStyle: borderColor,
+      layerName
+    });
+
+    for (let i = 0; i < linesOfText.length; i++) {
+      this.write({
+        id: `${id}-bubbleText-${i}`,
+        text: linesOfText[i],
+        x: x + paddingLeft,
+        y: y + fontPxSize + paddingTop + i * fontPxSize,
+        fillStyle: fontColor,
+        font: `${fontPxSize}px ${fontToUse}`,
+        layerName
+      });
+    }
+  }
+
+  addRect({id, x, y, width, height, strokeStyle, lineWidth, fillColor, layerName = 'initial'}) {
     let layer = this.layers[layerName];
     let ctx = layer.ctx;
     let shapes = layer.shapes;
@@ -139,6 +194,10 @@ class CanvasAPI {
         width,
         height
       );
+      if (fillColor) {
+        ctx.fillStyle = fillColor;
+        ctx.fill();
+      }
       ctx.stroke();
       ctx.closePath();
     }, {
@@ -174,13 +233,12 @@ class CanvasAPI {
     }));
   }
 
-  addCircle({id, x, y, radius, strokeStyle, lineWidth, fillColor}, layerName = 'initial') {
+  addCircle({id, x, y, radius, lineWidth, fillColor, layerName = 'initial'}) {
     let layer = this.layers[layerName];
     let ctx = layer.ctx;
     let shapes = layer.shapes;
 
     shapes.set(id, new Shape(() => {
-      ctx.strokeStyle = strokeStyle;
       ctx.lineWidth = lineWidth;
       ctx.moveTo(x, y);
       ctx.beginPath();
@@ -226,7 +284,7 @@ class CanvasAPI {
     };
   }
 
-  write({id, text, x, y, font, textBaseline, fillStyle}, layerName = 'initial') {
+  write({id, text, x, y, font, textBaseline, fillStyle, strokeStyle, layerName = 'initial'}) {
     let layer = this.layers[layerName];
     let ctx = layer.ctx;
     let shapes = layer.shapes;
@@ -236,6 +294,7 @@ class CanvasAPI {
       ctx.font = font;
       ctx.textBaseline = textBaseline;
       ctx.fillStyle = fillStyle;
+      ctx.strokeStyle = strokeStyle;
       ctx.fillText(text, x, y);
       ctx.closePath();
     }, {

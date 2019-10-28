@@ -12,13 +12,11 @@ class Engine {
     this.frameID = requestAnimationFrame(() => {
       let systemArguments = typeof sysArgs === 'function' ? sysArgs() : sysArgs;
 
-      if (typeof systemArguments !== 'object') {
-        throw 'Expecting systemArguments to be of type object';
-      }
-
       this.runSystems(systemArguments);
       this.run(sysArgs); // the original
     });
+
+    return this.frameID;
   }
 
   runSystems(systemArguments) {
@@ -29,6 +27,7 @@ class Engine {
 
   stop() {
     cancelAnimationFrame(this.frameID);
+    return this.frameID;
   }
 }
 

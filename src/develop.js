@@ -1,7 +1,7 @@
 import React from 'react';
 import {render} from 'react-dom';
 import './index.scss';
-
+import imgURL from './planet.png';
 import GameCanvas from 'lib/GameCanvas/GameCanvas';
 import Engine from 'lib/Engine/Engine';
 
@@ -15,11 +15,13 @@ let gameCanvas = new GameCanvas({
   mapWidth: 4000, // in pixels
   viewHeight: 400, // this is the what you actually see in the canvas
   viewWidth: 400, // this is the what you actually see in the canvas
+  enableSelectBox: false,
   onMiniMapClick: () => {
   },
   onMiniMapMove: () => {
   },
   onViewMapClick: (...args) => {
+    console.log(args);
     let mouseMoveDataInterface = {
       // The library only detects hits against circles, it ignores all other shapes
       // you can implement your own click detection system
@@ -106,7 +108,7 @@ render(<div>
   });
 
   let img = new Image;
-  img.src = 'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png';
+  img.src = imgURL;
   img.onload = () => {
     apis.main.addImage({
       id: 'my-image',
@@ -123,18 +125,25 @@ render(<div>
   let eng = new Engine();
   let direction = 0;
 
+  apis.main.writeBubble({
+    id: 'bubbleTextExampleID',
+    text: 'It is dangerous to go alone! \ntake this!',
+    backgroundColor: 'green',
+    borderColor:'orange',
+    borderWidth: 3,
+    fontColor: 'purple',
+    x: 200,
+    y: 200,
+    height:0, // the minimum value is the text value within!
+    width:0, // the minimum value is the text value within!
+    fontSize: 16
+  });
+
   eng.addSystem(() => {
     direction = direction + 0.01;
-    apis.main.addArc({
-      direction,
-      size: 0.75,
-      x: 100,
-      y: 100,
-      radius: 100
-    });
 
     apis.main.draw();
-    apis.mini.draw();
+    // apis.mini.draw();
   });
 
   // implements request animation frame internally

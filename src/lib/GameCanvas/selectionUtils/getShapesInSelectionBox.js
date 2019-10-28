@@ -7,10 +7,16 @@ function getShapesInSelectionBox(shapes, selectedData) {
 
   let hits = [];
   shapes.forEach((shape, id) => {
-    let shapeMetaData = shape.metaData;
-    let shapeX      = shapeMetaData.x;
-    let shapeY      = shapeMetaData.y;
-    let type   = shapeMetaData.type;
+    if (id === 'selectedBox') {
+      return;
+    }
+    let shapeMetaData = shape.metaData || {};
+    let shapeX = shapeMetaData.x;
+    let shapeY = shapeMetaData.y;
+    let radius = shapeMetaData.radius;
+    let width = shapeMetaData.width;
+    let height = shapeMetaData.height;
+    let type = shapeMetaData.type;
 
     if (type === 'circle') {
       let centerX = shapeX;
@@ -18,8 +24,16 @@ function getShapesInSelectionBox(shapes, selectedData) {
       if (centerX >= minX && centerX <= maxX && centerY >= minY && centerY <= maxY) {
         hits.push(id);
       }
+    } else if (type === 'rect' || type === 'image') {
+      // what is considered the 'centerX' for a rect?
+      let centerX = shapeX + width / 2;
+      let centerY = shapeY + height / 2;
+
+      if (centerX >= minX && centerX <= maxX && centerY >= minY && centerY <= maxY) {
+        hits.push(id);
+      }
     } else {
-      // do nothing, no support for non circles
+      // do nothing, no support for non circles or rects
     }
   });
 

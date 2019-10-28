@@ -8,17 +8,26 @@ function getShapesFromClick(shapes, x, y) {
   let hits = [];
 
   shapes.forEach((shape, id) => {
-    let shapeMetaData = shape.metaData;
-    let shapeX      = shapeMetaData.x;
-    let shapeY      = shapeMetaData.y;
+    if (id === 'selectedBox') {
+      return;
+    }
+    let shapeMetaData = shape.metaData || {};
+    let shapeX = shapeMetaData.x;
+    let shapeY = shapeMetaData.y;
     let radius = shapeMetaData.radius;
-    let type   = shapeMetaData.type;
-
+    let width = shapeMetaData.width;
+    let height = shapeMetaData.height;
+    let type = shapeMetaData.type;
 
     if (type === 'circle' && isPosInsideCircle(x, y, shapeX, shapeY, radius)) {
       hits.push(id);
+    } else if (type === 'rect' || type === 'image') {
+      if (x >= shapeX && x <= shapeX + width && y >= shapeY && y <= shapeY + height) {
+        hits.push(id);
+        // do nothing, no support for non circles
+      }
     } else if (type !== 'circle') {
-      // do nothing, no support for non circles
+
     }
   });
 

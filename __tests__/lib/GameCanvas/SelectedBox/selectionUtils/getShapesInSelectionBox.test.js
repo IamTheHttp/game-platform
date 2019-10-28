@@ -1,39 +1,43 @@
 import getShapesInSelectionBox from 'lib/GameCanvas/selectionUtils/getShapesInSelectionBox';
 import {Shape} from 'lib/CanvasAPI/CanvasAPI';
+import getShapesFromClick from 'lib/GameCanvas/selectionUtils/getShapesFromClick';
 
 
-describe('is a position inside a circle tests', () => {
-  it('works', () => {
+describe('Test selectionBox shape detection', () => {
+  it('Tests circles', () => {
     let shapes = new Map();
 
-    shapes.set('foo', new Shape(() => {}, {
+    shapes.set('foo', new Shape(() => {
+    }, {
       id: 'foo',
       type: 'circle',
-      x : 15,
-      y : 15,
+      x: 15,
+      y: 15,
       radius: 5
     }));
 
-    shapes.set('bar', new Shape(() => {}, {
+    shapes.set('bar', new Shape(() => {
+    }, {
       id: 'bar',
       type: 'circle',
-      x : 20,
-      y : 20,
+      x: 20,
+      y: 20,
       radius: 5
     }));
 
-    shapes.set('bar22', new Shape(() => {}, {
+    shapes.set('bar22', new Shape(() => {
+    }, {
       id: 'bar22',
       type: 'UNSUPPORTED TYPE',
-      x : 20,
-      y : 20,
+      x: 20,
+      y: 20,
       radius: 5
     }));
 
     expect(getShapesInSelectionBox(shapes, {
-      start : {
-        x:0,
-        y:0
+      start: {
+        x: 0,
+        y: 0
       },
       end: {
         x: 0,
@@ -42,9 +46,9 @@ describe('is a position inside a circle tests', () => {
     }).length).toBe(0);
 
     expect(getShapesInSelectionBox(shapes, {
-      start : {
-        x:-100,
-        y:-100
+      start: {
+        x: -100,
+        y: -100
       },
       end: {
         x: 100,
@@ -53,9 +57,9 @@ describe('is a position inside a circle tests', () => {
     }).length).toBe(2);
 
     expect(getShapesInSelectionBox(shapes, {
-      start : {
-        x:14,
-        y:14
+      start: {
+        x: 14,
+        y: 14
       },
       end: {
         x: 16,
@@ -64,9 +68,9 @@ describe('is a position inside a circle tests', () => {
     }).length).toBe(1);
 
     expect(getShapesInSelectionBox(shapes, {
-      start : {
-        x:14,
-        y:14
+      start: {
+        x: 14,
+        y: 14
       },
       end: {
         x: 26,
@@ -75,9 +79,9 @@ describe('is a position inside a circle tests', () => {
     }).length).toBe(2);
 
     expect(getShapesInSelectionBox(shapes, {
-      start : {
-        x:150,
-        y:150
+      start: {
+        x: 150,
+        y: 150
       },
       end: {
         x: 250,
@@ -86,14 +90,71 @@ describe('is a position inside a circle tests', () => {
     }).length).toBe(0);
 
     expect(getShapesInSelectionBox(shapes, {
-      start : {
-        x:250,
-        y:250
+      start: {
+        x: 250,
+        y: 250
       },
       end: {
         x: 0,
         y: 0
       }
     }).length).toBe(2);
+  });
+
+
+  it('Tests rects', () => {
+    let shapes = new Map();
+
+    shapes.set('foo', new Shape(() => {
+    }, {
+      id: 'foo',
+      type: 'rect',
+      x: 10,
+      y: 10,
+      width: 10,
+      height: 10
+    }));
+
+    shapes.set('bar', new Shape(() => {
+    }, {
+      id: 'bar',
+      type: 'rect',
+      x: 15,
+      y: 15,
+      width: 10,
+      height: 10
+    }));
+
+    shapes.set('bar22', new Shape(() => {
+    }, {
+      id: 'bar22',
+      type: 'UNSUPPORTED TYPE',
+      x: 20,
+      y: 20,
+      width: 10,
+      height: 10
+    }));
+
+    expect(getShapesInSelectionBox(shapes, {
+      start: {
+        x: 0,
+        y: 0
+      },
+      end: {
+        x: 20,
+        y: 20
+      }
+    }).length).toBe(2);
+
+    expect(getShapesInSelectionBox(shapes, {
+      start: {
+        x: 14,
+        y: 14
+      },
+      end: {
+        x: 16,
+        y: 16
+      }
+    }).length).toBe(1);
   });
 });
