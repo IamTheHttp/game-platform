@@ -7,6 +7,9 @@
 ---
 #Changelog
 ###29/10/2019
+Release version **0.3.1:**
+- Moved the RAF in Engine, now RAF will be queued first before an system runs, this will enable systems to cancel the frame
+###29/10/2019
 Release version **0.3.0:**
 - Moved all layerName arguments into the objects for all functions (for functions that accept Objects)
 - Added a writeBubble() text function

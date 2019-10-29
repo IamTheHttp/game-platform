@@ -10,10 +10,10 @@ class Engine {
 
   run(sysArgs) {
     this.frameID = requestAnimationFrame(() => {
+      this.run(sysArgs); // // Load the next frame request, this will allow any system to cancel the frame
       let systemArguments = typeof sysArgs === 'function' ? sysArgs() : sysArgs;
 
       this.runSystems(systemArguments);
-      this.run(sysArgs); // the original
     });
 
     return this.frameID;
