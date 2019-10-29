@@ -2,7 +2,8 @@
 [ ] Provide some basic SCSS that can be imported\
 [ ] Add a Game Grid to the common utilities\
 [ ] Add hit detection against rotated rects/images (currently only leveled rects are supported)\
-[ ] Create real objects for mouseMoveDataInterface to make the interface easier to document
+[ ] Create real objects for mouseMoveDataInterface to make the interface easier to document\
+[ ] Add docs for the canvasAPI as a stand alone
 ---
 #Changelog
 ###29/10/2019
