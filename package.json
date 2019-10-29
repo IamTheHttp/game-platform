@@ -2,6 +2,7 @@
   "name": "game-platform",
   "version": "0.3.0",
   "description": "Common utilitie for Canvas games",
+  "keywords": ["game", "html5 games", "game platform", "game engine", "game canvas"],
   "scripts": {
     "init": "npm install && jarb init",
     "start": "jarb devServer --env=develop",
