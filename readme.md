@@ -1,11 +1,11 @@
 # Roadmap
 [ ] Provide some basic SCSS that can be imported\
 [ ] Add a Game Grid to the common utilities\
-[ ] Add hit detection against rotated rects/images (currently only leveled rects are supported)  
-
+[ ] Add hit detection against rotated rects/images (currently only leveled rects are supported)\
+[ ] Create real objects for mouseMoveDataInterface to make the interface easier to document
 ---
 #Changelog
-###28/10/2019
+###29/10/2019
 Release version **0.3.0:**
 - Moved all layerName arguments into the objects for all functions (for functions that accept Objects)
 - Added a writeBubble() text function
@@ -14,97 +14,97 @@ Release version **0.3.0:**
 - onViewMapMove/click and onMinimapMove/click are now optional callbacks\
 - Add hit detection against Images\
 - Add configuration to disable selection box (options.enableSelectBox = false)\
-[ ] Added documentation to how writeBubble works\
-[ ] Updated docs that hit detection only works on 'initial' layer\
+- Added documentation to how writeBubble works\
+- Updated docs that hit detection only works on 'initial' layer\
 
 ---
 ###24/10/2019
 Release version **0.2.1**   
-[V] Added the addArc() method which enables drawing arcs.
+- Added the addArc() method which enables drawing arcs.
 ---
 ###22/10/2019
-Release version 0.2.0   
-[V] Added an Engine class to encapsulate rAF loop (start, stop, addSystem).
+Release version **0.2.0**   
+- Added an Engine class to encapsulate rAF loop (start, stop, addSystem).
 ---
 ###17/10/2019
-Release version 0.1.2   
-[V] Added the ability to remove a layer (canvasAPI.removeLayer(name))
+Release version **0.1.2**   
+- Added the ability to remove a layer (canvasAPI.removeLayer(name))
 ---
 ###03/10/2019 
-Release version 0.1.1   
-[V] Added onMiniMapClick and onMiniMapView  
+Release version **0.1.1**   
+- Added onMiniMapClick and onMiniMapView  
  ---
 ###03/10/2019 
-Release version 0.1.0   
-[V] Added support for Layers.  
-[V] To use layers:  
- - the canvas element must be positioned in a container element.   
- - The container element must be positioned absolute with a set height and width
- - The canvas elements must be positioned absolute (To enable layering) 
+Release version **0.1.0**   
+- Added support for Layers.  
+- To use layers:  
+  - the canvas element must be positioned in a container element.   
+  - The container element must be positioned absolute with a set height and width
+  - The canvas elements must be positioned absolute (To enable layering) 
 ---
 
 ###02/10/2019 
-Release version 0.0.9   
-[V] Updated JARB to 3.0.6  
-[V] Updated Canvas to 2.6.0 and removed canvas prebuilt.  
-[V] These changes now enable support for node 12.x
+Release version **0.0.9**   
+- Updated JARB to 3.0.6  
+- Updated Canvas to 2.6.0 and removed canvas prebuilt.  
+- These changes now enable support for node 12.x
   
 ---
 ###15/02/2019###  
-Release version 0.0.8   
-[V] Updated JARB to 2.0.0-beta.2
+Release version **0.0.8**   
+- Updated JARB to 2.0.0-beta.2
 
 ---
-###09/01/2019###  
-Release version 0.0.7   
-[V] Fix ObjectPool.generate(amount) to generate UP TO $amount of free objects
+###09/01/2019
+Release version **0.0.7**   
+- Fix ObjectPool.generate(amount) to generate UP TO $amount of free objects
 ---
-###06/01/2019###  
-[V] Updated jarb to 1.0.8
+###06/01/2019  
+- Updated jarb to 1.0.8
 ---
-###27/12/2018###  
-VERSION 0.0.6 RELEASE  
-[V] Ensure React is not bundled in the dist file  
-[V] Document all exported properties  
-[V] Remove ALL TODOs and REFACTORS  
+###27/12/2018
+Release version **0.0.6**  
+- Ensure React is not bundled in the dist file  
+- Document all exported properties  
+- Remove ALL TODOs and REFACTORS  
 ---
 
-Features
-------------------
+#Features
 - Engine
+- CanvasAPI that can be initialized with 2d ctx
 - (React) Game Canvas (Both Main Map and Mini Map) with click detection on what shape was clicked
 - ECS Entity
 - Utility to loop over entities
--  Object Pool utility to pre-create and manage instances of objects
+- Object Pool utility to pre-create and manage instances of objects
 
 
 
 ### Usage - Engine
-```javascript 
 
-  import {Engine} from 'game-platform/dist';
-  let engine = new Engine();
+```javascript
+
+import {Engine} from 'game-platform/dist';
+let engine = new Engine();
+
+engine.addSystem((systemArguments) => {
+   // run any system you want, order specified by order of insertion  
+});
+
+engine.addSystem((systemArguments) => {
+   // run any system you want, order specified by order of insertion  
+});
+
+
+let systemArguments = {
+  // object that is passed to all systems
+  // alternatively it can also be a function that returns the object
+  // in case of a function, it's evaluated every frame, so keep it light!
+}
+
+engine.run(systemArguments); // runs in a loop
   
-  engine.addSystem((systemArguments) => {
-     // run any system you want, order specified by order of insertion  
-  })
-  
-  engine.addSystem((systemArguments) => {
-     // run any system you want, order specified by order of insertion  
-  })
-  
-  
-  let systemArguments = {
-    // object that is passed to all systems
-    // alternatively it can also be a function that returns the object
-    // in case of a function, it's evaluated every frame, so keep it light!
-  }
-  
-  engine.run(systemArguments); // runs in a loop
-    
-  engine.stop(); // stops the loop completely
+engine.stop(); // stops the loop completely
 ```
-
 
 ### Usage - Game Canvas
 ```javascript
@@ -125,9 +125,11 @@ let gameCanvas = new GameCanvas({
   viewHeight : 400, // this is the what you actually see in the canvas
   viewWidth : 400, // this is the what you actually see in the canvas
   selectedBoxColor: 'blue', // the color for the current selection box of the user
+  enableSelectBox: true, // defaults to true, can be set to false to disable the click->drag select box
   onViewMapClick : (...args) => {
-    let mouseMoveDataInterface = {
-      // The library only detects hits against circles, it ignores all other shapes
+    let clickDataInterface = {
+      // The library only detects hits against circles, rects and images, it ignores all other shapes
+      // rects and images are calculated without orientation (rotation)
       // you can implement your own click detection system
       hits: [], // array of shape IDs that were clicked on
       dbClick: true, // BOOL, true or false
@@ -219,6 +221,21 @@ render(<div>
       rotation : 0.2 // in radians
     });
   };
+  
+  
+  apis.main.writeBubble({
+    id: 'bubbleTextExampleID',
+    text: 'It is dangerous to go alone! \ntake this!',
+    backgroundColor: 'green',
+    borderColor:'orange',
+    borderWidth: 3,
+    fontColor: 'purple',
+    x: 200,
+    y: 200,
+    height:0, // the minimum value is the text value within
+    width:0, // the minimum value is the text value within
+    fontSize: 16
+  });
 
   // in a game, you usually render in a loop, the API supports it by having deterministic draws
   setInterval(() => {
