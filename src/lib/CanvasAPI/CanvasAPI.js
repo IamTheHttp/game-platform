@@ -181,6 +181,10 @@ class CanvasAPI {
 
   addRect({id, x, y, width, height, strokeStyle, lineWidth, fillColor, layerName = 'initial'}) {
     let layer = this.layers[layerName];
+    if (!layer) {
+      throw `Could not find layer '${layerName}', are you sure you created the layer?`;
+    }
+
     let ctx = layer.ctx;
     let shapes = layer.shapes;
 
@@ -233,12 +237,13 @@ class CanvasAPI {
     }));
   }
 
-  addCircle({id, x, y, radius, lineWidth, fillColor, layerName = 'initial'}) {
+  addCircle({id, x, y, radius, lineWidth, color, fillColor, layerName = 'initial'}) {
     let layer = this.layers[layerName];
     let ctx = layer.ctx;
     let shapes = layer.shapes;
 
     shapes.set(id, new Shape(() => {
+      ctx.strokeStyle = color;
       ctx.lineWidth = lineWidth;
       ctx.moveTo(x, y);
       ctx.beginPath();
@@ -247,6 +252,7 @@ class CanvasAPI {
         ctx.fillStyle = fillColor;
         ctx.fill();
       }
+
       ctx.stroke();
       ctx.closePath();
     }, {

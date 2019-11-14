@@ -89,17 +89,20 @@ class GameCanvas {
 
     let selectedData = this.selectedBox.getData();
 
+    let layers = Object.keys(this.mapAPI.layers);
+
     let hits = [];
     // if a single click...
-    if (selectedData.end.x === selectedData.start.x) {
-      let x = selectedData.end.x;
-      let y = selectedData.end.y;
-      // TODO if we wanted to support hit detection against all layers
-      // TODO this is where we'd intervene to loop over all layers
-      hits = getShapesFromClick(this.mapAPI.layers.initial.shapes, x, y);
-    } else {
-      hits = getShapesInSelectionBox(this.mapAPI.layers.initial.shapes, selectedData);
-    }
+
+    layers.forEach((layerName) => {
+      if (selectedData.end.x === selectedData.start.x) {
+        let x = this.viewMapX;
+        let y = this.viewMapY;
+        hits = [...hits, ...getShapesFromClick(this.mapAPI.layers[layerName].shapes, layerName, x, y)];
+      } else {
+        hits = [...hits, ...getShapesInSelectionBox(this.mapAPI.layers[layerName].shapes, layerName, selectedData)];
+      }
+    });
 
     this.mapAPI.addRect({
       id: 'selectedBox',

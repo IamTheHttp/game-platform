@@ -30,10 +30,10 @@ describe('Check click detection against various shapes', () => {
       radius: 5
     }));
 
-    expect(getShapesFromClick(shapes, 15, 15).length).toBe(1);
-    expect(getShapesFromClick(shapes, 18, 18).length).toBe(2);
-    expect(getShapesFromClick(shapes, 20, 20).length).toBe(1);
-    expect(getShapesFromClick(shapes, 200, 200).length).toBe(0);
+    expect(getShapesFromClick(shapes, 'initial',15, 15).length).toBe(1);
+    expect(getShapesFromClick(shapes, 'initial',18, 18).length).toBe(2);
+    expect(getShapesFromClick(shapes, 'initial', 20, 20).length).toBe(1);
+    expect(getShapesFromClick(shapes, 'initial',200, 200).length).toBe(0);
   });
 
   it('Tests rects and images', () => {
@@ -66,9 +66,9 @@ describe('Check click detection against various shapes', () => {
       height:10
     }));
 
-    expect(getShapesFromClick(shapes, 13, 13).length).toBe(1);
-    expect(getShapesFromClick(shapes, 18, 18).length).toBe(2);
-    expect(getShapesFromClick(shapes, 22, 22).length).toBe(1);
-    expect(getShapesFromClick(shapes, 200, 200).length).toBe(0);
+    expect(getShapesFromClick(shapes, 'initial',13, 13).length).toBe(1);
+    expect(getShapesFromClick(shapes, 'initial',18, 18).length).toBe(2);
+    expect(getShapesFromClick(shapes, 'initial',22, 22).length).toBe(1);
+    expect(getShapesFromClick(shapes, 'initial',200, 200).length).toBe(0);
   });
 });

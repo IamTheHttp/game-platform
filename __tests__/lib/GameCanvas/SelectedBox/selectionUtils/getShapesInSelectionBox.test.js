@@ -34,7 +34,7 @@ describe('Test selectionBox shape detection', () => {
       radius: 5
     }));
 
-    expect(getShapesInSelectionBox(shapes, {
+    expect(getShapesInSelectionBox(shapes, 'initial',{
       start: {
         x: 0,
         y: 0
@@ -45,7 +45,7 @@ describe('Test selectionBox shape detection', () => {
       }
     }).length).toBe(0);
 
-    expect(getShapesInSelectionBox(shapes, {
+    expect(getShapesInSelectionBox(shapes, 'initial',{
       start: {
         x: -100,
         y: -100
@@ -56,7 +56,7 @@ describe('Test selectionBox shape detection', () => {
       }
     }).length).toBe(2);
 
-    expect(getShapesInSelectionBox(shapes, {
+    expect(getShapesInSelectionBox(shapes, 'initial',{
       start: {
         x: 14,
         y: 14
@@ -67,7 +67,7 @@ describe('Test selectionBox shape detection', () => {
       }
     }).length).toBe(1);
 
-    expect(getShapesInSelectionBox(shapes, {
+    expect(getShapesInSelectionBox(shapes, 'initial',{
       start: {
         x: 14,
         y: 14
@@ -78,7 +78,7 @@ describe('Test selectionBox shape detection', () => {
       }
     }).length).toBe(2);
 
-    expect(getShapesInSelectionBox(shapes, {
+    expect(getShapesInSelectionBox(shapes, 'initial',{
       start: {
         x: 150,
         y: 150
@@ -89,7 +89,7 @@ describe('Test selectionBox shape detection', () => {
       }
     }).length).toBe(0);
 
-    expect(getShapesInSelectionBox(shapes, {
+    expect(getShapesInSelectionBox(shapes, 'initial',{
       start: {
         x: 250,
         y: 250
@@ -135,7 +135,7 @@ describe('Test selectionBox shape detection', () => {
       height: 10
     }));
 
-    expect(getShapesInSelectionBox(shapes, {
+    expect(getShapesInSelectionBox(shapes, 'initial', {
       start: {
         x: 0,
         y: 0
@@ -146,7 +146,7 @@ describe('Test selectionBox shape detection', () => {
       }
     }).length).toBe(2);
 
-    expect(getShapesInSelectionBox(shapes, {
+    expect(getShapesInSelectionBox(shapes, 'initial', {
       start: {
         x: 14,
         y: 14

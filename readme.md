@@ -6,6 +6,13 @@
 [ ] Add docs for the canvasAPI as a stand alone
 ---
 #Changelog
+###14/11/2019
+Release version **0.4.0:**
+- Added click detection against all layers
+- Clicking on the Canvas will now return an array of objects with ID and layerName
+- Added color param for addCircle()
+- Fixed bugs related to click-hit not working
+
 ###29/10/2019
 Release version **0.3.1:**
 - Moved the RAF in Engine, now RAF will be queued first before an system runs, this will enable systems to cancel the frame

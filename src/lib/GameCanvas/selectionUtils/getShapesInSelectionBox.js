@@ -1,4 +1,4 @@
-function getShapesInSelectionBox(shapes, selectedData) {
+function getShapesInSelectionBox(shapes, layerName, selectedData) {
   let minX = Math.min(selectedData.start.x, selectedData.end.x);
   let maxX = Math.max(selectedData.start.x, selectedData.end.x);
   let minY = Math.min(selectedData.start.y, selectedData.end.y);
@@ -22,7 +22,10 @@ function getShapesInSelectionBox(shapes, selectedData) {
       let centerX = shapeX;
       let centerY = shapeY;
       if (centerX >= minX && centerX <= maxX && centerY >= minY && centerY <= maxY) {
-        hits.push(id);
+        hits.push({
+          id,
+          layerName
+        });
       }
     } else if (type === 'rect' || type === 'image') {
       // what is considered the 'centerX' for a rect?
@@ -30,7 +33,10 @@ function getShapesInSelectionBox(shapes, selectedData) {
       let centerY = shapeY + height / 2;
 
       if (centerX >= minX && centerX <= maxX && centerY >= minY && centerY <= maxY) {
-        hits.push(id);
+        hits.push({
+          id,
+          layerName
+        });
       }
     } else {
       // do nothing, no support for non circles or rects

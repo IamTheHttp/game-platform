@@ -15,7 +15,7 @@ let gameCanvas = new GameCanvas({
   mapWidth: 4000, // in pixels
   viewHeight: 400, // this is the what you actually see in the canvas
   viewWidth: 400, // this is the what you actually see in the canvas
-  enableSelectBox: false,
+  enableSelectBox: true,
   onMiniMapClick: () => {
   },
   onMiniMapMove: () => {
@@ -90,6 +90,13 @@ render(<div>
   <h1>Mini Map - Click to move around the map</h1>
   {miniMap}
 </div>, document.getElementById('app'), () => {
+  apis.main.addLayer('background');
+
+
+  /** ================================
+   ==========ADDING SHAPES===========
+   ================================= */
+
   apis.main.addRect({
     id: 'SomeRect', // Must be Unique, as a Map is used internally
     x: 10,
@@ -99,13 +106,83 @@ render(<div>
     strokeStyle: 'blue'
   });
 
+  apis.main.addRect({
+    id: 'SomeRectBackground', // Must be Unique, as a Map is used internally
+    x: 10,
+    y: 15,
+    width: 20,
+    height: 35,
+    strokeStyle: 'blue',
+    layerName:'background'
+  });
+
   apis.main.addCircle({
     id: 'ExampleID',
     x: 50,
     y: 50,
     radius: 15,
-    strokeStyle: 'red'
+    color: 'red'
   });
+
+  apis.main.writeBubble({
+    id: 'bubbleTextExampleID',
+    text: 'It is dangerous to go alone! \ntake this!',
+    backgroundColor: 'green',
+    borderColor: 'orange',
+    borderWidth: 3,
+    fontColor: 'purple',
+    x: 200,
+    y: 200,
+    height: 0, // the minimum value is the text value within!
+    width: 0, // the minimum value is the text value within!
+    fontSize: 16
+  });
+
+  apis.main.addCircle({
+    id: 'ExampleID222', // needs to be unique per layer?
+    x: 0,
+    y: 0,
+    radius: 15,
+    strokeStyle: 'red',
+    layerName: 'background'
+  });
+
+  apis.main.addShape({
+    id: '0 to 45deg',
+    drawFn: (ctx) => {
+      ctx.strokeStyle = 'green';
+      ctx.lineWidth = 1;
+
+      let radius = 100;
+      let x = 100;
+      let y = 100;
+      ctx.beginPath();
+      ctx.arc(x, y, radius, Math.PI * 0.0, Math.PI * 0.5);
+      ctx.stroke();
+      ctx.closePath();
+    }
+  });
+
+  apis.main.addShape({
+    id: '0 to 180',
+    drawFn: (ctx) => {
+      ctx.strokeStyle = 'black';
+      ctx.lineWidth = 1;
+
+      let radius = 90;
+      let x = 100;
+      let y = 100;
+      ctx.beginPath();
+      ctx.arc(x, y, radius, Math.PI * 0.5, Math.PI);
+      ctx.stroke();
+      ctx.closePath();
+    }
+  });
+
+
+  /** ================================
+   ==========DEFINING IMAGE==========
+   =================================*/
 
   let img = new Image;
   img.src = imgURL;
@@ -122,80 +199,23 @@ render(<div>
 
   // in a game, you usually render in a loop, the API supports it by having deterministic draws
 
+  /** ================================
+   ==========DEFINING ENGINE==========
+   =================================*/
   let eng = new Engine();
   let direction = 0;
 
-  apis.main.writeBubble({
-    id: 'bubbleTextExampleID',
-    text: 'It is dangerous to go alone! \ntake this!',
-    backgroundColor: 'green',
-    borderColor:'orange',
-    borderWidth: 3,
-    fontColor: 'purple',
-    x: 200,
-    y: 200,
-    height:0, // the minimum value is the text value within!
-    width:0, // the minimum value is the text value within!
-    fontSize: 16
-  });
-
   eng.addSystem(() => {
     direction = direction + 0.01;
-
     apis.main.draw();
     // apis.mini.draw();
   });
-
-  // implements request animation frame internally
   eng.run({});
 });
 
-// all elements are absolute positioned.
-apis.main.addLayer('background');
 
-apis.main.addCircle({
-  id: 'ExampleID222', // needs to be unique per layer?
-  x: 0,
-  y: 0,
-  radius: 15,
-  strokeStyle: 'red'
-}, 'background');
-
-apis.main.draw('background');
-apis.main.remove('ExampleID222', 'background');
-
-
-apis.main.addShape({
-  id: '0 to 45deg',
-  drawFn: (ctx) => {
-    ctx.strokeStyle = 'green';
-    ctx.lineWidth = 1;
-
-    let radius = 100;
-    let x = 100;
-    let y = 100;
-    ctx.beginPath();
-    ctx.arc(x, y, radius, Math.PI * 0.0, Math.PI * 0.5);
-    ctx.stroke();
-    ctx.closePath();
-  }
-});
-
-apis.main.addShape({
-  id: '0 to 180',
-  drawFn: (ctx) => {
-    ctx.strokeStyle = 'black';
-    ctx.lineWidth = 1;
-
-    let radius = 90;
-    let x = 100;
-    let y = 100;
-    ctx.beginPath();
-    ctx.arc(x, y, radius, Math.PI * 0.5, Math.PI);
-    ctx.stroke();
-    ctx.closePath();
-  }
-});
+// apis.main.draw('background');
+// apis.main.remove('ExampleID222', 'background');
 
 
 console.log(apis.main);
