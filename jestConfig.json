@@ -3,7 +3,7 @@
     "<rootDir>/",
     "<rootDir>/src"
   ],
-  "testRegex": "(/__tests__/.*|(\\.|/)(jest))\\.jsx?$",
+  "testRegex": "test.ts$",
   "transformIgnorePatterns": [
     "/node_modules/"
   ],
@@ -11,9 +11,10 @@
     "src/**/*.{js,jsx}",
     "!src/develop.js",
     "!src/.dll/*",
-    "!src/liveExample.js",
-    "!src/index.js",
-    "!src/polyfill/*.*"
+    "src/**/*.{ts,tsx}",
+    "!src/polyfill/*.*",
+    "!src/index.ts",
+    "!src/levels/*.*"
   ],
   "coverageThreshold": {
     "global": {
@@ -29,8 +30,9 @@
   },
   "setupFiles": [
     "<rootDir>/node_modules/jarb/lib/testSetup.js",
-    "<rootDir>/src/polyfill/rAF.js",
+    "<rootDir>/src/polyfill/rAF.ts",
     "jest-canvas-mock"
   ],
+  "preset": "ts-jest",
   "bail": true
 }

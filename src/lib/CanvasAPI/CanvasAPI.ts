@@ -3,16 +3,24 @@
  * Works by using a 2D context as an argument
  * Provides abstraction for some common shapes in Canvas
  */
-
-
 export class Shape {
-  constructor(draw, metaData) {
+  draw: () => {};
+  metaData: object;
+
+  constructor(draw, metaData = {}) {
     this.draw = draw;
     this.metaData = metaData;
   }
 }
 
+import {ILayers, IRect, IWriteToCanvas, IPanOffset} from '../interfaces';
+
 class CanvasAPI {
+  layers: ILayers;
+  defaultStrokeStyle: string;
+  panX: number;
+  panY: number;
+
   constructor(ctx, strokeStyle = 'white') {
     if (!ctx) {
       throw 'Cannot create layer, no initial context found';
@@ -32,7 +40,7 @@ class CanvasAPI {
     let originCanvas = this.layers.initial.ctx.canvas;
 
     let parentNode = originCanvas.parentNode;
-    let newCanvas = originCanvas.cloneNode();
+    let newCanvas = originCanvas.cloneNode() as HTMLCanvasElement;
 
     newCanvas.id = name;
     parentNode.insertBefore(newCanvas, originCanvas);
@@ -80,14 +88,14 @@ class CanvasAPI {
 
   /* istanbul ignore next */
   addImage({
-    id,
-    image, // the image to display
-    x, y, // pos for x,y..
-    height, width,
-    cropStartX, cropStartY, cropSizeX, cropSizeY,
-    rotation, // in radians
-    layerName = 'initial'
-  }) {
+             id,
+             image, // the image to display
+             x, y, // pos for x,y..
+             height, width,
+             cropStartX, cropStartY, cropSizeX, cropSizeY,
+             rotation, // in radians
+             layerName = 'initial'
+           }) {
     let layer = this.layers[layerName];
     let ctx = layer.ctx;
     let shapes = layer.shapes;
@@ -125,22 +133,22 @@ class CanvasAPI {
   }
 
   writeBubble({
-    id,
-    text,
-    backgroundColor,
-    borderColor,
-    borderWidth,
-    fontSize,
-    fontColor,
-    x,
-    y,
-    fontFace,
-    height,
-    width,
-    paddingLeft = 10,
-    paddingTop = 10,
-    layerName = 'initial'
-  }) {
+                id,
+                text,
+                backgroundColor,
+                borderColor,
+                borderWidth,
+                fontSize,
+                fontColor,
+                x,
+                y,
+                fontFace,
+                height,
+                width,
+                paddingLeft = 10,
+                paddingTop = 10,
+                layerName = 'initial'
+              }) {
     let longestTextWidth = 0;
     let linesOfText = text.split('\n');
     let fontPxSize = fontSize || this.layers.initial.ctx.font.split('px')[0];
@@ -174,12 +182,14 @@ class CanvasAPI {
         y: y + fontPxSize + paddingTop + i * fontPxSize,
         fillStyle: fontColor,
         font: `${fontPxSize}px ${fontToUse}`,
-        layerName
+        layerName,
+        textBaseline: null, // TODO really? does that make sense?
+        strokeStyle: null
       });
     }
   }
 
-  addRect({id, x, y, width, height, strokeStyle, lineWidth, fillColor, layerName = 'initial'}) {
+  addRect({id, x, y, width, height, strokeStyle, lineWidth, fillColor, layerName = 'initial'}: IRect) {
     let layer = this.layers[layerName];
     if (!layer) {
       throw `Could not find layer '${layerName}', are you sure you created the layer?`;
@@ -283,18 +293,28 @@ class CanvasAPI {
     }
   }
 
-  getPan() {
+  getPan(): IPanOffset {
     return {
       panX: this.panX || 0,
-      panY: this.panY || 0
-    };
+      panY: this.panY || 0,
+
+    }
   }
 
-  write({id, text, x, y, font, textBaseline, fillStyle, strokeStyle, layerName = 'initial'}) {
+  write({
+          id,
+          text,
+          x,
+          y,
+          font = '',
+          textBaseline,
+          fillStyle,
+          strokeStyle = '',
+          layerName = 'initial'
+        }: IWriteToCanvas) {
     let layer = this.layers[layerName];
     let ctx = layer.ctx;
     let shapes = layer.shapes;
-
     shapes.set(id, new Shape(() => {
       ctx.beginPath();
       ctx.font = font;

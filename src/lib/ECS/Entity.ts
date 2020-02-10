@@ -1,5 +1,6 @@
 import Group from './Group';
 import entityLoop from './util/entityLoop';
+import {IComponent, IEntityMap} from "../interfaces";
 
 export let spliceOne = function(arr, index = 0) {
   let idx = index;
@@ -23,8 +24,13 @@ export let spliceOne = function(arr, index = 0) {
  *
  */
 
-
 class Entity {
+  static counter: number;
+  static entities: IEntityMap;
+  static getByComps: (compNames: Array<string>) => object|Array<any>; // TODO is it really any?
+  static reset: () => void;
+  id: number;
+  components: object;
   constructor(classRef) {
     Entity.counter++;
     this.id = Entity.counter;
@@ -39,7 +45,7 @@ class Entity {
 
   // A component is added
   // we create a new group index, for exm
-  addComponent(component) {
+  addComponent(component: IComponent) {
     this.components[component.name] = component;
     this[component.name] = component;
     // creates an index group if it does not exist..
@@ -114,17 +120,18 @@ class Entity {
     delete Entity.entities[this.id];
   }
 
-  hasComponents(components = []) {
-    // quick breakout
-    if (this.components[components]) {
-      return true;
+  hasComponents(compNames: Array<string> | string = []) {
+
+    // quick breakout if single
+    if (typeof compNames === 'string') {
+      if (this.components[compNames]) {
+        return true;
+      }
+    } else {
+      return compNames.reduce((agg, compName) => {
+        return agg && !!this.components[compName];
+      }, true);
     }
-
-    let compNames = components.reduce ? components : [components];
-
-    return compNames.reduce((agg, compName) => {
-      return agg && !!this.components[compName];
-    }, true);
   }
 }
 
@@ -135,8 +142,8 @@ Entity.entities = {};
  * @param type 'array'|'map'
  * @return return array/map
  */
-Entity.getByComps = (components, type = 'array') => {
-  let compNames = components.reduce ? components : [components];
+Entity.getByComps = (components: Array<string>, type = 'array') => {
+  let compNames = components;
   Group.indexGroup(components, Entity.entities);
   let group = Group.getGroup(compNames);
   return type === 'map' ? group.entities : group.array.concat();

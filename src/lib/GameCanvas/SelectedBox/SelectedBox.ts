@@ -1,8 +1,14 @@
+import {ISelectedBoxData, ICoordinates} from "../../interfaces";
+
+
 /**
  * Class that represents the current selected area by the user
  * Populated when the user click, holds and move the mouse
  */
 class SelectedBox {
+  start: ICoordinates;
+  end: ICoordinates;
+
   constructor() {
     this.reset();
   }
@@ -18,7 +24,7 @@ class SelectedBox {
     };
   }
 
-  getData() {
+  getData(): ISelectedBoxData {
     return {
       start : Object.assign({}, this.start),
       end : Object.assign({}, this.end),

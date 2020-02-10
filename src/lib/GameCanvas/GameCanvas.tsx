@@ -3,9 +3,37 @@ import CanvasAPI from 'lib/CanvasAPI/CanvasAPI';
 import SelectedBox from './SelectedBox/SelectedBox';
 import getShapesFromClick from './selectionUtils/getShapesFromClick';
 import getShapesInSelectionBox from './selectionUtils/getShapesInSelectionBox';
+import {IViewClickInfo, IViewMoveInfo, IGameCanvasOptions} from "../interfaces";
+
 
 class GameCanvas {
-  constructor(options) {
+  selectedBoxColor: string;
+  mapHeight: number;
+  mapWidth: number;
+  viewHeight: number;
+  viewWidth: number;
+  onViewMapClick: (arg: IViewClickInfo) => void;
+  onViewMapMove: (arg: IViewMoveInfo) => void;
+  onMiniMapClick: (e: MouseEvent) => void;
+  onMiniMapMove: (e: MouseEvent) => void;
+  enableSelectBox: boolean;
+  lastClick: number;
+  dbClick: boolean;
+  dbTap: boolean;
+  lastTap: number;
+  selectedBox: SelectedBox;
+  isMouseDown: boolean;
+  mapAPI: CanvasAPI; // TODO circle back here..
+  miniMapAPI: CanvasAPI;
+  viewMapX: number;
+  viewMapY: number;
+  viewMapCanvas: HTMLCanvasElement;
+  miniMapCanvas: HTMLCanvasElement;
+  miniMapX: number;
+  miniMapY: number;
+
+
+  constructor(options: IGameCanvasOptions) {
     let noop = () => {
     };
     this.selectedBoxColor = options.selectedBoxColor || 'blue';
@@ -18,11 +46,10 @@ class GameCanvas {
     this.onMiniMapClick = options.onMiniMapClick || noop;
     this.onMiniMapMove = options.onMiniMapMove || noop;
     this.enableSelectBox = options.enableSelectBox;
-
     this.lastClick = 0;
+    this.isMouseDown = false;
     this.dbClick = false;
     this.lastTap = 0;
-    this.lastClick = false;
     this.selectedBox = new SelectedBox();
     this.updateViewMapCursorPosition = this.updateViewMapCursorPosition.bind(this);
     this.updateMiniMapCursorPosition = this.updateMiniMapCursorPosition.bind(this);
@@ -64,7 +91,10 @@ class GameCanvas {
           y: data.start.y,
           width: data.width,
           height: data.height,
-          strokeStyle: this.selectedBoxColor
+          strokeStyle: this.selectedBoxColor,
+          lineWidth: 1,
+          layerName: 'initial',
+          fillColor: null
         });
       }
     }
@@ -105,6 +135,10 @@ class GameCanvas {
     });
 
     this.mapAPI.addRect({
+      fillColor: null,
+      layerName: "initial",
+      lineWidth: 1,
+      strokeStyle: null,
       id: 'selectedBox',
       x: 0,
       y: 0,
@@ -149,7 +183,7 @@ class GameCanvas {
     };
   }
 
-  handleMiniMapMove(event) {
+  handleMiniMapMove(event: MouseEvent) {
     this.onMiniMapMove(event);
   }
 
@@ -177,6 +211,8 @@ class GameCanvas {
 
   updateMiniMapSquare() {
     this.miniMapAPI.addRect({
+      fillColor: null,
+      layerName: "initial",
       id: 'currentMap',
       x: -this.mapAPI.getPan().panX,
       y: -this.mapAPI.getPan().panY,
@@ -225,7 +261,7 @@ class GameCanvas {
     this.miniMapX = x;
     this.miniMapY = y;
 
-    this.handleMiniMapClick();
+    this.handleMiniMapClick(e);
   }
 
 
@@ -256,16 +292,17 @@ class GameCanvas {
     this.mapAPI.pan(calcPanX, calcPanY);
   }
 
-  generateMapCanvas(getRef) {
+  generateMapCanvas(getRef: (a:CanvasAPI, b:HTMLCanvasElement) => void) {
     return (
       <canvas
         className='viewMap'
-        ref={(el) => {
+        ref={(el: HTMLCanvasElement) => {
           if (!el) {
             return null;
           }
 
           if (process.env.NODE_ENV === 'test' && !el.removeEventListener) {
+            // @ts-ignore
             el = el._reactInternalFiber.child.stateNode; // eslint-disable-line
           }
 
@@ -286,11 +323,11 @@ class GameCanvas {
         onMouseMove={this.handleMapMouseMove}
         onMouseUp={this.handleMapMouseUp}
         onMouseLeave={this.handleMapMouseLeave}
-      ></canvas>
+      />
     );
   }
 
-  generateMiniMapCanvas(getRef) {
+  generateMiniMapCanvas(getRef: (a:CanvasAPI, b:HTMLCanvasElement) => void) {
     return (
       <canvas
         className='minimap'
@@ -324,7 +361,7 @@ class GameCanvas {
         onMouseMove={this.handleMiniMapMove}
         onMouseDown={this.handleMiniMapClick}
         onTouchStart={this.handleMiniMapTouchStart}
-      ></canvas>
+      />
     );
   }
 }

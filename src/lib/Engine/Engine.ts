@@ -1,4 +1,6 @@
 class Engine {
+  systems: Array<(systemArguments) => void>;
+  frameID: number;
   constructor() {
     this.systems = [];
     this.frameID = null;

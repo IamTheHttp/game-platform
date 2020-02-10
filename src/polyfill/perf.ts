@@ -11,25 +11,28 @@
 // of the page
 // but in reality, you're just getting the delta between now() calls, so it's not terribly
 // important where it's placed
+let windowCopy = window as any;
 
 (function() {
-  if ('performance' in window === false) {
-    window.performance = {};
+  if ('performance' in windowCopy === false) {
+    windowCopy.performance = {};
   }
 
   Date.now = (Date.now || function() {  // thanks IE8
     return new Date().getTime();
   });
 
-  if ('now' in window.performance === false) {
+  if ('now' in windowCopy.performance === false) {
     let nowOffset = Date.now();
 
     if (performance.timing && performance.timing.navigationStart) {
       nowOffset = performance.timing.navigationStart;
     }
 
-    window.performance.now = function now() {
+    windowCopy.performance.now = function now() {
       return Date.now() - nowOffset;
     };
   }
 })();
+
+export {};

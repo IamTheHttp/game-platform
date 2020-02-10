@@ -1,4 +1,13 @@
+interface IStats {
+  free: number;
+  used: number;
+}
+
 class ObjectPool {
+  type: () => void;
+  freePool: Array<any>;
+  stats: IStats;
+  incrementWhenEmpty: number;
   constructor(PooledClass, incrementWhenEmpty = 10) {
     this.type = PooledClass;
     this.freePool = [];

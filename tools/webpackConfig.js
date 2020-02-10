@@ -1,21 +1,14 @@
 module.exports = function(config){
-  config.resolve = {
-    modules: ["./src", "node_modules"]
-  };
+  config.resolve.modules = ["./src", "node_modules"];
+  delete config.optimization.minimizer
 
-  let plugins = [];
-  config.plugins.forEach((plugin) => {
-    if (plugin.constructor.name !== 'UglifyJsPlugin') {
-      plugins.push(plugin);
-    }
-  });
-  
+  config.optimization.minimize = false;
+
   if (process.env.NODE_ENV !== 'develop') {
     config.externals = {
       'react': 'react'
     };
   }
 
-  config.plugins = plugins;
   return config;
 };

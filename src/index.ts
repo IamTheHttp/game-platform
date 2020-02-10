@@ -11,3 +11,11 @@ export default {
   GameCanvas,
   Engine
 };
+
+export {
+  Entity,
+  entityLoop,
+  ObjectPool,
+  GameCanvas,
+  Engine
+}

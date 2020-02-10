@@ -1,7 +1,16 @@
 import entityLoop from './util/entityLoop';
-
+import Entity from "./Entity";
+import {IComponent, IEntityMap} from "../interfaces";
 
 class Group {
+  components: Array<IComponent>;
+  entities: IEntityMap;
+  array: Array<any>;
+  static groups: object;
+  static reset: () => void;
+  static generateGroupKey: (components: Array<string>) => string;
+  static getGroup: (compNames: Array<string>) => Group;
+  static indexGroup: (arr: Array<string>, entities: IEntityMap) => void;
   constructor(components, entities = {}) {
     this.components = components;
     this.entities = entities;
@@ -36,8 +45,13 @@ Group.getGroup = (components) => {
 };
 
 // this will create a new index group for the provided components.
-Group.indexGroup = (components, entities) => {
-  let compArray = components.reduce ? components : [components];
+Group.indexGroup = (compNames: Array<string> | string, entities) => {
+  let compArray = [];
+  if (typeof compNames === 'string') {
+    compArray = [compNames];
+  } else {
+    compArray = compNames;
+  }
 
   let key = Group.generateGroupKey(compArray);
 
