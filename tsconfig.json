@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist/",
+    "noImplicitAny": false,
+    "module": "es6",
+    "target": "es5",
+    "jsx": "react",
+    "allowJs": true,
+    "moduleResolution": "node",
+    "esModuleInterop" : true,
+    "downlevelIteration" : true,
+    "declaration": true,
+    "declarationDir" : "./types/",
+    "baseUrl": "src/",
+    "paths": {
+      "*": [
+        "*",
+        "./src/*"
+      ]
+    }
+  },
+  "include": [
+    "./src/global.d.ts",
+    "./src/index.ts"
+  ],
+  "exclude": [
+    "./src/.dll/**/*",
+    "node_modules"
+  ]
+}
