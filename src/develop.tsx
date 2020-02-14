@@ -23,7 +23,6 @@ let gameCanvas = new GameCanvas({
   onMiniMapMove: () => {
   },
   onViewMapClick: (...args) => {
-    console.log(args);
     let mouseMoveDataInterface = {
       // The library only detects hits against circles, it ignores all other shapes
       // you can implement your own click detection system

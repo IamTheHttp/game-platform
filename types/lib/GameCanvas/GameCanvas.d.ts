@@ -1,6 +1,6 @@
 import CanvasAPI from 'lib/CanvasAPI/CanvasAPI';
 import SelectedBox from './SelectedBox/SelectedBox';
-import { IViewClickInfo, IViewMoveInfo, IGameCanvasOptions } from "../interfaces";
+import { IViewClickInfo, IViewMoveInfo, IGameCanvasOptions, IClientViewCoordinates } from "../interfaces";
 declare class GameCanvas {
     selectedBoxColor: string;
     mapHeight: number;
@@ -20,14 +20,21 @@ declare class GameCanvas {
     isMouseDown: boolean;
     mapAPI: CanvasAPI;
     miniMapAPI: CanvasAPI;
-    viewMapX: number;
-    viewMapY: number;
+    lastKnownPositionInCanvasTermsX: number;
+    lastKnownPositionInCanvasTermsY: number;
     viewMapCanvas: HTMLCanvasElement;
     miniMapCanvas: HTMLCanvasElement;
     miniMapX: number;
     miniMapY: number;
     constructor(options: IGameCanvasOptions);
-    updateCursorPosition(event: any, canvas: any, canvasAPI: any): {
+    /**
+     * @desc - Gets the x,y position inside the canvas based on a mouse event with clientX and clientY
+     *         Will return X,Y values in relative terms to the painted Canvas dimensions and includes panning
+     * @param inputCoordinates
+     * @param canvas
+     * @param canvasAPI
+     */
+    getCursorPositionInCanvasTerms(inputCoordinates: IClientViewCoordinates, canvas: HTMLCanvasElement, canvasAPI: CanvasAPI): {
         x: number;
         y: number;
     };
@@ -35,11 +42,11 @@ declare class GameCanvas {
     handleMapMouseLeave(): void;
     handleMapTouchEnd(): void;
     handleMapMouseUp(): void;
-    updateViewMapCursorPosition(event: any): void;
-    updateMiniMapCursorPosition(event: any): void;
+    updateViewMapCursorPosition(inputCoordinates: IClientViewCoordinates): IClientViewCoordinates;
+    updateMiniMapCursorPosition(inputCoordinates: IClientViewCoordinates): void;
     getNewCanvasPairs({ getMapRef, getMiniRef }: {
-        getMapRef: any;
-        getMiniRef: any;
+        getMapRef: (a: CanvasAPI) => void;
+        getMiniRef: (a: CanvasAPI) => void;
     }): {
         map: any;
         minimap: any;
@@ -49,8 +56,9 @@ declare class GameCanvas {
     updateMiniMapSquare(): void;
     handleMapMouseDown(): void;
     setSelectBox(): void;
-    handleTouchStart(e: any): void;
-    handleMiniMapTouchStart(e: any): void;
+    handleTouchStart(e: TouchEvent): void;
+    handleMiniMapTouchStart(e: TouchEvent): void;
+    private ensureNegative;
     handleTouchMove(e: any): void;
     generateMapCanvas(getRef: (a: CanvasAPI, b: HTMLCanvasElement) => void): any;
     generateMiniMapCanvas(getRef: (a: CanvasAPI, b: HTMLCanvasElement) => void): any;

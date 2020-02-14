@@ -1,19 +1,19 @@
 import { IComponent, IEntityMap } from "../interfaces";
-export declare let spliceOne: (arr: any, index?: number) => void;
-/**
- * Entity class to a static interface
- *
- * entity.addComponent(Component component)
- *
- */
 declare class Entity {
     static counter: number;
     static entities: IEntityMap;
-    static getByComps: (compNames: Array<string>) => object | Array<any>;
-    static reset: () => void;
     id: number;
-    components: object;
+    components: {
+        [key: string]: IComponent;
+    };
     constructor(classRef: any);
+    static reset(): void;
+    static getByComps(components: Array<string>): Array<Entity>;
+    static getByComps(components: Array<string>, type: 'map'): IEntityMap;
+    static getByComps(components: Array<string>, type: 'array'): Array<Entity>;
+    static getByComp(compName: string): Array<Entity>;
+    static getByComp(compName: string, type: 'map'): IEntityMap;
+    static getByComp(compName: string, type: 'array'): Array<Entity>;
     assignGroup(group: any): void;
     addComponent(component: IComponent): void;
     copyArray(group: any): any;
@@ -23,6 +23,7 @@ declare class Entity {
      * Destroying an entity means removing all its components and deleting it from the Entity Object
      */
     destroy(): void;
+    normalizeToArray(compNames: any): any[];
     hasComponents(compNames?: Array<string> | string): boolean;
 }
 export default Entity;

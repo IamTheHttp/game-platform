@@ -12,7 +12,7 @@
     "outputSourcePath": true,
     "systemName": "Component documentation",
     "footer": "",
-    "copyright": "Copyright LadbrokesCoral group",
+    "copyright": "Patrick Tolosa",
     "navType": "vertical",
     "linenums": true,
     "theme" : "cerulean",

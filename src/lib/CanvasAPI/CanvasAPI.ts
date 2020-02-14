@@ -3,9 +3,14 @@
  * Works by using a 2D context as an argument
  * Provides abstraction for some common shapes in Canvas
  */
+
+
+// TODO we can solve this 'any' but subclassing the different shapes, thus having a full interface per shape
 export class Shape {
   draw: () => {};
-  metaData: object;
+  metaData: {
+    [key: string]: any
+  };
 
   constructor(draw, metaData = {}) {
     this.draw = draw;
@@ -13,7 +18,7 @@ export class Shape {
   }
 }
 
-import {ILayers, IRect, IWriteToCanvas, IPanOffset} from '../interfaces';
+import {ILayers, IRect, IWriteToCanvas, IPanOffset, ICircle, IArc, IWriteTextBubble} from '../interfaces';
 
 class CanvasAPI {
   layers: ILayers;
@@ -64,12 +69,14 @@ class CanvasAPI {
    */
   clear(layerName = 'initial') {
     let layer = this.layers[layerName];
-    let ctx = layer.ctx;
     layer.shapes = new Map();
   }
 
   clearAllLayers() {
     for (let layerName in this.layers) {
+      if (!this.layers.hasOwnProperty(layerName)) {
+        continue;
+      }
       this.clear(layerName);
     }
   }
@@ -81,7 +88,6 @@ class CanvasAPI {
    */
   remove(id, layerName = 'initial') {
     let layer = this.layers[layerName];
-    let ctx = layer.ctx;
     let shapes = layer.shapes;
     shapes.delete(id);
   }
@@ -121,7 +127,6 @@ class CanvasAPI {
     }));
   }
 
-  // TODO Finish this API
   addShape({id, drawFn, layerName = 'initial'}) {
     let layer = this.layers[layerName];
     let ctx = layer.ctx;
@@ -148,11 +153,11 @@ class CanvasAPI {
                 paddingLeft = 10,
                 paddingTop = 10,
                 layerName = 'initial'
-              }) {
+              }: IWriteTextBubble) {
     let longestTextWidth = 0;
     let linesOfText = text.split('\n');
-    let fontPxSize = fontSize || this.layers.initial.ctx.font.split('px')[0];
-    let fontToUse = fontFace || this.layers.initial.ctx.font.split('px')[1];
+    let fontPxSize = fontSize || +this.layers.initial.ctx.font.split('px')[0];
+    let fontToUse = fontFace || +this.layers.initial.ctx.font.split('px')[1];
 
     // set it first for text-width calculations
     this.layers.initial.ctx.font = `${fontPxSize}px ${fontToUse}`;
@@ -183,7 +188,7 @@ class CanvasAPI {
         fillStyle: fontColor,
         font: `${fontPxSize}px ${fontToUse}`,
         layerName,
-        textBaseline: null, // TODO really? does that make sense?
+        textBaseline: null, // TODO can text base line be null?
         strokeStyle: null
       });
     }
@@ -224,7 +229,7 @@ class CanvasAPI {
     }));
   }
 
-  addArc({id, direction, size, color = 'black', fillColor, lineWidth = 1, x, y, radius, layerName = 'initial'}) {
+  addArc({id, direction, size, color = 'black', fillColor, lineWidth = 1, x, y, radius, layerName = 'initial'}: IArc) {
     let layer = this.layers[layerName];
     let ctx = layer.ctx;
     let shapes = layer.shapes;
@@ -247,7 +252,8 @@ class CanvasAPI {
     }));
   }
 
-  addCircle({id, x, y, radius, lineWidth, color, fillColor, layerName = 'initial'}) {
+  // TODO add interface to this
+  addCircle({id, x, y, radius, lineWidth, color, fillColor, layerName = 'initial'}: ICircle) {
     let layer = this.layers[layerName];
     let ctx = layer.ctx;
     let shapes = layer.shapes;
@@ -282,6 +288,9 @@ class CanvasAPI {
     this.panY = y;
 
     for (let layerName in this.layers) {
+      if (!this.layers.hasOwnProperty(layerName)) {
+        continue;
+      }
       let layer = this.layers[layerName];
       let ctx = layer.ctx;
       ctx.setTransform(1, 0, 0, 1, x, y);
@@ -297,7 +306,6 @@ class CanvasAPI {
     return {
       panX: this.panX || 0,
       panY: this.panY || 0,
-
     }
   }
 

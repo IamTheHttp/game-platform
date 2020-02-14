@@ -16,7 +16,7 @@ describe('Tests a component', () => {
   });
 
   it('Indexes a group correctly', () => {
-    let ent = new Entity();
+    let ent = new Entity(null);
     Group.indexGroup(['test1', 'test2', 'test3'], {[ent.id] : ent});
     // Group.reset();
     expect(Group.groups['test1-test2-test3']).not.toBeUndefined();

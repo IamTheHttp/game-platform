@@ -7,6 +7,7 @@ module.exports = function (jestConfig) {
   //let's prevent Jest from collecting code coverage from the examples directory - we don't plan on testing it anyway.
   jestConfig.collectCoverageFrom.push("src/**/*.{ts,tsx}");
   jestConfig.collectCoverageFrom.push("!src/polyfill/*.*");
+  jestConfig.collectCoverageFrom.push("!src/develop.tsx");
   jestConfig.collectCoverageFrom.push("!src/index.ts");
   jestConfig.collectCoverageFrom.push("!src/levels/*.*");
 
@@ -18,10 +19,10 @@ module.exports = function (jestConfig) {
   jestConfig.preset = 'ts-jest';
   jestConfig.bail = true;
   jestConfig.coverageThreshold.global = {
-    "branches": 85,
-    "functions": 85,
-    "lines": 85,
-    "statements": 85
+    "branches": 80,
+    "functions": 80,
+    "lines": 80,
+    "statements": 80
   };
   return jestConfig;
 };

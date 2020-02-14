@@ -5,9 +5,31 @@
 
 import CanvasAPI from 'lib/CanvasAPI/CanvasAPI';
 
+interface Mocked2DContext {
+  measureText: (text: 'string') => object
+  font: string,
+  save: jest.Mocked<any>,
+  setTransform: jest.Mocked<any>,
+  clearRect: jest.Mocked<any>,
+  restore: jest.Mocked<any>,
+  beginPath: jest.Mocked<any>,
+  rect: jest.Mocked<any>,
+  fillText: jest.Mocked<any>,
+  fill: jest.Mocked<any>,
+  arc: jest.Mocked<any>,
+  stroke: jest.Mocked<any>,
+  closePath: jest.Mocked<any>,
+  moveTo: jest.Mocked<any>,
+  canvas: HTMLCanvasElement
+}
+
+  
+
+
+
 describe('Tests the CanvasAPI', () => {
 
-  let canvasAPI;
+  let canvasAPI : CanvasAPI;
   let canvasWidth = 200;
   let canvasHeight = 500;
   beforeEach(() => {
@@ -42,7 +64,7 @@ describe('Tests the CanvasAPI', () => {
 
   it('cannot instantiate without ctx', () => {
     expect(() => {
-      let canvasAPI = new CanvasAPI();
+      new CanvasAPI(null, null);
     }).toThrow();
   });
 
@@ -55,8 +77,8 @@ describe('Tests the CanvasAPI', () => {
   });
 
   it('Adds a shape, renders, and clears', () => {
-    let {ctx} = canvasAPI.layers.initial;
     let layer = canvasAPI.layers.initial;
+    let ctx = layer.ctx as unknown as Mocked2DContext;
 
     let x = 15;
     let y = 10;
@@ -81,12 +103,11 @@ describe('Tests the CanvasAPI', () => {
   });
 
   it('Adds a circle, renders  and remove it', () => {
-    let {ctx} = canvasAPI.layers.initial;
     let layer = canvasAPI.layers.initial;
+    let ctx = layer.ctx as unknown as Mocked2DContext;
+
     let x = 15;
     let y = 10;
-    let width = 100;
-    let height = 50;
     let radius = 500;
     expect(layer.shapes.size).toBe(0);
     canvasAPI.addCircle({
@@ -112,19 +133,17 @@ describe('Tests the CanvasAPI', () => {
   });
 
   it('write a text', () => {
-    let {ctx} = canvasAPI.layers.initial;
     let layer = canvasAPI.layers.initial;
+    let ctx = layer.ctx as unknown as Mocked2DContext;
     let x = 15;
     let y = 10;
-    let width = 100;
-    let height = 50;
 
     expect(layer.shapes.size).toBe(0);
     canvasAPI.write({
       id: 'text',
       text: 'test', // the image to display
       x, y, // pos for x,y..
-      textBaseline: 5,
+      textBaseline: 'top',
       fillStyle: 'white'
     });
     expect(layer.shapes.size).toBe(1);
@@ -137,8 +156,8 @@ describe('Tests the CanvasAPI', () => {
   });
 
   it('Sets and get pan values', () => {
-    let {ctx} = canvasAPI.layers.initial;
     let layer = canvasAPI.layers.initial;
+    let ctx = layer.ctx as unknown as Mocked2DContext;
 
     expect(canvasAPI.getPan()).toEqual({
       panX: 0,
@@ -155,7 +174,6 @@ describe('Tests the CanvasAPI', () => {
   });
 
   it('Adds a circle to a different layer, clearing one layer should not clear the other', () => {
-    let {ctx} = canvasAPI.layers.initial;
     let layer = canvasAPI.layers.initial;
     let x = 15;
     let y = 10;
@@ -200,8 +218,8 @@ describe('Tests the CanvasAPI', () => {
   });
 
   it('Adds an arc to the shapes', () => {
-    let {ctx} = canvasAPI.layers.initial;
     let layer = canvasAPI.layers.initial;
+    let ctx = layer.ctx as unknown as Mocked2DContext;
     let x = 100;
     let y = 100;
     let radius = 500;
@@ -226,8 +244,9 @@ describe('Tests the CanvasAPI', () => {
   });
 
   it('Adds an arc without FillColor', () => {
-    let {ctx} = canvasAPI.layers.initial;
     let layer = canvasAPI.layers.initial;
+    let ctx = layer.ctx as unknown as Mocked2DContext;
+
     let x = 100;
     let y = 100;
     let radius = 500;
@@ -291,8 +310,7 @@ describe('Tests the CanvasAPI', () => {
       width: 0, // the minimum value is the text value within!
       fontSize: 16,
       paddingLeft:0,
-      paddingTop:0,
-
+      paddingTop:0
     });
 
     // even though 0 height and 0 width were given, the string length and many lines force some size
@@ -301,7 +319,7 @@ describe('Tests the CanvasAPI', () => {
     expect(shape.metaData.width).toBe(100);
   });
 
-  it('Writes a bubble text to the canvas - Takes into account paddings for height calculations', () => {
+  it('Writes a bubble text to the canvas - Takes into account padding for height calculations', () => {
     canvasAPI.writeBubble({
       id: 'testBubbleText',
       text: 'It is dangerous to go alone! \ntake this!',
@@ -324,7 +342,7 @@ describe('Tests the CanvasAPI', () => {
     expect(shape.metaData.width).toBe(205); // + padding * 2 + border + 100 from mock measureText
   });
 
-  it('Works without missing defaultive arguments', () => {
+  it('Works without missing default arguments', () => {
     canvasAPI.writeBubble({
       id: 'testBubbleText',
       text: 'It is dangerous to go alone! \ntake this!',

@@ -4,10 +4,11 @@
 /* global beforeEach */
 import ObjectPool from 'lib/ObjectPool/ObjectPool';
 describe('Tests a component', () => {
-  let pool;
+  let pool: ObjectPool;
 
   beforeEach(() => {
     class Foo {
+      isAlive:boolean;
       constructor() {
         this.isAlive = true;
       }

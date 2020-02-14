@@ -26,11 +26,54 @@ export interface IWriteToCanvas {
     text: string;
     x: number;
     y: number;
-    font: string;
+    font?: string;
     textBaseline: CanvasTextBaseline;
     fillStyle: string;
-    strokeStyle: string;
-    layerName: string;
+    strokeStyle?: string;
+    layerName?: string;
+}
+export interface IWriteTextBubble {
+    id: string;
+    text: string;
+    x: number;
+    y: number;
+    font?: string;
+    textBaseline?: CanvasTextBaseline;
+    fillStyle?: string;
+    strokeStyle?: string;
+    backgroundColor: string;
+    borderColor: string;
+    borderWidth: number;
+    fontSize?: number;
+    fontColor: string;
+    fontFace?: string;
+    height: number;
+    width: number;
+    paddingLeft?: number;
+    paddingTop?: number;
+    layerName?: string;
+}
+export interface IArc {
+    id: string;
+    x: number;
+    y: number;
+    radius: number;
+    direction: number;
+    size: number;
+    color?: string;
+    lineWidth?: number;
+    fillColor?: string;
+    layerName?: string;
+}
+export interface ICircle {
+    id: string;
+    x: number;
+    y: number;
+    radius: number;
+    lineWidth?: number;
+    color?: string;
+    fillColor?: string;
+    layerName?: string;
 }
 export interface IRect {
     id: string;
@@ -38,14 +81,16 @@ export interface IRect {
     y: number;
     width: number;
     height: number;
-    strokeStyle: string;
-    lineWidth: number;
-    fillColor: string;
-    layerName: string;
+    strokeStyle?: string;
+    lineWidth?: number;
+    fillColor?: string;
+    layerName?: string;
 }
 export interface ICoordinates {
     x: number;
     y: number;
+}
+export interface IClientViewCoordinates extends ICoordinates {
 }
 export interface IGameCanvasOptions {
     selectedBoxColor?: string;

@@ -3,8 +3,7 @@ import CanvasAPI from 'lib/CanvasAPI/CanvasAPI';
 import SelectedBox from './SelectedBox/SelectedBox';
 import getShapesFromClick from './selectionUtils/getShapesFromClick';
 import getShapesInSelectionBox from './selectionUtils/getShapesInSelectionBox';
-import {IViewClickInfo, IViewMoveInfo, IGameCanvasOptions} from "../interfaces";
-
+import {IViewClickInfo, IViewMoveInfo, IGameCanvasOptions, IClientViewCoordinates} from "../interfaces";
 
 class GameCanvas {
   selectedBoxColor: string;
@@ -23,10 +22,10 @@ class GameCanvas {
   lastTap: number;
   selectedBox: SelectedBox;
   isMouseDown: boolean;
-  mapAPI: CanvasAPI; // TODO circle back here..
+  mapAPI: CanvasAPI;
   miniMapAPI: CanvasAPI;
-  viewMapX: number;
-  viewMapY: number;
+  lastKnownPositionInCanvasTermsX: number;
+  lastKnownPositionInCanvasTermsY: number;
   viewMapCanvas: HTMLCanvasElement;
   miniMapCanvas: HTMLCanvasElement;
   miniMapX: number;
@@ -65,14 +64,39 @@ class GameCanvas {
     this.handleMiniMapTouchStart = this.handleMiniMapTouchStart.bind(this);
   }
 
-  updateCursorPosition(event, canvas, canvasAPI) {
+  /**
+   * @desc - Gets the x,y position inside the canvas based on a mouse event with clientX and clientY
+   *         Will return X,Y values in relative terms to the painted Canvas dimensions and includes panning
+   * @param clientInputCoordinates
+   * @param canvas
+   * @param canvasAPI
+   */
+  getCursorPositionInCanvasTerms(clientInputCoordinates: IClientViewCoordinates, canvas: HTMLCanvasElement, canvasAPI: CanvasAPI): {x: number, y: number} {
     let rect = canvas.getBoundingClientRect();
-    // base position
-    let x = event.clientX - rect.left;
-    let y = event.clientY - rect.top;
 
-    x = Math.max(0, Math.round(x * (canvas.width / rect.width))) - canvasAPI.getPan().panX;
-    y = Math.max(0, Math.round(y * (canvas.height / rect.height))) - canvasAPI.getPan().panY;
+    if (typeof clientInputCoordinates.x !== 'number' || typeof clientInputCoordinates.y !== 'number') {
+      throw 'Invalid inputCoordinates provided, missing X or Y';
+    }
+
+    // X/Y represent the point inside the client view that was touched.
+    // this ignores scrolling, so the top left corner will always be 0,0 no matter the scroll
+    // this X,Y is not yet scaled for canvas
+    let rawXOnCanvasElement = clientInputCoordinates.x - rect.left;
+    let rawYyOnCanvasElement = clientInputCoordinates.y - rect.top;
+
+    // we need to scale the touch point with the real dimensions.
+    // the HTML element can be 100px wide, but the Canvas within can be 1000px wide.
+    // this ratio will allow us to correctly set the X,Y touch point
+    let WIDTH_RATIO = canvas.width / rect.width;
+    let HEIGHT_RATIO = canvas.height / rect.height;
+
+
+    let scaledX = Math.max(0, Math.round(rawXOnCanvasElement * WIDTH_RATIO));
+    let scaledY = Math.max(0, Math.round(rawYyOnCanvasElement * HEIGHT_RATIO));
+
+    // Now we're in scaled canvas X,Y terms, we can safely subtract the Pan to get the right position
+    let x = scaledX - canvasAPI.getPan().panX;
+    let y = scaledY - canvasAPI.getPan().panY;
 
     return {x, y};
   }
@@ -82,7 +106,7 @@ class GameCanvas {
       if (this.enableSelectBox === false) {
         return;
       } else {
-        this.selectedBox.setEnd(this.viewMapX, this.viewMapY);
+        this.selectedBox.setEnd(this.lastKnownPositionInCanvasTermsX, this.lastKnownPositionInCanvasTermsY);
         let data = this.selectedBox.getData();
 
         this.mapAPI.addRect({
@@ -100,8 +124,8 @@ class GameCanvas {
     }
 
     this.onViewMapMove({
-      x: this.viewMapX,
-      y: this.viewMapY,
+      x: this.lastKnownPositionInCanvasTermsX,
+      y: this.lastKnownPositionInCanvasTermsY,
       isMouseDown: this.isMouseDown,
       dbClick: this.dbClick,
       selectedBox: this.selectedBox.getData()
@@ -126,8 +150,8 @@ class GameCanvas {
 
     layers.forEach((layerName) => {
       if (selectedData.end.x === selectedData.start.x) {
-        let x = this.viewMapX;
-        let y = this.viewMapY;
+        let x = this.lastKnownPositionInCanvasTermsX;
+        let y = this.lastKnownPositionInCanvasTermsY;
         hits = [...hits, ...getShapesFromClick(this.mapAPI.layers[layerName].shapes, layerName, x, y)];
       } else {
         hits = [...hits, ...getShapesInSelectionBox(this.mapAPI.layers[layerName].shapes, layerName, selectedData)];
@@ -147,8 +171,8 @@ class GameCanvas {
     });
 
     this.onViewMapClick({
-      x: this.viewMapX,
-      y: this.viewMapY,
+      x: this.lastKnownPositionInCanvasTermsX,
+      y: this.lastKnownPositionInCanvasTermsY,
       isMouseDown: this.isMouseDown,
       dbClick: this.dbTap || this.dbClick,
       selectedBox: selectedData,
@@ -163,20 +187,21 @@ class GameCanvas {
     }
   }
 
+  updateViewMapCursorPosition(inputCoordinates: IClientViewCoordinates): IClientViewCoordinates  {
+    let {x, y} = this.getCursorPositionInCanvasTerms(inputCoordinates, this.viewMapCanvas, this.mapAPI);
+    this.lastKnownPositionInCanvasTermsX = x;
+    this.lastKnownPositionInCanvasTermsY = y;
 
-  updateViewMapCursorPosition(event) {
-    let {x, y} = this.updateCursorPosition(event, this.viewMapCanvas, this.mapAPI);
-    this.viewMapX = x;
-    this.viewMapY = y;
+    return {x, y}
   }
 
-  updateMiniMapCursorPosition(event) {
-    let {x, y} = this.updateCursorPosition(event, this.miniMapCanvas, this.miniMapAPI);
+  updateMiniMapCursorPosition(inputCoordinates: IClientViewCoordinates) {
+    let {x, y} = this.getCursorPositionInCanvasTerms(inputCoordinates, this.miniMapCanvas, this.miniMapAPI);
     this.miniMapX = x;
     this.miniMapY = y;
   }
 
-  getNewCanvasPairs({getMapRef, getMiniRef}) {
+  getNewCanvasPairs({getMapRef, getMiniRef}: {getMapRef: (a: CanvasAPI) => void, getMiniRef: (a: CanvasAPI) => void}) {
     return {
       map: this.generateMapCanvas(getMapRef),
       minimap: this.generateMiniMapCanvas(getMiniRef)
@@ -238,25 +263,32 @@ class GameCanvas {
       return;
     }
 
-    this.selectedBox.setStart(this.viewMapX, this.viewMapY);
-    this.selectedBox.setEnd(this.viewMapX, this.viewMapY);
+    this.selectedBox.setStart(this.lastKnownPositionInCanvasTermsX, this.lastKnownPositionInCanvasTermsY);
+    this.selectedBox.setEnd(this.lastKnownPositionInCanvasTermsX, this.lastKnownPositionInCanvasTermsY);
   }
 
-  handleTouchStart(e) {
-    let {x, y} = this.updateCursorPosition(e.touches[0], this.viewMapCanvas, this.mapAPI);
+  handleTouchStart(e: TouchEvent) {
+    let coords = {
+      x: e.touches[0].clientX,
+      y: e.touches[0].clientY
+    };
+    this.updateViewMapCursorPosition(coords);
+
+    let {x, y} = this.getCursorPositionInCanvasTerms(coords, this.viewMapCanvas, this.mapAPI);
     let now = new Date().getTime();
 
     this.dbTap = (now - this.lastTap) < 300;
     this.lastTap = now;
 
-    this.viewMapX = x;
-    this.viewMapY = y;
-
     this.setSelectBox();
   }
 
-  handleMiniMapTouchStart(e) {
-    let {x, y} = this.updateCursorPosition(e.touches[0], this.miniMapCanvas, this.miniMapAPI);
+  handleMiniMapTouchStart(e: TouchEvent) {
+    let coords = {
+      x: e.touches[0].clientX,
+      y: e.touches[0].clientY
+    };
+    let {x, y} = this.getCursorPositionInCanvasTerms(coords, this.miniMapCanvas, this.miniMapAPI);
 
     this.miniMapX = x;
     this.miniMapY = y;
@@ -265,31 +297,47 @@ class GameCanvas {
   }
 
 
+  private ensureNegative(a: number) {
+    return Math.min(a, 0);
+  }
+
+  // Clicking / Touching the minimap should pan the main view
   handleTouchMove(e) {
     e.preventDefault();
-    let {x, y} = this.updateCursorPosition(e.touches[0], this.viewMapCanvas, this.mapAPI);
+    // Canvas terms include
 
-    let calcPanX;
-    let calcPanY;
-    let {panX, panY} = this.mapAPI.getPan();
+    let coords = {
+      x: e.touches[0].clientX,
+      y: e.touches[0].clientY
+    };
+    let {x, y} = this.getCursorPositionInCanvasTerms(coords, this.viewMapCanvas, this.mapAPI);
 
-    let xMoved = x - this.viewMapX;
-    let yMoved = y - this.viewMapY;
+    let {panX: currentPanX, panY: currentPanY} = this.mapAPI.getPan();
 
-    calcPanX = panX + xMoved;
-    calcPanY = panY + yMoved;
+    // example: current is 5, lastKnown is 20, we moved -15.
+    let xPxChange = x - this.lastKnownPositionInCanvasTermsX;
+    let yPxChange = y - this.lastKnownPositionInCanvasTermsY;
 
-    // both numbers should be negative
-    calcPanX = Math.min(calcPanX, 0);
-    calcPanY = Math.min(calcPanY, 0);
+    // the new pan is the current pan + the change in movement
+    let plannedNewPanX = currentPanX + xPxChange;
+    let plannedNewPanY = currentPanY + yPxChange;
 
-    // the panning + the mapSize, should not exceed the viewSize
-    let width = this.mapWidth;
-    let height = this.mapHeight;
-    calcPanX = -calcPanX + this.viewWidth < width ? calcPanX : this.viewWidth - width;
-    calcPanY = -calcPanY + this.viewHeight < height ? calcPanY : this.viewHeight - height;
+    // We must ensure we don't escape from the bottom-right
+    let IS_PANNING_CONTAINED_WITHIN_MAP_FOR_X = plannedNewPanX + this.viewWidth < this.mapWidth;
+    let IS_PANNING_CONTAINED_WITHIN_MAP_FOR_Y = plannedNewPanY + this.viewWidth < this.mapHeight;
 
-    this.mapAPI.pan(calcPanX, calcPanY);
+    // Max allowed panning will ensure we can't over-pan on the bottom right
+    let MAX_ALLOWED_X_PANNING = this.viewWidth - this.mapWidth;
+    let MAX_ALLOWED_Y_PANNING = this.viewHeight - this.mapHeight;
+
+    let newPanX = IS_PANNING_CONTAINED_WITHIN_MAP_FOR_X ? plannedNewPanX : MAX_ALLOWED_X_PANNING;
+    let newPanY = IS_PANNING_CONTAINED_WITHIN_MAP_FOR_Y ? plannedNewPanY : MAX_ALLOWED_Y_PANNING;
+
+    // SAFETY
+    // our panning is always negative, as don't allow to scroll off the edges
+    // (if panning could be positive, we the canvas edge would be in the mainView)
+    // This is equal to MIN_ALLOWED_X_PANNING = 0;
+    this.mapAPI.pan(this.ensureNegative(newPanX), this.ensureNegative(newPanY));
   }
 
   generateMapCanvas(getRef: (a:CanvasAPI, b:HTMLCanvasElement) => void) {

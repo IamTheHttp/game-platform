@@ -7,9 +7,9 @@ describe('Tests the entity loop', () => {
     Entity.reset();
   });
   it ('does not crash when empty', () => {
-    let foo = new Entity();
+    new Entity(null);
     let runs = 0;
-    entityLoop(Entity.getByComps('lol'), (ent) => {
+    entityLoop(Entity.getByComps(['lol']), () => {
       runs++;
       return true;
     });
@@ -17,34 +17,34 @@ describe('Tests the entity loop', () => {
   });
 
   it ('Loops on Entity arrays', () => {
-    let foo = new Entity();
+    let foo = new Entity(null);
 
     foo.addComponent({
       name : 'lol'
     });
 
     let runs = 0;
-    let ents = entityLoop(Entity.getByComps('lol'), (ent) => {
+    let entities = entityLoop(Entity.getByComps(['lol']), (ent) => {
       runs++;
       expect(ent).not.toBeUndefined();
       return true;
     });
 
-    expect(ents.length).toBe(1);
+    expect(entities.length).toBe(1);
     expect(runs).toBe(1);
   });
 
   it('works on objects', () => {
-    new Entity();
+    new Entity(null);
 
     let runs = 0;
-    let ents = entityLoop(Entity.entities, (ent) => {
+    let entities = entityLoop(Entity.entities, (ent) => {
       runs++;
       expect(ent).not.toBeUndefined();
       return true;
     });
 
-    expect(ents.length).toBe(1);
+    expect(entities.length).toBe(1);
     expect(runs).toBe(1);
   });
 });

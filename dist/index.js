@@ -216,9 +216,7 @@ Group.indexGroup = function (compNames, entities) {
 // 3. Querying for a list of components should create an group for that list, one off.
 // 4. Adding and removing components will update the above lists as needed.
 
-// CONCATENATED MODULE: ./src/lib/ECS/Entity.ts
-
-
+// CONCATENATED MODULE: ./src/lib/ECS/util/spliceOne.ts
 var spliceOne = function (arr, index) {
     if (index === void 0) { index = 0; }
     var idx = index;
@@ -232,20 +230,40 @@ var spliceOne = function (arr, index) {
     }
     arr.length--;
 };
-/**
- * Entity class to a static interface
- *
- * entity.addComponent(Component component)
- *
- */
+/* harmony default export */ var util_spliceOne = (spliceOne);
+
+// CONCATENATED MODULE: ./src/lib/ECS/Entity.ts
+
+
+
 var Entity_Entity = /** @class */ (function () {
     function Entity(classRef) {
-        Entity.counter++;
         this.id = Entity.counter;
         this.constructor = classRef;
         this.components = {};
         Entity.entities[this.id] = this;
+        Entity.counter++;
     }
+    Entity.reset = function () {
+        entityLoop(Entity.entities, function (entity) {
+            entity.destroy();
+        });
+        ECS_Group.reset();
+    };
+    ;
+    Entity.getByComps = function (components, type) {
+        if (type === void 0) { type = 'array'; }
+        var compNames = components;
+        ECS_Group.indexGroup(components, Entity.entities);
+        var group = ECS_Group.getGroup(compNames);
+        return type === 'map' ? group.entities : group.array.concat();
+    };
+    ;
+    Entity.getByComp = function (compName, type) {
+        if (type === void 0) { type = 'array'; }
+        return Entity.getByComps([compName]);
+    };
+    ;
     Entity.prototype.assignGroup = function (group) {
         group.entities[this.id] = this;
     };
@@ -257,11 +275,16 @@ var Entity_Entity = /** @class */ (function () {
         // creates an index group if it does not exist..
         var arr = [];
         for (var compName in this.components) {
-            arr.push(compName);
+            if (this.components.hasOwnProperty(compName)) {
+                arr.push(compName);
+            }
         }
         ECS_Group.indexGroup(arr, Entity.entities);
         // we need to see if we need to add entity into other groups.
         for (var groupKey in ECS_Group.groups) {
+            if (!ECS_Group.groups.hasOwnProperty(groupKey)) {
+                continue;
+            }
             var group = ECS_Group.groups[groupKey];
             // if the ent is in this group, skip.
             if (group.entities[this.id]) {
@@ -293,6 +316,9 @@ var Entity_Entity = /** @class */ (function () {
         var compName = component.name;
         // we need to see if we need to remove entity from other groups
         for (var groupKey in ECS_Group.groups) {
+            if (!ECS_Group.groups.hasOwnProperty(groupKey)) {
+                continue;
+            }
             var group = ECS_Group.groups[groupKey];
             // if the ent is in this group, skip.
             var compInGroup = group.components.indexOf(component.name) > -1;
@@ -300,7 +326,7 @@ var Entity_Entity = /** @class */ (function () {
             // if this ent does not have all the other comps, skip..
             if (group.entities[this.id] && compInGroup && entHasReqComps) {
                 delete group.entities[this.id];
-                spliceOne(group.array, group.array.indexOf(this));
+                util_spliceOne(group.array, group.array.indexOf(this));
             }
         }
         delete this.components[compName];
@@ -316,13 +342,30 @@ var Entity_Entity = /** @class */ (function () {
         });
         delete Entity.entities[this.id];
     };
+    Entity.prototype.normalizeToArray = function (compNames) {
+        if (typeof compNames === 'string') {
+            return [compNames];
+        }
+        if (!compNames) {
+            return [];
+        }
+        if (compNames instanceof Array) {
+            return compNames;
+        }
+    };
     Entity.prototype.hasComponents = function (compNames) {
         var _this = this;
-        if (compNames === void 0) { compNames = []; }
+        var componentNames = this.normalizeToArray(compNames);
+        if (!compNames) {
+            return false;
+        }
         // quick breakout if single
         if (typeof compNames === 'string') {
             if (this.components[compNames]) {
                 return true;
+            }
+            else {
+                return false;
             }
         }
         else {
@@ -331,28 +374,10 @@ var Entity_Entity = /** @class */ (function () {
             }, true);
         }
     };
+    Entity.counter = 0;
+    Entity.entities = {};
     return Entity;
 }());
-Entity_Entity.entities = {};
-/**
- * @param components
- * @param type 'array'|'map'
- * @return return array/map
- */
-Entity_Entity.getByComps = function (components, type) {
-    if (type === void 0) { type = 'array'; }
-    var compNames = components;
-    ECS_Group.indexGroup(components, Entity_Entity.entities);
-    var group = ECS_Group.getGroup(compNames);
-    return type === 'map' ? group.entities : group.array.concat();
-};
-Entity_Entity.reset = function () {
-    entityLoop(Entity_Entity.entities, function (entity) {
-        entity.destroy();
-    });
-    ECS_Group.reset();
-};
-Entity_Entity.counter = 0;
 window.Entity = Entity_Entity;
 /* harmony default export */ var ECS_Entity = (Entity_Entity);
 
@@ -411,6 +436,11 @@ var external_react_ = __webpack_require__(0);
 var external_react_default = /*#__PURE__*/__webpack_require__.n(external_react_);
 
 // CONCATENATED MODULE: ./src/lib/CanvasAPI/CanvasAPI.ts
+/**
+ * Library for working with Canvas,
+ * Works by using a 2D context as an argument
+ * Provides abstraction for some common shapes in Canvas
+ */
 var __values = (undefined && undefined.__values) || function(o) {
     var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
     if (m) return m.call(o);
@@ -422,11 +452,7 @@ var __values = (undefined && undefined.__values) || function(o) {
     };
     throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
 };
-/**
- * Library for working with Canvas,
- * Works by using a 2D context as an argument
- * Provides abstraction for some common shapes in Canvas
- */
+// TODO we can solve this 'any' but subclassing the different shapes, thus having a full interface per shape
 var Shape = /** @class */ (function () {
     function Shape(draw, metaData) {
         if (metaData === void 0) { metaData = {}; }
@@ -474,11 +500,13 @@ var CanvasAPI = /** @class */ (function () {
     CanvasAPI.prototype.clear = function (layerName) {
         if (layerName === void 0) { layerName = 'initial'; }
         var layer = this.layers[layerName];
-        var ctx = layer.ctx;
         layer.shapes = new Map();
     };
     CanvasAPI.prototype.clearAllLayers = function () {
         for (var layerName in this.layers) {
+            if (!this.layers.hasOwnProperty(layerName)) {
+                continue;
+            }
             this.clear(layerName);
         }
     };
@@ -490,7 +518,6 @@ var CanvasAPI = /** @class */ (function () {
     CanvasAPI.prototype.remove = function (id, layerName) {
         if (layerName === void 0) { layerName = 'initial'; }
         var layer = this.layers[layerName];
-        var ctx = layer.ctx;
         var shapes = layer.shapes;
         shapes.delete(id);
     };
@@ -522,7 +549,6 @@ var CanvasAPI = /** @class */ (function () {
             width: width
         }));
     };
-    // TODO Finish this API
     CanvasAPI.prototype.addShape = function (_a) {
         var id = _a.id, drawFn = _a.drawFn, _b = _a.layerName, layerName = _b === void 0 ? 'initial' : _b;
         var layer = this.layers[layerName];
@@ -536,8 +562,8 @@ var CanvasAPI = /** @class */ (function () {
         var id = _a.id, text = _a.text, backgroundColor = _a.backgroundColor, borderColor = _a.borderColor, borderWidth = _a.borderWidth, fontSize = _a.fontSize, fontColor = _a.fontColor, x = _a.x, y = _a.y, fontFace = _a.fontFace, height = _a.height, width = _a.width, _b = _a.paddingLeft, paddingLeft = _b === void 0 ? 10 : _b, _c = _a.paddingTop, paddingTop = _c === void 0 ? 10 : _c, _d = _a.layerName, layerName = _d === void 0 ? 'initial' : _d;
         var longestTextWidth = 0;
         var linesOfText = text.split('\n');
-        var fontPxSize = fontSize || this.layers.initial.ctx.font.split('px')[0];
-        var fontToUse = fontFace || this.layers.initial.ctx.font.split('px')[1];
+        var fontPxSize = fontSize || +this.layers.initial.ctx.font.split('px')[0];
+        var fontToUse = fontFace || +this.layers.initial.ctx.font.split('px')[1];
         // set it first for text-width calculations
         this.layers.initial.ctx.font = fontPxSize + "px " + fontToUse;
         for (var i = 0; i < linesOfText.length; i++) {
@@ -617,6 +643,7 @@ var CanvasAPI = /** @class */ (function () {
             ctx.closePath();
         }));
     };
+    // TODO add interface to this
     CanvasAPI.prototype.addCircle = function (_a) {
         var id = _a.id, x = _a.x, y = _a.y, radius = _a.radius, lineWidth = _a.lineWidth, color = _a.color, fillColor = _a.fillColor, _b = _a.layerName, layerName = _b === void 0 ? 'initial' : _b;
         var layer = this.layers[layerName];
@@ -649,6 +676,9 @@ var CanvasAPI = /** @class */ (function () {
         this.panX = x;
         this.panY = y;
         for (var layerName in this.layers) {
+            if (!this.layers.hasOwnProperty(layerName)) {
+                continue;
+            }
             var layer = this.layers[layerName];
             var ctx = layer.ctx;
             ctx.setTransform(1, 0, 0, 1, x, y);
@@ -920,13 +950,33 @@ var GameCanvas_GameCanvas = /** @class */ (function () {
         this.handleMapTouchEnd = this.handleMapTouchEnd.bind(this);
         this.handleMiniMapTouchStart = this.handleMiniMapTouchStart.bind(this);
     }
-    GameCanvas.prototype.updateCursorPosition = function (event, canvas, canvasAPI) {
+    /**
+     * @desc - Gets the x,y position inside the canvas based on a mouse event with clientX and clientY
+     *         Will return X,Y values in relative terms to the painted Canvas dimensions and includes panning
+     * @param inputCoordinates
+     * @param canvas
+     * @param canvasAPI
+     */
+    GameCanvas.prototype.getCursorPositionInCanvasTerms = function (inputCoordinates, canvas, canvasAPI) {
         var rect = canvas.getBoundingClientRect();
-        // base position
-        var x = event.clientX - rect.left;
-        var y = event.clientY - rect.top;
-        x = Math.max(0, Math.round(x * (canvas.width / rect.width))) - canvasAPI.getPan().panX;
-        y = Math.max(0, Math.round(y * (canvas.height / rect.height))) - canvasAPI.getPan().panY;
+        if (typeof inputCoordinates.x !== 'number' || typeof inputCoordinates.y !== 'number') {
+            throw 'Invalid inputCoordinates provided, missing X or Y';
+        }
+        // X/Y represent the point inside the client view that was touched.
+        // this ignores scrolling, so the top left corner will always be 0,0 no matter the scroll
+        // this X,Y is not yet scaled for canvas
+        var rawXOnCanvasElement = inputCoordinates.x - rect.left;
+        var rawYyOnCanvasElement = inputCoordinates.y - rect.top;
+        // we need to scale the touch point with the real dimensions.
+        // the HTML element can be 100px wide, but the Canvas within can be 1000px wide.
+        // this ratio will allow us to correctly set the X,Y touch point
+        var WIDTH_RATIO = canvas.width / rect.width;
+        var HEIGHT_RATIO = canvas.height / rect.height;
+        var scaledX = Math.max(0, Math.round(rawXOnCanvasElement * WIDTH_RATIO));
+        var scaledY = Math.max(0, Math.round(rawYyOnCanvasElement * HEIGHT_RATIO));
+        // Now we're in scaled canvas X,Y terms, we can safely subtract the Pan to get the right position
+        var x = scaledX - canvasAPI.getPan().panX;
+        var y = scaledY - canvasAPI.getPan().panY;
         return { x: x, y: y };
     };
     GameCanvas.prototype.handleMapMouseMove = function () {
@@ -935,7 +985,7 @@ var GameCanvas_GameCanvas = /** @class */ (function () {
                 return;
             }
             else {
-                this.selectedBox.setEnd(this.viewMapX, this.viewMapY);
+                this.selectedBox.setEnd(this.lastKnownPositionInCanvasTermsX, this.lastKnownPositionInCanvasTermsY);
                 var data = this.selectedBox.getData();
                 this.mapAPI.addRect({
                     id: 'selectedBox',
@@ -951,8 +1001,8 @@ var GameCanvas_GameCanvas = /** @class */ (function () {
             }
         }
         this.onViewMapMove({
-            x: this.viewMapX,
-            y: this.viewMapY,
+            x: this.lastKnownPositionInCanvasTermsX,
+            y: this.lastKnownPositionInCanvasTermsY,
             isMouseDown: this.isMouseDown,
             dbClick: this.dbClick,
             selectedBox: this.selectedBox.getData()
@@ -972,8 +1022,8 @@ var GameCanvas_GameCanvas = /** @class */ (function () {
         // if a single click...
         layers.forEach(function (layerName) {
             if (selectedData.end.x === selectedData.start.x) {
-                var x = _this.viewMapX;
-                var y = _this.viewMapY;
+                var x = _this.lastKnownPositionInCanvasTermsX;
+                var y = _this.lastKnownPositionInCanvasTermsY;
                 hits = GameCanvas_spread(hits, selectionUtils_getShapesFromClick(_this.mapAPI.layers[layerName].shapes, layerName, x, y));
             }
             else {
@@ -992,8 +1042,8 @@ var GameCanvas_GameCanvas = /** @class */ (function () {
             height: 0
         });
         this.onViewMapClick({
-            x: this.viewMapX,
-            y: this.viewMapY,
+            x: this.lastKnownPositionInCanvasTermsX,
+            y: this.lastKnownPositionInCanvasTermsY,
             isMouseDown: this.isMouseDown,
             dbClick: this.dbTap || this.dbClick,
             selectedBox: selectedData,
@@ -1006,13 +1056,14 @@ var GameCanvas_GameCanvas = /** @class */ (function () {
             this.handleMapTouchEnd();
         }
     };
-    GameCanvas.prototype.updateViewMapCursorPosition = function (event) {
-        var _a = this.updateCursorPosition(event, this.viewMapCanvas, this.mapAPI), x = _a.x, y = _a.y;
-        this.viewMapX = x;
-        this.viewMapY = y;
+    GameCanvas.prototype.updateViewMapCursorPosition = function (inputCoordinates) {
+        var _a = this.getCursorPositionInCanvasTerms(inputCoordinates, this.viewMapCanvas, this.mapAPI), x = _a.x, y = _a.y;
+        this.lastKnownPositionInCanvasTermsX = x;
+        this.lastKnownPositionInCanvasTermsY = y;
+        return { x: x, y: y };
     };
-    GameCanvas.prototype.updateMiniMapCursorPosition = function (event) {
-        var _a = this.updateCursorPosition(event, this.miniMapCanvas, this.miniMapAPI), x = _a.x, y = _a.y;
+    GameCanvas.prototype.updateMiniMapCursorPosition = function (inputCoordinates) {
+        var _a = this.getCursorPositionInCanvasTerms(inputCoordinates, this.miniMapCanvas, this.miniMapAPI), x = _a.x, y = _a.y;
         this.miniMapX = x;
         this.miniMapY = y;
     };
@@ -1069,43 +1120,63 @@ var GameCanvas_GameCanvas = /** @class */ (function () {
         if (this.enableSelectBox === false) {
             return;
         }
-        this.selectedBox.setStart(this.viewMapX, this.viewMapY);
-        this.selectedBox.setEnd(this.viewMapX, this.viewMapY);
+        this.selectedBox.setStart(this.lastKnownPositionInCanvasTermsX, this.lastKnownPositionInCanvasTermsY);
+        this.selectedBox.setEnd(this.lastKnownPositionInCanvasTermsX, this.lastKnownPositionInCanvasTermsY);
     };
     GameCanvas.prototype.handleTouchStart = function (e) {
-        var _a = this.updateCursorPosition(e.touches[0], this.viewMapCanvas, this.mapAPI), x = _a.x, y = _a.y;
+        var coords = {
+            x: e.touches[0].clientX,
+            y: e.touches[0].clientY
+        };
+        this.updateViewMapCursorPosition(coords);
+        var _a = this.getCursorPositionInCanvasTerms(coords, this.viewMapCanvas, this.mapAPI), x = _a.x, y = _a.y;
         var now = new Date().getTime();
         this.dbTap = (now - this.lastTap) < 300;
         this.lastTap = now;
-        this.viewMapX = x;
-        this.viewMapY = y;
         this.setSelectBox();
     };
     GameCanvas.prototype.handleMiniMapTouchStart = function (e) {
-        var _a = this.updateCursorPosition(e.touches[0], this.miniMapCanvas, this.miniMapAPI), x = _a.x, y = _a.y;
+        var coords = {
+            x: e.touches[0].clientX,
+            y: e.touches[0].clientY
+        };
+        var _a = this.getCursorPositionInCanvasTerms(coords, this.miniMapCanvas, this.miniMapAPI), x = _a.x, y = _a.y;
         this.miniMapX = x;
         this.miniMapY = y;
         this.handleMiniMapClick(e);
     };
+    GameCanvas.prototype.ensureNegative = function (a) {
+        return Math.min(a, 0);
+    };
+    // Clicking / Touching the minimap should pan the main view
     GameCanvas.prototype.handleTouchMove = function (e) {
         e.preventDefault();
-        var _a = this.updateCursorPosition(e.touches[0], this.viewMapCanvas, this.mapAPI), x = _a.x, y = _a.y;
-        var calcPanX;
-        var calcPanY;
-        var _b = this.mapAPI.getPan(), panX = _b.panX, panY = _b.panY;
-        var xMoved = x - this.viewMapX;
-        var yMoved = y - this.viewMapY;
-        calcPanX = panX + xMoved;
-        calcPanY = panY + yMoved;
-        // both numbers should be negative
-        calcPanX = Math.min(calcPanX, 0);
-        calcPanY = Math.min(calcPanY, 0);
-        // the panning + the mapSize, should not exceed the viewSize
-        var width = this.mapWidth;
-        var height = this.mapHeight;
-        calcPanX = -calcPanX + this.viewWidth < width ? calcPanX : this.viewWidth - width;
-        calcPanY = -calcPanY + this.viewHeight < height ? calcPanY : this.viewHeight - height;
-        this.mapAPI.pan(calcPanX, calcPanY);
+        // Canvas terms include
+        var coords = {
+            x: e.touches[0].clientX,
+            y: e.touches[0].clientY
+        };
+        var _a = this.getCursorPositionInCanvasTerms(coords, this.viewMapCanvas, this.mapAPI), x = _a.x, y = _a.y;
+        var _b = this.mapAPI.getPan(), currentPanX = _b.panX, currentPanY = _b.panY;
+        // example: current is 5, lastKnown is 20, we moved -15.
+        var xPxChange = x - this.lastKnownPositionInCanvasTermsX;
+        var yPxChange = y - this.lastKnownPositionInCanvasTermsY;
+        // the new pan is the current pan + the change in movement
+        var plannedNewPanX = currentPanX + xPxChange;
+        var plannedNewPanY = currentPanY + yPxChange;
+        // We must ensure we don't escape from the bottom-right
+        var IS_PANNING_CONTAINED_WITHIN_MAP_FOR_X = plannedNewPanX + this.viewWidth < this.mapWidth;
+        var IS_PANNING_CONTAINED_WITHIN_MAP_FOR_Y = plannedNewPanY + this.viewWidth < this.mapHeight;
+        // Max allowed panning will ensure we can't over-pan on the bottom right
+        var MAX_ALLOWED_X_PANNING = this.viewWidth - this.mapWidth;
+        var MAX_ALLOWED_Y_PANNING = this.viewHeight - this.mapHeight;
+        var newPanX = IS_PANNING_CONTAINED_WITHIN_MAP_FOR_X ? plannedNewPanX : MAX_ALLOWED_X_PANNING;
+        var newPanY = IS_PANNING_CONTAINED_WITHIN_MAP_FOR_Y ? plannedNewPanY : MAX_ALLOWED_Y_PANNING;
+        // SAFETY
+        // our panning is always negative, as don't allow to scroll off the edges
+        // (if panning could be positive, we the canvas edge would be in the mainView)
+        // This is equal to MIN_ALLOWED_X_PANNING = 0;
+        this.mapAPI.pan(this.ensureNegative(newPanX), this.ensureNegative(newPanY));
     };
     GameCanvas.prototype.generateMapCanvas = function (getRef) {
         var _this = this;
