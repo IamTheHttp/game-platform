@@ -30,11 +30,11 @@ declare class GameCanvas {
     /**
      * @desc - Gets the x,y position inside the canvas based on a mouse event with clientX and clientY
      *         Will return X,Y values in relative terms to the painted Canvas dimensions and includes panning
-     * @param inputCoordinates
+     * @param clientInputCoordinates
      * @param canvas
      * @param canvasAPI
      */
-    getCursorPositionInCanvasTerms(inputCoordinates: IClientViewCoordinates, canvas: HTMLCanvasElement, canvasAPI: CanvasAPI): {
+    getCursorPositionInCanvasTerms(clientInputCoordinates: IClientViewCoordinates, canvas: HTMLCanvasElement, canvasAPI: CanvasAPI): {
         x: number;
         y: number;
     };

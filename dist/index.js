@@ -953,20 +953,20 @@ var GameCanvas_GameCanvas = /** @class */ (function () {
     /**
      * @desc - Gets the x,y position inside the canvas based on a mouse event with clientX and clientY
      *         Will return X,Y values in relative terms to the painted Canvas dimensions and includes panning
-     * @param inputCoordinates
+     * @param clientInputCoordinates
      * @param canvas
      * @param canvasAPI
      */
-    GameCanvas.prototype.getCursorPositionInCanvasTerms = function (inputCoordinates, canvas, canvasAPI) {
+    GameCanvas.prototype.getCursorPositionInCanvasTerms = function (clientInputCoordinates, canvas, canvasAPI) {
         var rect = canvas.getBoundingClientRect();
-        if (typeof inputCoordinates.x !== 'number' || typeof inputCoordinates.y !== 'number') {
+        if (typeof clientInputCoordinates.x !== 'number' || typeof clientInputCoordinates.y !== 'number') {
             throw 'Invalid inputCoordinates provided, missing X or Y';
         }
         // X/Y represent the point inside the client view that was touched.
         // this ignores scrolling, so the top left corner will always be 0,0 no matter the scroll
         // this X,Y is not yet scaled for canvas
-        var rawXOnCanvasElement = inputCoordinates.x - rect.left;
-        var rawYyOnCanvasElement = inputCoordinates.y - rect.top;
+        var rawXOnCanvasElement = clientInputCoordinates.x - rect.left;
+        var rawYyOnCanvasElement = clientInputCoordinates.y - rect.top;
         // we need to scale the touch point with the real dimensions.
         // the HTML element can be 100px wide, but the Canvas within can be 1000px wide.
         // this ratio will allow us to correctly set the X,Y touch point
