@@ -101,7 +101,7 @@ class GameCanvas {
     return {x, y};
   }
 
-  handleMapMouseMove() {
+  private handleMapMouseMove() {
     if (this.isMouseDown) {
       if (this.enableSelectBox === false) {
         return;
@@ -132,13 +132,13 @@ class GameCanvas {
     });
   }
 
-  handleMapMouseLeave() {
+  private handleMapMouseLeave() {
     if (this.isMouseDown) {
       this.handleMapMouseUp();
     }
   }
 
-  handleMapTouchEnd() {
+  private handleMapTouchEnd() {
     this.isMouseDown = false;
 
     let selectedData = this.selectedBox.getData();
@@ -181,7 +181,7 @@ class GameCanvas {
     this.selectedBox.reset();
   }
 
-  handleMapMouseUp() {
+  private handleMapMouseUp() {
     if (!this.lastTap) {
       this.handleMapTouchEnd();
     }
@@ -208,11 +208,11 @@ class GameCanvas {
     };
   }
 
-  handleMiniMapMove(event: MouseEvent) {
+  private handleMiniMapMove(event: MouseEvent) {
     this.onMiniMapMove(event);
   }
 
-  handleMiniMapClick(event) {
+  private handleMiniMapClick(event) {
     let x = this.miniMapX;
     let y = this.miniMapY;
     // Handle negative overflows, both numbers should be positive
@@ -248,7 +248,7 @@ class GameCanvas {
     });
   }
 
-  handleMapMouseDown() {
+  private handleMapMouseDown() {
     if (!this.lastTap) {
       let now = new Date().getTime();
       this.dbClick = (now - this.lastClick) < 300;
@@ -267,7 +267,7 @@ class GameCanvas {
     this.selectedBox.setEnd(this.lastKnownPositionInCanvasTermsX, this.lastKnownPositionInCanvasTermsY);
   }
 
-  handleTouchStart(e: TouchEvent) {
+  private handleTouchStart(e: TouchEvent) {
     let coords = {
       x: e.touches[0].clientX,
       y: e.touches[0].clientY
@@ -283,7 +283,7 @@ class GameCanvas {
     this.setSelectBox();
   }
 
-  handleMiniMapTouchStart(e: TouchEvent) {
+  private handleMiniMapTouchStart(e: TouchEvent) {
     let coords = {
       x: e.touches[0].clientX,
       y: e.touches[0].clientY
@@ -302,7 +302,7 @@ class GameCanvas {
   }
 
   // Clicking / Touching the minimap should pan the main view
-  handleTouchMove(e) {
+  private handleTouchMove(e) {
     e.preventDefault();
     // Canvas terms include
 

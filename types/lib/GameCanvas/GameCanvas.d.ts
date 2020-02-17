@@ -38,10 +38,10 @@ declare class GameCanvas {
         x: number;
         y: number;
     };
-    handleMapMouseMove(): void;
-    handleMapMouseLeave(): void;
-    handleMapTouchEnd(): void;
-    handleMapMouseUp(): void;
+    private handleMapMouseMove;
+    private handleMapMouseLeave;
+    private handleMapTouchEnd;
+    private handleMapMouseUp;
     updateViewMapCursorPosition(inputCoordinates: IClientViewCoordinates): IClientViewCoordinates;
     updateMiniMapCursorPosition(inputCoordinates: IClientViewCoordinates): void;
     getNewCanvasPairs({ getMapRef, getMiniRef }: {
@@ -51,15 +51,15 @@ declare class GameCanvas {
         map: any;
         minimap: any;
     };
-    handleMiniMapMove(event: MouseEvent): void;
-    handleMiniMapClick(event: any): void;
+    private handleMiniMapMove;
+    private handleMiniMapClick;
     updateMiniMapSquare(): void;
-    handleMapMouseDown(): void;
+    private handleMapMouseDown;
     setSelectBox(): void;
-    handleTouchStart(e: TouchEvent): void;
-    handleMiniMapTouchStart(e: TouchEvent): void;
+    private handleTouchStart;
+    private handleMiniMapTouchStart;
     private ensureNegative;
-    handleTouchMove(e: any): void;
+    private handleTouchMove;
     generateMapCanvas(getRef: (a: CanvasAPI, b: HTMLCanvasElement) => void): any;
     generateMiniMapCanvas(getRef: (a: CanvasAPI, b: HTMLCanvasElement) => void): any;
 }
