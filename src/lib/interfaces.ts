@@ -1,4 +1,4 @@
-import {Shape} from "./CanvasAPI/CanvasAPI";
+import {Shapes} from "lib/CanvasAPI/Shapes/Shapes";
 import Entity from "lib/ECS/Entity";
 
 export interface IEntityMap {
@@ -21,7 +21,7 @@ export interface TMP {
 
 export interface ILayer {
   ctx: CanvasRenderingContext2D,
-  shapes: Map<string, Shape>
+  shapes: Map<string, Shapes>
 }
 
 export interface IPanOffset {

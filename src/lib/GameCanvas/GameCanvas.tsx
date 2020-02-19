@@ -101,7 +101,7 @@ class GameCanvas {
     return {x, y};
   }
 
-  private handleMapMouseMove() {
+  handleMapMouseMove() {
     if (this.isMouseDown) {
       if (this.enableSelectBox === false) {
         return;
@@ -132,13 +132,13 @@ class GameCanvas {
     });
   }
 
-  private handleMapMouseLeave() {
+  handleMapMouseLeave() {
     if (this.isMouseDown) {
       this.handleMapMouseUp();
     }
   }
 
-  private handleMapTouchEnd() {
+  handleMapTouchEnd() {
     this.isMouseDown = false;
 
     let selectedData = this.selectedBox.getData();
@@ -181,7 +181,7 @@ class GameCanvas {
     this.selectedBox.reset();
   }
 
-  private handleMapMouseUp() {
+  handleMapMouseUp() {
     if (!this.lastTap) {
       this.handleMapTouchEnd();
     }
@@ -208,11 +208,11 @@ class GameCanvas {
     };
   }
 
-  private handleMiniMapMove(event: MouseEvent) {
+  handleMiniMapMove(event: MouseEvent) {
     this.onMiniMapMove(event);
   }
 
-  private handleMiniMapClick(event) {
+  handleMiniMapClick(event) {
     let x = this.miniMapX;
     let y = this.miniMapY;
     // Handle negative overflows, both numbers should be positive
@@ -248,7 +248,7 @@ class GameCanvas {
     });
   }
 
-  private handleMapMouseDown() {
+  handleMapMouseDown() {
     if (!this.lastTap) {
       let now = new Date().getTime();
       this.dbClick = (now - this.lastClick) < 300;
@@ -267,7 +267,7 @@ class GameCanvas {
     this.selectedBox.setEnd(this.lastKnownPositionInCanvasTermsX, this.lastKnownPositionInCanvasTermsY);
   }
 
-  private handleTouchStart(e: TouchEvent) {
+  handleTouchStart(e: TouchEvent) {
     let coords = {
       x: e.touches[0].clientX,
       y: e.touches[0].clientY
@@ -283,7 +283,7 @@ class GameCanvas {
     this.setSelectBox();
   }
 
-  private handleMiniMapTouchStart(e: TouchEvent) {
+  handleMiniMapTouchStart(e: TouchEvent) {
     let coords = {
       x: e.touches[0].clientX,
       y: e.touches[0].clientY
@@ -297,12 +297,12 @@ class GameCanvas {
   }
 
 
-  private ensureNegative(a: number) {
+  ensureNegative(a: number) {
     return Math.min(a, 0);
   }
 
   // Clicking / Touching the minimap should pan the main view
-  private handleTouchMove(e) {
+  handleTouchMove(e) {
     e.preventDefault();
     // Canvas terms include
 
@@ -340,7 +340,7 @@ class GameCanvas {
     this.mapAPI.pan(this.ensureNegative(newPanX), this.ensureNegative(newPanY));
   }
 
-  generateMapCanvas(getRef: (a:CanvasAPI, b:HTMLCanvasElement) => void) {
+  generateMapCanvas(getRef: (a:CanvasAPI, b:HTMLCanvasElement) => void): HTMLCanvasElement {
     return (
       <canvas
         className='viewMap'
@@ -375,7 +375,7 @@ class GameCanvas {
     );
   }
 
-  generateMiniMapCanvas(getRef: (a:CanvasAPI, b:HTMLCanvasElement) => void) {
+  generateMiniMapCanvas(getRef: (a:CanvasAPI, b:HTMLCanvasElement) => void): HTMLCanvasElement {
     return (
       <canvas
         className='minimap'

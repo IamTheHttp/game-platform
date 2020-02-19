@@ -2,6 +2,7 @@ import entityLoop from './util/entityLoop';
 import Entity from "./Entity";
 import {IComponent, IEntityMap} from "../interfaces";
 
+// TODO move all static functions in to the class
 class Group {
   components: Array<IComponent>;
   entities: IEntityMap;
@@ -10,12 +11,42 @@ class Group {
   static reset: () => void;
   static generateGroupKey: (components: Array<string>) => string;
   static getGroup: (compNames: Array<string>) => Group;
-  static indexGroup: (arr: Array<string>, entities: IEntityMap) => void;
+
   constructor(components, entities = {}) {
     this.components = components;
     this.entities = entities;
     this.array = [];
   }
+
+  static indexGroup(compNames: Array<string> | string, entities: IEntityMap) {
+    let compArray = [];
+    if (typeof compNames === 'string') {
+      compArray = [compNames];
+    } else {
+      compArray = compNames;
+    }
+
+    let key = Group.generateGroupKey(compArray);
+
+    let group;
+
+    // if group already exists, return it
+    if (Group.groups[key]) {
+      return;
+    } else {
+      group = Group.groups[key] = new Group(compArray);
+    }
+
+// insert the provided entities into this group...
+    entityLoop(entities, (entity) => {
+      if (entity.hasComponents(compArray)) {
+        group.entities[entity.id] = entity;
+        group.array = [...group.array, entity];
+      }
+    });
+
+    return group;
+  };
 }
 
 Group.groups = {};
@@ -42,36 +73,6 @@ Group.generateGroupKey = (components) => {
 Group.getGroup = (components) => {
   let key = Group.generateGroupKey(components);
   return Group.groups[key] || {};
-};
-
-// this will create a new index group for the provided components.
-Group.indexGroup = (compNames: Array<string> | string, entities) => {
-  let compArray = [];
-  if (typeof compNames === 'string') {
-    compArray = [compNames];
-  } else {
-    compArray = compNames;
-  }
-
-  let key = Group.generateGroupKey(compArray);
-
-  let group;
-
-  if (Group.groups[key]) {
-    return;
-  } else {
-    group = Group.groups[key] = new Group(compArray);
-  }
-
-  // insert the provided entities into this group...
-  entityLoop(entities, (entity) => {
-    if (entity.hasComponents(compArray)) {
-      group.entities[entity.id] = entity;
-      group.array = [...group.array, entity];
-    }
-  });
-
-  return group;
 };
 
 export default Group;

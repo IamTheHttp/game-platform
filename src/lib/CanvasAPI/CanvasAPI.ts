@@ -4,19 +4,8 @@
  * Provides abstraction for some common shapes in Canvas
  */
 
+import {Circle, Shapes} from "lib/CanvasAPI/Shapes/Shapes";
 
-// TODO we can solve this 'any' but subclassing the different shapes, thus having a full interface per shape
-export class Shape {
-  draw: () => {};
-  metaData: {
-    [key: string]: any
-  };
-
-  constructor(draw, metaData = {}) {
-    this.draw = draw;
-    this.metaData = metaData;
-  }
-}
 
 import {ILayers, IRect, IWriteToCanvas, IPanOffset, ICircle, IArc, IWriteTextBubble} from '../interfaces';
 
@@ -106,7 +95,7 @@ class CanvasAPI {
     let ctx = layer.ctx;
     let shapes = layer.shapes;
 
-    shapes.set(id, new Shape(() => {
+    shapes.set(id, new Shapes(() => {
       ctx.beginPath();
       ctx.save();
       ctx.translate(x + width / 2, y + height / 2);
@@ -132,7 +121,7 @@ class CanvasAPI {
     let ctx = layer.ctx;
     let shapes = layer.shapes;
 
-    shapes.set(id, new Shape(() => {
+    shapes.set(id, new Shapes(() => {
       drawFn(ctx);
     }));
   }
@@ -188,7 +177,7 @@ class CanvasAPI {
         fillStyle: fontColor,
         font: `${fontPxSize}px ${fontToUse}`,
         layerName,
-        textBaseline: null, // TODO can text base line be null?
+        textBaseline: null,
         strokeStyle: null
       });
     }
@@ -203,7 +192,7 @@ class CanvasAPI {
     let ctx = layer.ctx;
     let shapes = layer.shapes;
 
-    shapes.set(id, new Shape(() => {
+    shapes.set(id, new Shapes(() => {
       ctx.strokeStyle = strokeStyle;
       ctx.lineWidth = lineWidth;
       ctx.beginPath();
@@ -234,7 +223,7 @@ class CanvasAPI {
     let ctx = layer.ctx;
     let shapes = layer.shapes;
 
-    shapes.set(id, new Shape(() => {
+    shapes.set(id, new Shapes(() => {
       ctx.strokeStyle = color;
       ctx.lineWidth = lineWidth;
 
@@ -252,32 +241,13 @@ class CanvasAPI {
     }));
   }
 
-  // TODO add interface to this
   addCircle({id, x, y, radius, lineWidth, color, fillColor, layerName = 'initial'}: ICircle) {
     let layer = this.layers[layerName];
     let ctx = layer.ctx;
     let shapes = layer.shapes;
 
-    shapes.set(id, new Shape(() => {
-      ctx.strokeStyle = color;
-      ctx.lineWidth = lineWidth;
-      ctx.moveTo(x, y);
-      ctx.beginPath();
-      ctx.arc(x, y, radius, 0, Math.PI * 2);
-      if (fillColor) {
-        ctx.fillStyle = fillColor;
-        ctx.fill();
-      }
-
-      ctx.stroke();
-      ctx.closePath();
-    }, {
-      id,
-      type: 'circle',
-      x,
-      y,
-      radius
-    }));
+    // TODO run npm start and ensure this works
+    shapes.set(id, new Circle(id, x, y, radius, lineWidth, fillColor,  color, ctx));
   }
 
   /**
@@ -323,7 +293,7 @@ class CanvasAPI {
     let layer = this.layers[layerName];
     let ctx = layer.ctx;
     let shapes = layer.shapes;
-    shapes.set(id, new Shape(() => {
+    shapes.set(id, new Shapes(() => {
       ctx.beginPath();
       ctx.font = font;
       ctx.textBaseline = textBaseline;

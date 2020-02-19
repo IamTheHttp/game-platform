@@ -164,11 +164,8 @@ describe('Tests Game canvas', () => {
       }
     };
 
-    // TODO is there a clever solution?
-    // @ts-ignore
-    gameCanvas.viewMapCanvas = canvas;
-    // @ts-ignore
-    gameCanvas.mapAPI = canvasAPI;
+     gameCanvas.viewMapCanvas = canvas as HTMLCanvasElement;
+    gameCanvas.mapAPI = canvasAPI as CanvasAPI;
     gameCanvas.updateViewMapCursorPosition({
       x:10, y:10
     });

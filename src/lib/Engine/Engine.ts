@@ -6,28 +6,28 @@ class Engine {
     this.frameID = null;
   }
 
-  addSystem(system) {
+  addSystem(system: (sysArgs) => {}) : any {
     this.systems.push(system);
   }
 
-  run(sysArgs) {
+  run(sysArgs: any): number {
     this.frameID = requestAnimationFrame(() => {
       this.run(sysArgs); // // Load the next frame request, this will allow any system to cancel the frame
-      let systemArguments = typeof sysArgs === 'function' ? sysArgs() : sysArgs;
+      let normalizedSysArgs = typeof sysArgs === 'function' ? sysArgs() : sysArgs;
 
-      this.runSystems(systemArguments);
+      this.runSystems(normalizedSysArgs);
     });
 
     return this.frameID;
   }
 
-  runSystems(systemArguments) {
+  runSystems(sysArgs) {
     for (let i = 0; i < this.systems.length; i++) {
-      this.systems[i](systemArguments);
+      this.systems[i](sysArgs);
     }
   }
 
-  stop() {
+  stop(): number {
     cancelAnimationFrame(this.frameID);
     return this.frameID;
   }

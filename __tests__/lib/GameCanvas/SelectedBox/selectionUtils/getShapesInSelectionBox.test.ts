@@ -1,5 +1,5 @@
 import getShapesInSelectionBox from 'lib/GameCanvas/selectionUtils/getShapesInSelectionBox';
-import {Shape} from 'lib/CanvasAPI/CanvasAPI';
+import {Shapes} from "lib/CanvasAPI/Shapes/Shapes";
 import getShapesFromClick from 'lib/GameCanvas/selectionUtils/getShapesFromClick';
 
 
@@ -7,7 +7,7 @@ describe('Test selectionBox shape detection', () => {
   it('Tests circles', () => {
     let shapes = new Map();
 
-    shapes.set('foo', new Shape(() => {
+    shapes.set('foo', new Shapes(() => {
     }, {
       id: 'foo',
       type: 'circle',
@@ -16,7 +16,7 @@ describe('Test selectionBox shape detection', () => {
       radius: 5
     }));
 
-    shapes.set('bar', new Shape(() => {
+    shapes.set('bar', new Shapes(() => {
     }, {
       id: 'bar',
       type: 'circle',
@@ -25,7 +25,7 @@ describe('Test selectionBox shape detection', () => {
       radius: 5
     }));
 
-    shapes.set('bar22', new Shape(() => {
+    shapes.set('bar22', new Shapes(() => {
     }, {
       id: 'bar22',
       type: 'UNSUPPORTED TYPE',
@@ -105,7 +105,7 @@ describe('Test selectionBox shape detection', () => {
   it('Tests rects', () => {
     let shapes = new Map();
 
-    shapes.set('foo', new Shape(() => {
+    shapes.set('foo', new Shapes(() => {
     }, {
       id: 'foo',
       type: 'rect',
@@ -115,7 +115,7 @@ describe('Test selectionBox shape detection', () => {
       height: 10
     }));
 
-    shapes.set('bar', new Shape(() => {
+    shapes.set('bar', new Shapes(() => {
     }, {
       id: 'bar',
       type: 'rect',
@@ -125,7 +125,7 @@ describe('Test selectionBox shape detection', () => {
       height: 10
     }));
 
-    shapes.set('bar22', new Shape(() => {
+    shapes.set('bar22', new Shapes(() => {
     }, {
       id: 'bar22',
       type: 'UNSUPPORTED TYPE',
