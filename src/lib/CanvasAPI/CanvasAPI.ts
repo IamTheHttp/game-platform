@@ -246,7 +246,6 @@ class CanvasAPI {
     let ctx = layer.ctx;
     let shapes = layer.shapes;
 
-    // TODO run npm start and ensure this works
     shapes.set(id, new Circle(id, x, y, radius, lineWidth, fillColor,  color, ctx));
   }
 

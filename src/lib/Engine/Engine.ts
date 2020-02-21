@@ -6,7 +6,7 @@ class Engine {
     this.frameID = null;
   }
 
-  addSystem(system: (sysArgs) => {}) : any {
+  addSystem(system: (sysArgs) => void) : void{
     this.systems.push(system);
   }
 

@@ -50,18 +50,24 @@ class GameCanvas {
     this.dbClick = false;
     this.lastTap = 0;
     this.selectedBox = new SelectedBox();
-    this.updateViewMapCursorPosition = this.updateViewMapCursorPosition.bind(this);
-    this.updateMiniMapCursorPosition = this.updateMiniMapCursorPosition.bind(this);
-    this.handleMapMouseUp = this.handleMapMouseUp.bind(this);
-    this.handleMapMouseDown = this.handleMapMouseDown.bind(this);
-    this.handleMiniMapClick = this.handleMiniMapClick.bind(this);
-    this.handleMiniMapMove = this.handleMiniMapMove.bind(this);
-    this.handleMapMouseMove = this.handleMapMouseMove.bind(this);
-    this.handleMapMouseLeave = this.handleMapMouseLeave.bind(this);
-    this.handleTouchMove = this.handleTouchMove.bind(this);
-    this.handleTouchStart = this.handleTouchStart.bind(this);
-    this.handleMapTouchEnd = this.handleMapTouchEnd.bind(this);
-    this.handleMiniMapTouchStart = this.handleMiniMapTouchStart.bind(this);
+
+    [
+      'updateViewMapCursorPosition',
+      'updateMiniMapCursorPosition',
+      'handleMapMouseUp',
+      'handleMapMouseDown',
+      'handleMapMouseDown',
+      'handleMiniMapClick',
+      'handleMiniMapMove',
+      'handleMapMouseMove',
+      'handleMapMouseLeave',
+      'handleTouchMove',
+      'handleTouchStart',
+      'handleMapTouchEnd',
+      'handleMiniMapTouchStart'
+    ].forEach((fn) => {
+      this[fn] = this[fn].bind(this);
+    });
   }
 
   /**
@@ -394,7 +400,10 @@ class GameCanvas {
 
           this.miniMapAPI = new CanvasAPI(el.getContext('2d'));
 
-          // TODO - what? why? is this needed?
+
+          // updateMiniMapSquare depends on mapAPI to be defined
+          // due to some race conditions this might happen before mapAPI was defined
+          // An interval is used to detect when mapAPI is defined
           let key = setInterval(() => {
             if (this.mapAPI) {
               this.updateMiniMapSquare();

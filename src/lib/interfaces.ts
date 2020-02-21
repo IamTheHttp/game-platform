@@ -115,8 +115,8 @@ export interface IGameCanvasOptions {
   mapWidth: number,
   viewHeight: number,
   viewWidth: number,
-  onViewMapClick?: (arg?: IViewClickInfo) => void;
-  onViewMapMove?: (arg?: IViewMoveInfo) => void;
+  onViewMapClick?: (arg: IViewClickInfo) => void;
+  onViewMapMove?: (arg: IViewMoveInfo) => void;
   onMiniMapClick?: (e: MouseEvent) => void,
   onMiniMapMove?: (e: MouseEvent) => void,
   enableSelectBox?: boolean,
@@ -139,5 +139,5 @@ export interface IViewMoveInfo {
 }
 
 export interface IViewClickInfo extends IViewMoveInfo{
-  hits: Array<any> // TODO it's not really any..
+  hits: Array<{id: string, layerName: string}>
 }

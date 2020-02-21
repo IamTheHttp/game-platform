@@ -22,8 +22,8 @@ let gameCanvas = new GameCanvas({
   },
   onMiniMapMove: () => {
   },
-  onViewMapClick: (...args) => {
-    let mouseMoveDataInterface = {
+  onViewMapClick: (mouseClickInfo) => {
+    let mouseClickInfoInterface = {
       // The library only detects hits against circles, it ignores all other shapes
       // you can implement your own click detection system
       hits: [], // array of shape IDs that were clicked on
@@ -158,7 +158,9 @@ render(
       x: 0,
       y: 0,
       radius: 15,
-      strokeStyle: 'red',
+      lineWidth: 50,
+      color: 'black',
+      fillColor: 'red',
       layerName: 'background'
     });
 
@@ -220,9 +222,10 @@ render(
     let eng = new Engine();
     let direction = 0;
 
-    eng.addSystem(() => {
+    eng.addSystem((systemArgs) => {
       direction = direction + 0.01;
       apis.main.draw();
+      apis.main.draw('background');
       // apis.mini.draw();
     });
     eng.run({});
