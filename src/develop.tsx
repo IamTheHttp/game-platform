@@ -1,12 +1,12 @@
+const imgURL = require('./planet.png');
+
 import React from 'react';
 import {render} from 'react-dom';
 import './index.scss';
-
-const imgURL = require('./planet.png');
-import GameCanvas from 'lib/GameCanvas/GameCanvas';
-import Engine from 'lib/Engine/Engine';
+import Engine from "./lib/Engine/Engine";
 import CanvasAPI from "./lib/CanvasAPI/CanvasAPI";
-import {Canvas} from "canvas";
+import GameCanvas from "./lib/GameCanvas/GameCanvas";
+
 
 let gameCanvas = new GameCanvas({
   // The mapHeight/width determine the size of the map,

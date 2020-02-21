@@ -1,9 +1,9 @@
 import React from 'react';
-import CanvasAPI from 'lib/CanvasAPI/CanvasAPI';
 import SelectedBox from './SelectedBox/SelectedBox';
 import getShapesFromClick from './selectionUtils/getShapesFromClick';
 import getShapesInSelectionBox from './selectionUtils/getShapesInSelectionBox';
 import {IViewClickInfo, IViewMoveInfo, IGameCanvasOptions, IClientViewCoordinates} from "../interfaces";
+import CanvasAPI from "../CanvasAPI/CanvasAPI";
 
 class GameCanvas {
   selectedBoxColor: string;

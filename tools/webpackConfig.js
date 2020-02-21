@@ -1,5 +1,5 @@
 module.exports = function(config){
-  config.resolve.modules = ["./src", "node_modules"];
+  config.resolve.modules = ["node_modules"];
 
   if (config.optimization) {
     delete config.optimization.minimizer;

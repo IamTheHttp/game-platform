@@ -4,7 +4,7 @@
  * Provides abstraction for some common shapes in Canvas
  */
 
-import {Circle, Shapes} from "lib/CanvasAPI/Shapes/Shapes";
+import {Circle, Shapes} from "./Shapes/Shapes";
 
 
 import {ILayers, IRect, IWriteToCanvas, IPanOffset, ICircle, IArc, IWriteTextBubble} from '../interfaces';
