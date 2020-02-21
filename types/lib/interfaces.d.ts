@@ -1,4 +1,4 @@
-import { Shape } from "./CanvasAPI/CanvasAPI";
+import { Shapes } from "lib/CanvasAPI/Shapes/Shapes";
 import Entity from "lib/ECS/Entity";
 export interface IEntityMap {
     [key: number]: Entity;
@@ -15,7 +15,7 @@ export interface TMP {
 }
 export interface ILayer {
     ctx: CanvasRenderingContext2D;
-    shapes: Map<string, Shape>;
+    shapes: Map<string, Shapes>;
 }
 export interface IPanOffset {
     panX: number;
@@ -98,8 +98,8 @@ export interface IGameCanvasOptions {
     mapWidth: number;
     viewHeight: number;
     viewWidth: number;
-    onViewMapClick?: (arg?: IViewClickInfo) => void;
-    onViewMapMove?: (arg?: IViewMoveInfo) => void;
+    onViewMapClick?: (arg: IViewClickInfo) => void;
+    onViewMapMove?: (arg: IViewMoveInfo) => void;
     onMiniMapClick?: (e: MouseEvent) => void;
     onMiniMapMove?: (e: MouseEvent) => void;
     enableSelectBox?: boolean;
@@ -118,5 +118,8 @@ export interface IViewMoveInfo {
     selectedBox: ISelectedBoxData;
 }
 export interface IViewClickInfo extends IViewMoveInfo {
-    hits: Array<any>;
+    hits: Array<{
+        id: string;
+        layerName: string;
+    }>;
 }

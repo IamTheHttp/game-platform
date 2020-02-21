@@ -3,13 +3,6 @@
  * Works by using a 2D context as an argument
  * Provides abstraction for some common shapes in Canvas
  */
-export declare class Shape {
-    draw: () => {};
-    metaData: {
-        [key: string]: any;
-    };
-    constructor(draw: any, metaData?: {});
-}
 import { ILayers, IRect, IWriteToCanvas, IPanOffset, ICircle, IArc, IWriteTextBubble } from '../interfaces';
 declare class CanvasAPI {
     layers: ILayers;

@@ -1,13 +1,13 @@
 import { IComponent, IEntityMap } from "../interfaces";
 declare class Group {
-    components: Array<IComponent>;
+    components: IComponent[];
     entities: IEntityMap;
-    array: Array<any>;
-    static groups: object;
-    static reset: () => void;
-    static generateGroupKey: (components: Array<string>) => string;
-    static getGroup: (compNames: Array<string>) => Group;
-    static indexGroup: (arr: Array<string>, entities: IEntityMap) => void;
-    constructor(components: any, entities?: {});
+    array: any[];
+    static groups: {};
+    constructor(components: IComponent[], entities?: IEntityMap, array?: any[]);
+    static reset(): void;
+    static generateGroupKey(compNames: Array<string>): string;
+    static getGroup(compNames: Array<string>): Group;
+    static indexGroup(compNames: Array<string> | string, entities: IEntityMap): any;
 }
 export default Group;

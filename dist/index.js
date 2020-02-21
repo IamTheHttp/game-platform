@@ -153,68 +153,70 @@ var __spread = (undefined && undefined.__spread) || function () {
     return ar;
 };
 
-var Group = /** @class */ (function () {
-    function Group(components, entities) {
-        if (entities === void 0) { entities = {}; }
-        this.components = components;
-        this.entities = entities;
-        this.array = [];
-    }
-    return Group;
-}());
-Group.groups = {};
-Group.reset = function () {
-    Group.groups = {};
-};
-Group.generateGroupKey = function (components) {
-    var names = [];
-    for (var count = 0; count < components.length; count++) {
-        var name_1 = components[count];
-        names.push(name_1);
-    }
-    return names
-        .map(function (x) {
-        return x.toLowerCase();
-    })
-        .sort()
-        .join('-');
-};
-Group.getGroup = function (components) {
-    var key = Group.generateGroupKey(components);
-    return Group.groups[key] || {};
-};
-// this will create a new index group for the provided components.
-Group.indexGroup = function (compNames, entities) {
-    var compArray = [];
-    if (typeof compNames === 'string') {
-        compArray = [compNames];
-    }
-    else {
-        compArray = compNames;
-    }
-    var key = Group.generateGroupKey(compArray);
-    var group;
-    if (Group.groups[key]) {
-        return;
-    }
-    else {
-        group = Group.groups[key] = new Group(compArray);
-    }
-    // insert the provided entities into this group...
-    entityLoop(entities, function (entity) {
-        if (entity.hasComponents(compArray)) {
-            group.entities[entity.id] = entity;
-            group.array = __spread(group.array, [entity]);
-        }
-    });
-    return group;
-};
-/* harmony default export */ var ECS_Group = (Group);
 // life cycle of a group!
 // 1. Adding a component adds a group with that one component.
 // 2. Adding 2nd component creates a group with that 2nd component
 // 3. Querying for a list of components should create an group for that list, one off.
 // 4. Adding and removing components will update the above lists as needed.
+var Group_Group = /** @class */ (function () {
+    function Group(components, entities, array) {
+        if (entities === void 0) { entities = {}; }
+        if (array === void 0) { array = []; }
+        this.components = components;
+        this.entities = entities;
+        this.array = array;
+    }
+    Group.reset = function () {
+        Group.groups = {};
+    };
+    Group.generateGroupKey = function (compNames) {
+        var names = [];
+        for (var count = 0; count < compNames.length; count++) {
+            var name_1 = compNames[count];
+            names.push(name_1);
+        }
+        return names
+            .map(function (x) {
+            return x.toLowerCase();
+        })
+            .sort()
+            .join('-');
+    };
+    Group.getGroup = function (compNames) {
+        var key = Group.generateGroupKey(compNames);
+        return Group.groups[key] || {};
+    };
+    Group.indexGroup = function (compNames, entities) {
+        var compArray = [];
+        if (typeof compNames === 'string') {
+            compArray = [compNames];
+        }
+        else {
+            compArray = compNames;
+        }
+        var key = Group.generateGroupKey(compArray);
+        var group;
+        // if group already exists, return it
+        if (Group.groups[key]) {
+            return;
+        }
+        else {
+            group = Group.groups[key] = new Group(compArray);
+        }
+        // insert the provided entities into this group...
+        entityLoop(entities, function (entity) {
+            if (entity.hasComponents(compArray)) {
+                group.entities[entity.id] = entity;
+                group.array = __spread(group.array, [entity]);
+            }
+        });
+        return group;
+    };
+    ;
+    Group.groups = {};
+    return Group;
+}());
+/* harmony default export */ var ECS_Group = (Group_Group);
 
 // CONCATENATED MODULE: ./src/lib/ECS/util/spliceOne.ts
 var spliceOne = function (arr, index) {
@@ -435,6 +437,64 @@ var ObjectPool = /** @class */ (function () {
 var external_react_ = __webpack_require__(0);
 var external_react_default = /*#__PURE__*/__webpack_require__.n(external_react_);
 
+// CONCATENATED MODULE: ./src/lib/CanvasAPI/Shapes/Shapes.ts
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var Shapes = /** @class */ (function () {
+    function Shapes(draw, metaData) {
+        if (metaData === void 0) { metaData = {}; }
+        this.draw = draw;
+        this.metaData = metaData;
+    }
+    return Shapes;
+}());
+
+var Circle = /** @class */ (function (_super) {
+    __extends(Circle, _super);
+    function Circle(id, x, y, radius, lineWidth, fillColor, color, ctx) {
+        var _this = this;
+        var shapeMetaData = { id: id, x: x, y: y, radius: radius, type: 'circle' };
+        _this = _super.call(this, function () { return _this._draw(); }, shapeMetaData) || this;
+        _this.metaData = shapeMetaData;
+        _this.id = id;
+        _this.ctx = ctx;
+        _this.x = x;
+        _this.y = y;
+        _this.radius = radius;
+        _this.lineWidth = lineWidth;
+        _this.fillColor = fillColor;
+        _this.color = color;
+        return _this;
+    }
+    Circle.prototype._draw = function () {
+        var _a = this, ctx = _a.ctx, lineWidth = _a.lineWidth, x = _a.x, y = _a.y, radius = _a.radius, fillColor = _a.fillColor, color = _a.color;
+        ctx.strokeStyle = color;
+        ctx.lineWidth = lineWidth;
+        ctx.moveTo(x, y);
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, Math.PI * 2);
+        if (fillColor) {
+            ctx.fillStyle = fillColor;
+            ctx.fill();
+        }
+        ctx.stroke();
+        ctx.closePath();
+    };
+    return Circle;
+}(Shapes));
+
+
 // CONCATENATED MODULE: ./src/lib/CanvasAPI/CanvasAPI.ts
 /**
  * Library for working with Canvas,
@@ -452,17 +512,8 @@ var __values = (undefined && undefined.__values) || function(o) {
     };
     throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
 };
-// TODO we can solve this 'any' but subclassing the different shapes, thus having a full interface per shape
-var Shape = /** @class */ (function () {
-    function Shape(draw, metaData) {
-        if (metaData === void 0) { metaData = {}; }
-        this.draw = draw;
-        this.metaData = metaData;
-    }
-    return Shape;
-}());
 
-var CanvasAPI = /** @class */ (function () {
+var CanvasAPI_CanvasAPI = /** @class */ (function () {
     function CanvasAPI(ctx, strokeStyle) {
         if (strokeStyle === void 0) { strokeStyle = 'white'; }
         if (!ctx) {
@@ -531,7 +582,7 @@ var CanvasAPI = /** @class */ (function () {
         var layer = this.layers[layerName];
         var ctx = layer.ctx;
         var shapes = layer.shapes;
-        shapes.set(id, new Shape(function () {
+        shapes.set(id, new Shapes(function () {
             ctx.beginPath();
             ctx.save();
             ctx.translate(x + width / 2, y + height / 2);
@@ -554,7 +605,7 @@ var CanvasAPI = /** @class */ (function () {
         var layer = this.layers[layerName];
         var ctx = layer.ctx;
         var shapes = layer.shapes;
-        shapes.set(id, new Shape(function () {
+        shapes.set(id, new Shapes(function () {
             drawFn(ctx);
         }));
     };
@@ -603,7 +654,7 @@ var CanvasAPI = /** @class */ (function () {
         }
         var ctx = layer.ctx;
         var shapes = layer.shapes;
-        shapes.set(id, new Shape(function () {
+        shapes.set(id, new Shapes(function () {
             ctx.strokeStyle = strokeStyle;
             ctx.lineWidth = lineWidth;
             ctx.beginPath();
@@ -628,7 +679,7 @@ var CanvasAPI = /** @class */ (function () {
         var layer = this.layers[layerName];
         var ctx = layer.ctx;
         var shapes = layer.shapes;
-        shapes.set(id, new Shape(function () {
+        shapes.set(id, new Shapes(function () {
             ctx.strokeStyle = color;
             ctx.lineWidth = lineWidth;
             var startArc = direction - (size / 2);
@@ -643,31 +694,12 @@ var CanvasAPI = /** @class */ (function () {
             ctx.closePath();
         }));
     };
-    // TODO add interface to this
     CanvasAPI.prototype.addCircle = function (_a) {
         var id = _a.id, x = _a.x, y = _a.y, radius = _a.radius, lineWidth = _a.lineWidth, color = _a.color, fillColor = _a.fillColor, _b = _a.layerName, layerName = _b === void 0 ? 'initial' : _b;
         var layer = this.layers[layerName];
         var ctx = layer.ctx;
         var shapes = layer.shapes;
-        shapes.set(id, new Shape(function () {
-            ctx.strokeStyle = color;
-            ctx.lineWidth = lineWidth;
-            ctx.moveTo(x, y);
-            ctx.beginPath();
-            ctx.arc(x, y, radius, 0, Math.PI * 2);
-            if (fillColor) {
-                ctx.fillStyle = fillColor;
-                ctx.fill();
-            }
-            ctx.stroke();
-            ctx.closePath();
-        }, {
-            id: id,
-            type: 'circle',
-            x: x,
-            y: y,
-            radius: radius
-        }));
+        shapes.set(id, new Circle(id, x, y, radius, lineWidth, fillColor, color, ctx));
     };
     /**
      * Method allows us to pan around the canvas
@@ -699,7 +731,7 @@ var CanvasAPI = /** @class */ (function () {
         var layer = this.layers[layerName];
         var ctx = layer.ctx;
         var shapes = layer.shapes;
-        shapes.set(id, new Shape(function () {
+        shapes.set(id, new Shapes(function () {
             ctx.beginPath();
             ctx.font = font;
             ctx.textBaseline = textBaseline;
@@ -743,7 +775,7 @@ var CanvasAPI = /** @class */ (function () {
 // adding an image causes segmentation fault for some reason :)
 /* istanbul ignore next */
 if (false) {}
-/* harmony default export */ var CanvasAPI_CanvasAPI = (CanvasAPI);
+/* harmony default export */ var lib_CanvasAPI_CanvasAPI = (CanvasAPI_CanvasAPI);
 
 // CONCATENATED MODULE: ./src/lib/GameCanvas/SelectedBox/SelectedBox.ts
 /**
@@ -920,6 +952,7 @@ var GameCanvas_spread = (undefined && undefined.__spread) || function () {
 
 var GameCanvas_GameCanvas = /** @class */ (function () {
     function GameCanvas(options) {
+        var _this = this;
         var noop = function () {
         };
         this.selectedBoxColor = options.selectedBoxColor || 'blue';
@@ -937,18 +970,23 @@ var GameCanvas_GameCanvas = /** @class */ (function () {
         this.dbClick = false;
         this.lastTap = 0;
         this.selectedBox = new SelectedBox_SelectedBox();
-        this.updateViewMapCursorPosition = this.updateViewMapCursorPosition.bind(this);
-        this.updateMiniMapCursorPosition = this.updateMiniMapCursorPosition.bind(this);
-        this.handleMapMouseUp = this.handleMapMouseUp.bind(this);
-        this.handleMapMouseDown = this.handleMapMouseDown.bind(this);
-        this.handleMiniMapClick = this.handleMiniMapClick.bind(this);
-        this.handleMiniMapMove = this.handleMiniMapMove.bind(this);
-        this.handleMapMouseMove = this.handleMapMouseMove.bind(this);
-        this.handleMapMouseLeave = this.handleMapMouseLeave.bind(this);
-        this.handleTouchMove = this.handleTouchMove.bind(this);
-        this.handleTouchStart = this.handleTouchStart.bind(this);
-        this.handleMapTouchEnd = this.handleMapTouchEnd.bind(this);
-        this.handleMiniMapTouchStart = this.handleMiniMapTouchStart.bind(this);
+        [
+            'updateViewMapCursorPosition',
+            'updateMiniMapCursorPosition',
+            'handleMapMouseUp',
+            'handleMapMouseDown',
+            'handleMapMouseDown',
+            'handleMiniMapClick',
+            'handleMiniMapMove',
+            'handleMapMouseMove',
+            'handleMapMouseLeave',
+            'handleTouchMove',
+            'handleTouchStart',
+            'handleMapTouchEnd',
+            'handleMiniMapTouchStart'
+        ].forEach(function (fn) {
+            _this[fn] = _this[fn].bind(_this);
+        });
     }
     /**
      * @desc - Gets the x,y position inside the canvas based on a mouse event with clientX and clientY
@@ -1190,7 +1228,7 @@ var GameCanvas_GameCanvas = /** @class */ (function () {
                 document.addEventListener('mousemove', _this.updateViewMapCursorPosition);
                 el.removeEventListener('touchmove', _this.handleTouchMove, false);
                 el.addEventListener('touchmove', _this.handleTouchMove, false);
-                _this.mapAPI = new CanvasAPI_CanvasAPI(el.getContext('2d'));
+                _this.mapAPI = new lib_CanvasAPI_CanvasAPI(el.getContext('2d'));
                 getRef(_this.mapAPI, el);
             }, height: this.viewHeight, width: this.viewWidth, onMouseDown: this.handleMapMouseDown, onTouchStart: this.handleTouchStart, onTouchEnd: this.handleMapTouchEnd, onMouseMove: this.handleMapMouseMove, onMouseUp: this.handleMapMouseUp, onMouseLeave: this.handleMapMouseLeave }));
     };
@@ -1204,8 +1242,10 @@ var GameCanvas_GameCanvas = /** @class */ (function () {
                 _this.miniMapCanvas = el;
                 document.removeEventListener('mousemove', _this.updateMiniMapCursorPosition);
                 document.addEventListener('mousemove', _this.updateMiniMapCursorPosition);
-                _this.miniMapAPI = new CanvasAPI_CanvasAPI(el.getContext('2d'));
-                // TODO - what? why? is this needed?
+                _this.miniMapAPI = new lib_CanvasAPI_CanvasAPI(el.getContext('2d'));
+                // updateMiniMapSquare depends on mapAPI to be defined
+                // due to some race conditions this might happen before mapAPI was defined
+                // An interval is used to detect when mapAPI is defined
                 var key = setInterval(function () {
                     if (_this.mapAPI) {
                         _this.updateMiniMapSquare();
@@ -1232,14 +1272,14 @@ var Engine = /** @class */ (function () {
         var _this = this;
         this.frameID = requestAnimationFrame(function () {
             _this.run(sysArgs); // // Load the next frame request, this will allow any system to cancel the frame
-            var systemArguments = typeof sysArgs === 'function' ? sysArgs() : sysArgs;
-            _this.runSystems(systemArguments);
+            var normalizedSysArgs = typeof sysArgs === 'function' ? sysArgs() : sysArgs;
+            _this.runSystems(normalizedSysArgs);
         });
         return this.frameID;
     };
-    Engine.prototype.runSystems = function (systemArguments) {
+    Engine.prototype.runSystems = function (sysArgs) {
         for (var i = 0; i < this.systems.length; i++) {
-            this.systems[i](systemArguments);
+            this.systems[i](sysArgs);
         }
     };
     Engine.prototype.stop = function () {

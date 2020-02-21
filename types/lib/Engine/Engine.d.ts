@@ -2,9 +2,9 @@ declare class Engine {
     systems: Array<(systemArguments: any) => void>;
     frameID: number;
     constructor();
-    addSystem(system: any): void;
+    addSystem(system: (sysArgs: any) => void): void;
     run(sysArgs: any): number;
-    runSystems(systemArguments: any): void;
+    runSystems(sysArgs: any): void;
     stop(): number;
 }
 export default Engine;
