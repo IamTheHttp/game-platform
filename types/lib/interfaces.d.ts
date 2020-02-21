@@ -1,5 +1,5 @@
-import { Shapes } from "lib/CanvasAPI/Shapes/Shapes";
-import Entity from "lib/ECS/Entity";
+import Entity from "./ECS/Entity";
+import { Shapes } from "./CanvasAPI/Shapes/Shapes";
 export interface IEntityMap {
     [key: number]: Entity;
 }

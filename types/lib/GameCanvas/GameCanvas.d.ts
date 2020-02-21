@@ -1,6 +1,6 @@
-import CanvasAPI from 'lib/CanvasAPI/CanvasAPI';
 import SelectedBox from './SelectedBox/SelectedBox';
 import { IViewClickInfo, IViewMoveInfo, IGameCanvasOptions, IClientViewCoordinates } from "../interfaces";
+import CanvasAPI from "../CanvasAPI/CanvasAPI";
 declare class GameCanvas {
     selectedBoxColor: string;
     mapHeight: number;

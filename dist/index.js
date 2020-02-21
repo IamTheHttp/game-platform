@@ -437,6 +437,153 @@ var ObjectPool = /** @class */ (function () {
 var external_react_ = __webpack_require__(0);
 var external_react_default = /*#__PURE__*/__webpack_require__.n(external_react_);
 
+// CONCATENATED MODULE: ./src/lib/GameCanvas/SelectedBox/SelectedBox.ts
+/**
+ * Class that represents the current selected area by the user
+ * Populated when the user click, holds and move the mouse
+ */
+var SelectedBox = /** @class */ (function () {
+    function SelectedBox() {
+        this.reset();
+    }
+    SelectedBox.prototype.reset = function () {
+        this.start = {
+            x: 0,
+            y: 0
+        };
+        this.end = {
+            x: 0,
+            y: 0
+        };
+    };
+    SelectedBox.prototype.getData = function () {
+        return {
+            start: Object.assign({}, this.start),
+            end: Object.assign({}, this.end),
+            width: this.getWidth(),
+            height: this.getHeight()
+        };
+    };
+    SelectedBox.prototype.getHeight = function () {
+        return this.end.y - this.start.y;
+    };
+    SelectedBox.prototype.getWidth = function () {
+        return this.end.x - this.start.x;
+    };
+    SelectedBox.prototype.setStart = function (x, y) {
+        this.start.x = x;
+        this.start.y = y;
+    };
+    SelectedBox.prototype.setEnd = function (x, y) {
+        this.end.x = x;
+        this.end.y = y;
+    };
+    return SelectedBox;
+}());
+/* harmony default export */ var SelectedBox_SelectedBox = (SelectedBox);
+
+// CONCATENATED MODULE: ./src/lib/GameCanvas/selectionUtils/isPosInsideCircle.ts
+/**
+ * Utility function to detect if a point is inside a circle
+ * @param x
+ * @param y
+ * @param centerX
+ * @param centerY
+ * @param radius
+ * @return {boolean}
+ */
+function isPosInsideCircle(x, y, centerX, centerY, radius) {
+    return Math.pow((x - centerX), 2) + Math.pow((y - centerY), 2) < Math.pow(radius, 2);
+}
+/* harmony default export */ var selectionUtils_isPosInsideCircle = (isPosInsideCircle);
+
+// CONCATENATED MODULE: ./src/lib/GameCanvas/selectionUtils/getShapesFromClick.ts
+
+/**
+ * Function used for getting all shapes hit from a single click (not from a selection box)
+ */
+function getShapesFromClick(shapes, layerName, x, y) {
+    var hits = [];
+    shapes.forEach(function (shape, id) {
+        if (id === 'selectedBox') {
+            return;
+        }
+        var shapeMetaData = shape.metaData || {};
+        var shapeX = shapeMetaData.x;
+        var shapeY = shapeMetaData.y;
+        var radius = shapeMetaData.radius;
+        var width = shapeMetaData.width;
+        var height = shapeMetaData.height;
+        var type = shapeMetaData.type;
+        if (type === 'circle' && selectionUtils_isPosInsideCircle(x, y, shapeX, shapeY, radius)) {
+            hits.push({
+                id: id,
+                layerName: layerName
+            });
+        }
+        else if (type === 'rect' || type === 'image') {
+            if (x >= shapeX && x <= shapeX + width && y >= shapeY && y <= shapeY + height) {
+                hits.push({
+                    id: id,
+                    layerName: layerName
+                });
+                // do nothing, no support for non circles
+            }
+        }
+        else if (type !== 'circle') {
+        }
+    });
+    return hits;
+}
+/* harmony default export */ var selectionUtils_getShapesFromClick = (getShapesFromClick);
+
+// CONCATENATED MODULE: ./src/lib/GameCanvas/selectionUtils/getShapesInSelectionBox.ts
+function getShapesInSelectionBox(shapes, layerName, selectedData) {
+    var minX = Math.min(selectedData.start.x, selectedData.end.x);
+    var maxX = Math.max(selectedData.start.x, selectedData.end.x);
+    var minY = Math.min(selectedData.start.y, selectedData.end.y);
+    var maxY = Math.max(selectedData.start.y, selectedData.end.y);
+    var hits = [];
+    shapes.forEach(function (shape, id) {
+        if (id === 'selectedBox') {
+            return;
+        }
+        var shapeMetaData = shape.metaData || {};
+        var shapeX = shapeMetaData.x;
+        var shapeY = shapeMetaData.y;
+        var radius = shapeMetaData.radius;
+        var width = shapeMetaData.width;
+        var height = shapeMetaData.height;
+        var type = shapeMetaData.type;
+        if (type === 'circle') {
+            var centerX = shapeX;
+            var centerY = shapeY;
+            if (centerX >= minX && centerX <= maxX && centerY >= minY && centerY <= maxY) {
+                hits.push({
+                    id: id,
+                    layerName: layerName
+                });
+            }
+        }
+        else if (type === 'rect' || type === 'image') {
+            // what is considered the 'centerX' for a rect?
+            var centerX = shapeX + width / 2;
+            var centerY = shapeY + height / 2;
+            if (centerX >= minX && centerX <= maxX && centerY >= minY && centerY <= maxY) {
+                hits.push({
+                    id: id,
+                    layerName: layerName
+                });
+            }
+        }
+        else {
+            // do nothing, no support for non circles or rects
+        }
+    });
+    return hits;
+}
+/* harmony default export */ var selectionUtils_getShapesInSelectionBox = (getShapesInSelectionBox);
+
 // CONCATENATED MODULE: ./src/lib/CanvasAPI/Shapes/Shapes.ts
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -776,153 +923,6 @@ var CanvasAPI_CanvasAPI = /** @class */ (function () {
 /* istanbul ignore next */
 if (false) {}
 /* harmony default export */ var lib_CanvasAPI_CanvasAPI = (CanvasAPI_CanvasAPI);
-
-// CONCATENATED MODULE: ./src/lib/GameCanvas/SelectedBox/SelectedBox.ts
-/**
- * Class that represents the current selected area by the user
- * Populated when the user click, holds and move the mouse
- */
-var SelectedBox = /** @class */ (function () {
-    function SelectedBox() {
-        this.reset();
-    }
-    SelectedBox.prototype.reset = function () {
-        this.start = {
-            x: 0,
-            y: 0
-        };
-        this.end = {
-            x: 0,
-            y: 0
-        };
-    };
-    SelectedBox.prototype.getData = function () {
-        return {
-            start: Object.assign({}, this.start),
-            end: Object.assign({}, this.end),
-            width: this.getWidth(),
-            height: this.getHeight()
-        };
-    };
-    SelectedBox.prototype.getHeight = function () {
-        return this.end.y - this.start.y;
-    };
-    SelectedBox.prototype.getWidth = function () {
-        return this.end.x - this.start.x;
-    };
-    SelectedBox.prototype.setStart = function (x, y) {
-        this.start.x = x;
-        this.start.y = y;
-    };
-    SelectedBox.prototype.setEnd = function (x, y) {
-        this.end.x = x;
-        this.end.y = y;
-    };
-    return SelectedBox;
-}());
-/* harmony default export */ var SelectedBox_SelectedBox = (SelectedBox);
-
-// CONCATENATED MODULE: ./src/lib/GameCanvas/selectionUtils/isPosInsideCircle.ts
-/**
- * Utility function to detect if a point is inside a circle
- * @param x
- * @param y
- * @param centerX
- * @param centerY
- * @param radius
- * @return {boolean}
- */
-function isPosInsideCircle(x, y, centerX, centerY, radius) {
-    return Math.pow((x - centerX), 2) + Math.pow((y - centerY), 2) < Math.pow(radius, 2);
-}
-/* harmony default export */ var selectionUtils_isPosInsideCircle = (isPosInsideCircle);
-
-// CONCATENATED MODULE: ./src/lib/GameCanvas/selectionUtils/getShapesFromClick.ts
-
-/**
- * Function used for getting all shapes hit from a single click (not from a selection box)
- */
-function getShapesFromClick(shapes, layerName, x, y) {
-    var hits = [];
-    shapes.forEach(function (shape, id) {
-        if (id === 'selectedBox') {
-            return;
-        }
-        var shapeMetaData = shape.metaData || {};
-        var shapeX = shapeMetaData.x;
-        var shapeY = shapeMetaData.y;
-        var radius = shapeMetaData.radius;
-        var width = shapeMetaData.width;
-        var height = shapeMetaData.height;
-        var type = shapeMetaData.type;
-        if (type === 'circle' && selectionUtils_isPosInsideCircle(x, y, shapeX, shapeY, radius)) {
-            hits.push({
-                id: id,
-                layerName: layerName
-            });
-        }
-        else if (type === 'rect' || type === 'image') {
-            if (x >= shapeX && x <= shapeX + width && y >= shapeY && y <= shapeY + height) {
-                hits.push({
-                    id: id,
-                    layerName: layerName
-                });
-                // do nothing, no support for non circles
-            }
-        }
-        else if (type !== 'circle') {
-        }
-    });
-    return hits;
-}
-/* harmony default export */ var selectionUtils_getShapesFromClick = (getShapesFromClick);
-
-// CONCATENATED MODULE: ./src/lib/GameCanvas/selectionUtils/getShapesInSelectionBox.ts
-function getShapesInSelectionBox(shapes, layerName, selectedData) {
-    var minX = Math.min(selectedData.start.x, selectedData.end.x);
-    var maxX = Math.max(selectedData.start.x, selectedData.end.x);
-    var minY = Math.min(selectedData.start.y, selectedData.end.y);
-    var maxY = Math.max(selectedData.start.y, selectedData.end.y);
-    var hits = [];
-    shapes.forEach(function (shape, id) {
-        if (id === 'selectedBox') {
-            return;
-        }
-        var shapeMetaData = shape.metaData || {};
-        var shapeX = shapeMetaData.x;
-        var shapeY = shapeMetaData.y;
-        var radius = shapeMetaData.radius;
-        var width = shapeMetaData.width;
-        var height = shapeMetaData.height;
-        var type = shapeMetaData.type;
-        if (type === 'circle') {
-            var centerX = shapeX;
-            var centerY = shapeY;
-            if (centerX >= minX && centerX <= maxX && centerY >= minY && centerY <= maxY) {
-                hits.push({
-                    id: id,
-                    layerName: layerName
-                });
-            }
-        }
-        else if (type === 'rect' || type === 'image') {
-            // what is considered the 'centerX' for a rect?
-            var centerX = shapeX + width / 2;
-            var centerY = shapeY + height / 2;
-            if (centerX >= minX && centerX <= maxX && centerY >= minY && centerY <= maxY) {
-                hits.push({
-                    id: id,
-                    layerName: layerName
-                });
-            }
-        }
-        else {
-            // do nothing, no support for non circles or rects
-        }
-    });
-    return hits;
-}
-/* harmony default export */ var selectionUtils_getShapesInSelectionBox = (getShapesInSelectionBox);
 
 // CONCATENATED MODULE: ./src/lib/GameCanvas/GameCanvas.tsx
 var GameCanvas_read = (undefined && undefined.__read) || function (o, n) {

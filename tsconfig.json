@@ -10,7 +10,9 @@
     "esModuleInterop" : true,
     "downlevelIteration" : true,
     "declaration": true,
-    "declarationDir" : "./types/"
+    "declarationDir" : "./types/",
+    "baseUrl": "./src/",
+    "rootDir": "./src"
   },
   "include": [
     "./src/global.d.ts",
