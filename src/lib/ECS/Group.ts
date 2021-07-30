@@ -1,5 +1,6 @@
 import entityLoop from './util/entityLoop';
 import {IComponent, IEntityMap} from "../interfaces";
+import Entity from "./Entity";
 
 // life cycle of a group!
 
@@ -35,8 +36,8 @@ class Group {
     let key = Group.generateGroupKey(compNames);
     return Group.groups[key] || {};
   }
-  static indexGroup(compNames: Array<string> | string, entities: IEntityMap) {
-    let compArray = [];
+  static indexGroup<T extends Entity>(compNames: Array<string> | string, entities: IEntityMap<T>) {
+    let compArray:IComponent[] = [];
     if (typeof compNames === 'string') {
       compArray = [compNames];
     } else {

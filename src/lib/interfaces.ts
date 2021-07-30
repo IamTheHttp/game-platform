@@ -1,8 +1,8 @@
 import Entity from "./ECS/Entity";
 import {Shapes} from "./CanvasAPI/Shapes/Shapes";
 
-export interface IEntityMap {
-  [key: number]: Entity
+export interface IEntityMap<T extends Entity> {
+  [key: number]: T
 }
 
 export interface IComponent {
@@ -140,4 +140,19 @@ export interface IViewMoveInfo {
 
 export interface IViewClickInfo extends IViewMoveInfo{
   hits: Array<{id: string, layerName: string}>
+}
+
+
+export interface IAddImageData {
+  id: string,
+  image: CanvasImageSource, // the image to display
+  x:number, y:number, // pos for x,y..
+  height:number, width:number,
+  cropStartX:number, cropStartY:number, cropSizeX:number, cropSizeY:number,
+  rotation:number, // in radians
+  layerName: string
+}
+
+export interface IShape {
+  id: string, drawFn: (ctx: CanvasRenderingContext2D) => void, layerName: string;
 }

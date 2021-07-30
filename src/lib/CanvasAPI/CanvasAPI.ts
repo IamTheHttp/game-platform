@@ -7,7 +7,19 @@
 import {Circle, Shapes} from "./Shapes/Shapes";
 
 
-import {ILayers, IRect, IWriteToCanvas, IPanOffset, ICircle, IArc, IWriteTextBubble} from '../interfaces';
+import {
+  ILayers,
+  IRect,
+  IWriteToCanvas,
+  IPanOffset,
+  ICircle,
+  IArc,
+  IWriteTextBubble,
+  IAddImageData, IShape
+} from '../interfaces';
+
+
+
 
 class CanvasAPI {
   layers: ILayers;
@@ -15,7 +27,7 @@ class CanvasAPI {
   panX: number;
   panY: number;
 
-  constructor(ctx, strokeStyle = 'white') {
+  constructor(ctx: CanvasRenderingContext2D, strokeStyle = 'white') {
     if (!ctx) {
       throw 'Cannot create layer, no initial context found';
     }
@@ -30,7 +42,7 @@ class CanvasAPI {
     ctx.strokeStyle = strokeStyle;
   }
 
-  addLayer(name) {
+  addLayer(name: string) {
     let originCanvas = this.layers.initial.ctx.canvas;
 
     let parentNode = originCanvas.parentNode;
@@ -45,7 +57,7 @@ class CanvasAPI {
     };
   }
 
-  removeLayer(name) {
+  removeLayer(name:string) {
     let originCanvas = this.layers.initial.ctx.canvas;
     let parentNode = originCanvas.parentNode;
 
@@ -75,7 +87,7 @@ class CanvasAPI {
    * @param id
    * @param layerName
    */
-  remove(id, layerName = 'initial') {
+  remove(id: string, layerName = 'initial') {
     let layer = this.layers[layerName];
     let shapes = layer.shapes;
     shapes.delete(id);
@@ -90,7 +102,7 @@ class CanvasAPI {
              cropStartX, cropStartY, cropSizeX, cropSizeY,
              rotation, // in radians
              layerName = 'initial'
-           }) {
+           }: IAddImageData) {
     let layer = this.layers[layerName];
     let ctx = layer.ctx;
     let shapes = layer.shapes;
@@ -116,7 +128,7 @@ class CanvasAPI {
     }));
   }
 
-  addShape({id, drawFn, layerName = 'initial'}) {
+  addShape({id, drawFn, layerName = 'initial'}:  IShape) {
     let layer = this.layers[layerName];
     let ctx = layer.ctx;
     let shapes = layer.shapes;
@@ -252,7 +264,7 @@ class CanvasAPI {
   /**
    * Method allows us to pan around the canvas
    */
-  pan(x, y) {
+  pan(x:number, y:number) {
     this.panX = x;
     this.panY = y;
 

@@ -4,7 +4,7 @@ export class Shapes {
     [key: string]: any
   };
 
-  constructor(draw, metaData = {}) {
+  constructor(draw: () => void, metaData = {}) {
     this.draw = draw;
     this.metaData = metaData;
   }

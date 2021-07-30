@@ -1,17 +1,13 @@
 {
   "compilerOptions": {
-    "outDir": "./dist/",
     "noImplicitAny": false,
     "module": "es6",
     "target": "es5",
     "jsx": "react",
-    "allowJs": true,
+    "downlevelIteration": true,
     "moduleResolution": "node",
     "esModuleInterop" : true,
-    "downlevelIteration" : true,
-    "declaration": true,
-    "baseUrl": "./src/",
-    "rootDir": "./src"
+    "baseUrl": "src/"
   },
   "include": [
     "./src/global.d.ts",

@@ -4,10 +4,10 @@ import isPosInsideCircle from './isPosInsideCircle';
 /**
  * Function used for getting all shapes hit from a single click (not from a selection box)
  */
-function getShapesFromClick(shapes, layerName, x, y) {
+function getShapesFromClick(shapes, layerName: string, x:number, y:number) {
   let hits = [];
 
-  shapes.forEach((shape, id) => {
+  shapes.forEach((shape, id: string) => {
     if (id === 'selectedBox') {
       return;
     }

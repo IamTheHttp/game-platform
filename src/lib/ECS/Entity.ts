@@ -3,16 +3,19 @@ import entityLoop from './util/entityLoop';
 import {IComponent, IEntityMap} from "../interfaces";
 import spliceOne from './util/spliceOne';
 
+
+
 class Entity {
   static counter: number = 0;
-  static entities: IEntityMap = {};
-
+  static entities: IEntityMap<unknown> = {}; // TODO can this be improved?
   id: number;
+
+
   components: {
     [key: string]: IComponent
   };
 
-  constructor(classRef) {
+  constructor(classRef: unknown) {
     this.id = Entity.counter;
     this.constructor = classRef;
     this.components = {};
@@ -20,29 +23,29 @@ class Entity {
     Entity.counter++;
   }
 
-  static reset() {
-    entityLoop(Entity.entities, (entity) => {
+  static reset<T extends Entity>() {
+    entityLoop<T>(Entity.entities, (entity) => {
       entity.destroy();
     });
     Group.reset();
   };
 
   // static if(value: any, condition: boolean): void;
-  static getByComps(components: Array<string>): Array<Entity>;
-  static getByComps(components: Array<string>, type: 'map'): IEntityMap;
-  static getByComps(components: Array<string>, type: 'array'): Array<Entity>;
-  static getByComps(components: Array<string>, type = 'array'): IEntityMap|Array<Entity> {
+  static getByComps<T extends Entity>(components: Array<string>): Array<T>;
+  static getByComps<T extends Entity>(components: Array<string>, type: 'map'): IEntityMap<T>;
+  static getByComps<T extends Entity>(components: Array<string>, type: 'array'): Array<T>;
+  static getByComps<T extends Entity>(components: Array<string>, type = 'array'): IEntityMap<T>|Array<T> {
     let compNames = components;
     Group.indexGroup(components, Entity.entities);
     let group = Group.getGroup(compNames);
     return type === 'map' ? group.entities : group.array.concat();
   };
 
-  static getByComp(compName: string): Array<Entity>;
-  static getByComp(compName: string, type: 'map'): IEntityMap;
-  static getByComp(compName: string, type: 'array'): Array<Entity>;
-  static getByComp(compName: string, type= 'array'): IEntityMap|Array<Entity> {
-    return Entity.getByComps([compName]);
+  static getByComp<T extends Entity>(compName: string): Array<T>;
+  static getByComp<T extends Entity>(compName: string, type: 'map'): IEntityMap<T>;
+  static getByComp<T extends Entity>(compName: string, type: 'array'): Array<T>;
+  static getByComp<T extends Entity>(compName: string, type= 'array'): IEntityMap<T>|Array<T> {
+    return Entity.getByComps<T>([compName]);
   };
 
   assignGroup(group) {
@@ -53,6 +56,7 @@ class Entity {
   // we create a new group index, for exm
   addComponent(component: IComponent) {
     this.components[component.name] = component;
+    // @ts-ignore TODO can this be improved?
     this[component.name] = component;
     // creates an index group if it does not exist..
 
@@ -98,7 +102,7 @@ class Entity {
   }
 
   // mixed, an actual component or just component name
-  removeComponent(comp) {
+  removeComponent(comp: string | IComponent) {
     let component = this.components[comp] || comp;
     let compName = component.name;
 

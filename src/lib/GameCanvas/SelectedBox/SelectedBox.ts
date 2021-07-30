@@ -41,12 +41,12 @@ class SelectedBox {
     return this.end.x - this.start.x;
   }
 
-  setStart(x, y) {
+  setStart(x:number, y:number) {
     this.start.x = x;
     this.start.y = y;
   }
 
-  setEnd(x, y) {
+  setEnd(x:number, y:number) {
     this.end.x = x;
     this.end.y = y;
   }

@@ -1,4 +1,6 @@
-function getShapesInSelectionBox(shapes, layerName, selectedData) {
+import {ISelectedBoxData} from "../../interfaces";
+
+function getShapesInSelectionBox(shapes, layerName: string, selectedData: ISelectedBoxData) {
   let minX = Math.min(selectedData.start.x, selectedData.end.x);
   let maxX = Math.max(selectedData.start.x, selectedData.end.x);
   let minY = Math.min(selectedData.start.y, selectedData.end.y);
@@ -6,7 +8,7 @@ function getShapesInSelectionBox(shapes, layerName, selectedData) {
 
 
   let hits = [];
-  shapes.forEach((shape, id) => {
+  shapes.forEach((shape, id: string) => {
     if (id === 'selectedBox') {
       return;
     }

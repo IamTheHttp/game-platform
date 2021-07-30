@@ -1,4 +1,4 @@
-let spliceOne = function(arr, index = 0) {
+let spliceOne = function(arr: unknown[], index = 0) {
   let idx = index;
   let len = arr.length;
   if (!len || idx >= len) {
