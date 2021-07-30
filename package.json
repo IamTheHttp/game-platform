@@ -1,7 +1,7 @@
 {
   "name": "game-platform",
   "version": "1.0.1",
-  "description": "Common utilitie for Canvas games",
+  "description": "Common utility for Canvas games",
   "keywords": [
     "game",
     "html5 games",
@@ -10,9 +10,10 @@
     "game canvas"
   ],
   "scripts": {
+    "rollup": "tsc && rollup -c",
     "init": "npm install && jarb init",
     "start": "jarb devServer --env=develop",
-    "build": "jarb build",
+    "build": "npm run rollup",
     "analyze": "jarb analyze --analyzeBundle=1",
     "test": "jarb test --coverage",
     "tdd": "jarb test",
@@ -34,14 +35,21 @@
     "dist",
     "types"
   ],
-  "main": "dist",
+  "main": "dist/build.js",
+  "module": "dist/build.js",
   "dependencies": {
+    "@rollup/plugin-image": "^2.1.0",
+    "@rollup/plugin-json": "^4.1.0",
+    "@rollup/plugin-node-resolve": "^13.0.4",
     "@types/jest": "^25.1.2",
     "canvas": "2.6.0",
     "react": "16.8.2",
     "react-dom": "16.8.2",
+    "rollup": "^2.55.1",
+    "rollup-plugin-scss": "^3.0.0",
+    "rollup-plugin-typescript": "^1.0.1",
     "ts-jest": "^25.2.0",
     "typescript": "^3.7.5"
   },
-  "types": "types/index.d.ts"
+  "types": "./dist/index.d.ts"
 }

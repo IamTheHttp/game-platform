@@ -1,6 +1,6 @@
 const imgURL = require('./planet.png');
 
-import React from 'react';
+import *  as React from 'react';
 import {render} from 'react-dom';
 import './index.scss';
 import Engine from "./lib/Engine/Engine";
