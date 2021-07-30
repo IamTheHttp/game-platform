@@ -6,7 +6,11 @@
 [ ] Add docs for the canvasAPI as a stand alone
 ---
 #Changelog
-###14/11/2019
+### 31/07/2021
+Release version **2.0.0**
+- Change build to rollup (Starting migration away from jarb)
+
+### 14/11/2019
 Release version **0.4.0:**
 - Added click detection against all layers
 - Clicking on the Canvas will now return an array of objects with ID and layerName
