@@ -335,11 +335,7 @@ var GameCanvas = /** @class */ (function () {
                     }
                 }, 100);
                 getRef(_this.miniMapAPI, el);
-            }, height: this.mapHeight, width: this.mapWidth, 
-            // onMouseMove={(a) => {}}
-            onMouseMove: this.handleMiniMapMove, 
-            // onMouseDown={this.handleMiniMapClick}
-            onTouchStart: this.handleMiniMapTouchStart }));
+            }, height: this.mapHeight, width: this.mapWidth, onMouseMove: this.handleMiniMapMove, onMouseDown: this.handleMiniMapClick, onTouchStart: this.handleMiniMapTouchStart }));
     };
     return GameCanvas;
 }());
