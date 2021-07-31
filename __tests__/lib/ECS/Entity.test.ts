@@ -1,10 +1,6 @@
-/* global describe */
-/* global it */
-/* global expect */
-/* global beforeEach */
+import {Entity} from "../../../src";
+import spliceOne from "../../../src/lib/ECS/util/spliceOne";
 
-import spliceOne from 'lib/ECS/util/spliceOne';
-import Entity from 'lib/ECS/Entity';
 describe('Tests for entities', () => {
   beforeEach(() => {
     Entity.reset();

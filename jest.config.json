@@ -1,0 +1,42 @@
+{
+  "testEnvironment": "jsdom",
+  "testRegex": "test.ts|test.tsx",
+  "preset": "ts-jest",
+  "transformIgnorePatterns": [
+    "/node_modules/"
+  ],
+  "transform": {
+    "^.+\\.[t|j]sx?$": "ts-jest"
+  },
+  "collectCoverageFrom": [
+    "src/**/*.{js,jsx,ts,tsx}",
+    "!src/develop.{js, jsx, ts, tsx}",
+    "!src/.dll/*",
+    "!src/polyfill/*.*",
+    "!src/index.ts",
+    "!src/levels/*.*",
+    "!src/pageSetup.tsx"
+  ],
+  "coverageThreshold": {
+    "global": {
+      "branches": 80,
+      "functions": 80,
+      "lines": 85,
+      "statements": 85
+    }
+  },
+  "moduleNameMapper": {
+    "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/__mocks__/fileMock.ts",
+    "\\.(css|less|scss)$": "<rootDir>/__mocks__/styleMock.ts"
+  },
+  "setupFiles": [
+    "<rootDir>/node_modules/jarb/lib/testSetup.js",
+    "<rootDir>/src/polyfill/rAF.ts",
+    "jest-canvas-mock"
+  ],
+  "modulePaths": [
+    "<rootDir>/src"
+  ],
+  "bail": false
+}
+

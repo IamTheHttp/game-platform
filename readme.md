@@ -7,6 +7,11 @@
 ---
 #Changelog
 ### 31/07/2021
+Release version **2.1.0**
+- Fix(General): Fix all implicit any issues with typescript
+- Breaking(CanvasAPI): Change function name from drawFn to render when adding a generic shape (canvasAPI.addShape).  
+
+### 31/07/2021
 Release version **2.0.0**
 - Change build to rollup (Starting migration away from jarb)
 

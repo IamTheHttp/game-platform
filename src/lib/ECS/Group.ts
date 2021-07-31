@@ -1,5 +1,6 @@
 import entityLoop from './util/entityLoop';
-import {IComponent, IEntityMap} from "../interfaces";
+import {IEmptyGroup, IEntityMap} from "../interfaces";
+import Entity from "./Entity";
 
 // life cycle of a group!
 
@@ -9,8 +10,8 @@ import {IComponent, IEntityMap} from "../interfaces";
 // 4. Adding and removing components will update the above lists as needed.
 
 class Group {
-  static groups = {};
-  constructor( public components: IComponent[], public entities:IEntityMap = {}, public array : any[] = []) {
+  static groups: Record<string, Group> = {};
+  constructor( public components: string[], public entities:IEntityMap<Entity> = {}, public array : any[] = []) {
   }
 
   static reset() {
@@ -31,12 +32,13 @@ class Group {
       .join('-');
   }
 
-  static getGroup(compNames: Array<string>): Group {
+  static getGroup(compNames: Array<string>): Group | IEmptyGroup {
     let key = Group.generateGroupKey(compNames);
     return Group.groups[key] || {};
   }
-  static indexGroup(compNames: Array<string> | string, entities: IEntityMap) {
-    let compArray = [];
+
+  static indexGroup(compNames: Array<string> | string, entities: IEntityMap<Entity>) {
+    let compArray:string[] = [];
     if (typeof compNames === 'string') {
       compArray = [compNames];
     } else {
@@ -45,7 +47,7 @@ class Group {
 
     let key = Group.generateGroupKey(compArray);
 
-    let group;
+    let group: Group;
 
     // if group already exists, return it
     if (Group.groups[key]) {
@@ -55,7 +57,7 @@ class Group {
     }
 
 // insert the provided entities into this group...
-    entityLoop(entities, (entity) => {
+    entityLoop<Entity>(entities, (entity) => {
       if (entity.hasComponents(compArray)) {
         group.entities[entity.id] = entity;
         group.array = [...group.array, entity];

@@ -16,7 +16,7 @@ let windowCopy = window as any;
   }
 
   if (!windowCopy.requestAnimationFrame)    {
-    windowCopy.requestAnimationFrame = function(callback) {
+    windowCopy.requestAnimationFrame = function(callback: (time: number) => void) {
       let currTime = new Date().getTime();
       let timeToCall = Math.max(0, 16 - (currTime - lastTime));
       let id = windowCopy.setTimeout(() => {
@@ -29,7 +29,7 @@ let windowCopy = window as any;
   }
 
   if (!windowCopy.cancelAnimationFrame)    {
-    windowCopy.cancelAnimationFrame = function(id) {
+    windowCopy.cancelAnimationFrame = function(id: number) {
       clearTimeout(id);
     };
   }

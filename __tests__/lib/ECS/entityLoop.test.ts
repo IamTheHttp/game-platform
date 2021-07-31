@@ -1,6 +1,4 @@
-import entityLoop from 'lib/ECS/util/entityLoop';
-import Entity from 'lib/ECS/Entity';
-
+import {Entity, entityLoop} from "../../../src";
 
 describe('Tests the entity loop', () => {
   beforeEach(() => {

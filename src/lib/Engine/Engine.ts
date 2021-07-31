@@ -1,12 +1,12 @@
 class Engine {
-  systems: Array<(systemArguments) => void>;
+  systems: Array<(systemArguments: Record<string, any>) => void>;
   frameID: number;
   constructor() {
     this.systems = [];
     this.frameID = null;
   }
 
-  addSystem(system: (sysArgs) => void) : void{
+  addSystem(system: (sysArgs: Record<string, any>) => void) : void{
     this.systems.push(system);
   }
 
@@ -21,7 +21,7 @@ class Engine {
     return this.frameID;
   }
 
-  runSystems(sysArgs) {
+  runSystems(sysArgs: Record<string, any>) {
     for (let i = 0; i < this.systems.length; i++) {
       this.systems[i](sysArgs);
     }

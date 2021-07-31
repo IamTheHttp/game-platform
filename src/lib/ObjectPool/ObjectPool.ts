@@ -3,13 +3,16 @@ interface IStats {
   used: number;
 }
 
-class ObjectPool {
-  type: () => void;
+class ObjectPool<T> {
+  type: new () => T;
   freePool: Array<any>;
   stats: IStats;
   incrementWhenEmpty: number;
-  constructor(PooledClass, incrementWhenEmpty = 10) {
+
+  constructor(PooledClass: new () => T, incrementWhenEmpty = 10) {
     this.type = PooledClass;
+
+    const foo = new this.type();
     this.freePool = [];
     this.stats = {
       free: 0,
@@ -27,7 +30,7 @@ class ObjectPool {
   }
 
   // Ensures the pool has at least $amount of free objects
-  generate(amount) {
+  generate(amount: number) {
     let count = amount - this.stats.free > 0 ? amount - this.stats.free : 0;
     // generate a gazzilion fighters?
     while (count > 0) {
@@ -48,7 +51,7 @@ class ObjectPool {
   }
 
   // releases an object, marks it as free
-  release(object) {
+  release(object: T) {
     // prevent release twice
     if (this.freePool.indexOf(object) === -1) {
       this.freePool.push(object);

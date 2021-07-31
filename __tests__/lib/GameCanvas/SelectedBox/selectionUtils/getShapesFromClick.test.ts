@@ -1,12 +1,11 @@
-import getShapesFromClick from 'lib/GameCanvas/selectionUtils/getShapesFromClick';
-import {Shapes} from "lib/CanvasAPI/Shapes/Shapes";
-
+import {Shape} from "../../../../../src/lib/CanvasAPI/Shapes/Shape";
+import getShapesFromClick from "../../../../../src/lib/GameCanvas/selectionUtils/getShapesFromClick";
 
 describe('Check click detection against various shapes', () => {
   it('Tests circles', () => {
     let shapes = new Map();
 
-    shapes.set('foo', new Shapes(() => {}, {
+    shapes.set('foo', new Shape(() => {}, {
       id: 'foo',
       type: 'circle',
       x : 15,
@@ -14,7 +13,7 @@ describe('Check click detection against various shapes', () => {
       radius: 5
     }));
 
-    shapes.set('bar', new Shapes(() => {}, {
+    shapes.set('bar', new Shape(() => {}, {
       id: 'bar',
       type: 'circle',
       x : 20,
@@ -22,7 +21,7 @@ describe('Check click detection against various shapes', () => {
       radius: 5
     }));
 
-    shapes.set('bar22', new Shapes(() => {}, {
+    shapes.set('bar22', new Shape(() => {}, {
       id: 'bar22',
       type: 'UNSUPPORTED TYPE',
       x : 20,
@@ -39,7 +38,7 @@ describe('Check click detection against various shapes', () => {
   it('Tests rects and images', () => {
     let shapes = new Map();
 
-    shapes.set('foo', new Shapes(() => {}, {
+    shapes.set('foo', new Shape(() => {}, {
       id: 'foo',
       type: 'rect',
       x : 10,
@@ -48,7 +47,7 @@ describe('Check click detection against various shapes', () => {
       height:10
     }));
 
-    shapes.set('bar', new Shapes(() => {}, {
+    shapes.set('bar', new Shape(() => {}, {
       id: 'bar',
       type: 'image',
       x : 15,
@@ -57,7 +56,7 @@ describe('Check click detection against various shapes', () => {
       height:10
     }));
 
-    shapes.set('bar22', new Shapes(() => {}, {
+    shapes.set('bar22', new Shape(() => {}, {
       id: 'bar22',
       type: 'UNSUPPORTED TYPE',
       x : 20,

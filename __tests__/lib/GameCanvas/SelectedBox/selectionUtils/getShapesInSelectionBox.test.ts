@@ -1,13 +1,11 @@
-import getShapesInSelectionBox from 'lib/GameCanvas/selectionUtils/getShapesInSelectionBox';
-import {Shapes} from "lib/CanvasAPI/Shapes/Shapes";
-import getShapesFromClick from 'lib/GameCanvas/selectionUtils/getShapesFromClick';
-
+import {Shape} from "../../../../../src/lib/CanvasAPI/Shapes/Shape";
+import getShapesInSelectionBox from "../../../../../src/lib/GameCanvas/selectionUtils/getShapesInSelectionBox";
 
 describe('Test selectionBox shape detection', () => {
   it('Tests circles', () => {
     let shapes = new Map();
 
-    shapes.set('foo', new Shapes(() => {
+    shapes.set('foo', new Shape(() => {
     }, {
       id: 'foo',
       type: 'circle',
@@ -16,7 +14,7 @@ describe('Test selectionBox shape detection', () => {
       radius: 5
     }));
 
-    shapes.set('bar', new Shapes(() => {
+    shapes.set('bar', new Shape(() => {
     }, {
       id: 'bar',
       type: 'circle',
@@ -25,7 +23,7 @@ describe('Test selectionBox shape detection', () => {
       radius: 5
     }));
 
-    shapes.set('bar22', new Shapes(() => {
+    shapes.set('bar22', new Shape(() => {
     }, {
       id: 'bar22',
       type: 'UNSUPPORTED TYPE',
@@ -35,6 +33,8 @@ describe('Test selectionBox shape detection', () => {
     }));
 
     expect(getShapesInSelectionBox(shapes, 'initial',{
+      width: 0,
+      height: 0,
       start: {
         x: 0,
         y: 0
@@ -46,6 +46,8 @@ describe('Test selectionBox shape detection', () => {
     }).length).toBe(0);
 
     expect(getShapesInSelectionBox(shapes, 'initial',{
+      width: 200,
+      height: 200,
       start: {
         x: -100,
         y: -100
@@ -57,6 +59,8 @@ describe('Test selectionBox shape detection', () => {
     }).length).toBe(2);
 
     expect(getShapesInSelectionBox(shapes, 'initial',{
+      width: 2,
+      height: 2,
       start: {
         x: 14,
         y: 14
@@ -68,6 +72,8 @@ describe('Test selectionBox shape detection', () => {
     }).length).toBe(1);
 
     expect(getShapesInSelectionBox(shapes, 'initial',{
+      width: 12,
+      height: 12,
       start: {
         x: 14,
         y: 14
@@ -79,6 +85,8 @@ describe('Test selectionBox shape detection', () => {
     }).length).toBe(2);
 
     expect(getShapesInSelectionBox(shapes, 'initial',{
+      width: 100,
+      height: 100,
       start: {
         x: 150,
         y: 150
@@ -90,6 +98,8 @@ describe('Test selectionBox shape detection', () => {
     }).length).toBe(0);
 
     expect(getShapesInSelectionBox(shapes, 'initial',{
+      width: 250,
+      height: 250,
       start: {
         x: 250,
         y: 250
@@ -105,7 +115,7 @@ describe('Test selectionBox shape detection', () => {
   it('Tests rects', () => {
     let shapes = new Map();
 
-    shapes.set('foo', new Shapes(() => {
+    shapes.set('foo', new Shape(() => {
     }, {
       id: 'foo',
       type: 'rect',
@@ -115,7 +125,7 @@ describe('Test selectionBox shape detection', () => {
       height: 10
     }));
 
-    shapes.set('bar', new Shapes(() => {
+    shapes.set('bar', new Shape(() => {
     }, {
       id: 'bar',
       type: 'rect',
@@ -125,7 +135,7 @@ describe('Test selectionBox shape detection', () => {
       height: 10
     }));
 
-    shapes.set('bar22', new Shapes(() => {
+    shapes.set('bar22', new Shape(() => {
     }, {
       id: 'bar22',
       type: 'UNSUPPORTED TYPE',
@@ -136,6 +146,8 @@ describe('Test selectionBox shape detection', () => {
     }));
 
     expect(getShapesInSelectionBox(shapes, 'initial', {
+      width: 20,
+      height: 20,
       start: {
         x: 0,
         y: 0
@@ -147,6 +159,8 @@ describe('Test selectionBox shape detection', () => {
     }).length).toBe(2);
 
     expect(getShapesInSelectionBox(shapes, 'initial', {
+      width: 2,
+      height: 2,
       start: {
         x: 14,
         y: 14

@@ -1,9 +1,30 @@
-import *  as React from 'react';
+import * as React from 'react';
 import SelectedBox from './SelectedBox/SelectedBox';
 import getShapesFromClick from './selectionUtils/getShapesFromClick';
 import getShapesInSelectionBox from './selectionUtils/getShapesInSelectionBox';
-import {IViewClickInfo, IViewMoveInfo, IGameCanvasOptions, IClientViewCoordinates} from "../interfaces";
+import {
+  IViewClickInfo,
+  IViewMoveInfo,
+  IGameCanvasOptions,
+  IClientViewCoordinates,
+  IHit
+} from "../interfaces";
 import CanvasAPI from "../CanvasAPI/CanvasAPI";
+import {MouseEvent, ReactElement, ReactHTMLElement, TouchEvent, TouchEventHandler} from "react";
+
+
+type FUNCTIONS = 'updateViewMapCursorPosition' |
+  'updateMiniMapCursorPosition' |
+  'handleMapMouseUp' |
+  'handleMapMouseDown' |
+  'handleMiniMapClick' |
+  'handleMiniMapMove' |
+  'handleMapMouseMove' |
+  'handleMapMouseLeave' |
+  'handleTouchMove' |
+  'handleTouchStart' |
+  'handleMapTouchEnd' |
+  'handleMiniMapTouchStart';
 
 class GameCanvas {
   selectedBoxColor: string;
@@ -13,8 +34,8 @@ class GameCanvas {
   viewWidth: number;
   onViewMapClick: (arg: IViewClickInfo) => void;
   onViewMapMove: (arg: IViewMoveInfo) => void;
-  onMiniMapClick: (e: MouseEvent) => void;
-  onMiniMapMove: (e: MouseEvent) => void;
+  onMiniMapClick: (e: MouseEvent | TouchEvent) => void;
+  onMiniMapMove: (e: MouseEvent | TouchEvent) => void;
   enableSelectBox: boolean;
   lastClick: number;
   dbClick: boolean;
@@ -65,7 +86,7 @@ class GameCanvas {
       'handleTouchStart',
       'handleMapTouchEnd',
       'handleMiniMapTouchStart'
-    ].forEach((fn) => {
+    ].forEach((fn: FUNCTIONS) => {
       this[fn] = this[fn].bind(this);
     });
   }
@@ -77,7 +98,7 @@ class GameCanvas {
    * @param canvas
    * @param canvasAPI
    */
-  getCursorPositionInCanvasTerms(clientInputCoordinates: IClientViewCoordinates, canvas: HTMLCanvasElement, canvasAPI: CanvasAPI): {x: number, y: number} {
+  getCursorPositionInCanvasTerms(clientInputCoordinates: IClientViewCoordinates, canvas: HTMLCanvasElement, canvasAPI: CanvasAPI): { x: number, y: number } {
     let rect = canvas.getBoundingClientRect();
 
     if (typeof clientInputCoordinates.x !== 'number' || typeof clientInputCoordinates.y !== 'number') {
@@ -151,7 +172,7 @@ class GameCanvas {
 
     let layers = Object.keys(this.mapAPI.layers);
 
-    let hits = [];
+    let hits: IHit[] = [];
     // if a single click...
 
     layers.forEach((layerName) => {
@@ -193,7 +214,7 @@ class GameCanvas {
     }
   }
 
-  updateViewMapCursorPosition(inputCoordinates: IClientViewCoordinates): IClientViewCoordinates  {
+  updateViewMapCursorPosition(inputCoordinates: IClientViewCoordinates): IClientViewCoordinates {
     let {x, y} = this.getCursorPositionInCanvasTerms(inputCoordinates, this.viewMapCanvas, this.mapAPI);
     this.lastKnownPositionInCanvasTermsX = x;
     this.lastKnownPositionInCanvasTermsY = y;
@@ -207,18 +228,21 @@ class GameCanvas {
     this.miniMapY = y;
   }
 
-  getNewCanvasPairs({getMapRef, getMiniRef}: {getMapRef: (a: CanvasAPI) => void, getMiniRef: (a: CanvasAPI) => void}) {
+  getNewCanvasPairs({
+                      getMapRef,
+                      getMiniRef
+                    }: { getMapRef: (a: CanvasAPI) => void, getMiniRef: (a: CanvasAPI) => void }) {
     return {
       map: this.generateMapCanvas(getMapRef),
       minimap: this.generateMiniMapCanvas(getMiniRef)
     };
   }
 
-  handleMiniMapMove(event: MouseEvent) {
+  handleMiniMapMove(event: MouseEvent<HTMLCanvasElement>) {
     this.onMiniMapMove(event);
   }
 
-  handleMiniMapClick(event) {
+  handleMiniMapClick(event: MouseEvent | TouchEvent) {
     let x = this.miniMapX;
     let y = this.miniMapY;
     // Handle negative overflows, both numbers should be positive
@@ -308,7 +332,7 @@ class GameCanvas {
   }
 
   // Clicking / Touching the minimap should pan the main view
-  handleTouchMove(e) {
+  handleTouchMove(e: TouchEvent) {
     e.preventDefault();
     // Canvas terms include
 
@@ -346,7 +370,7 @@ class GameCanvas {
     this.mapAPI.pan(this.ensureNegative(newPanX), this.ensureNegative(newPanY));
   }
 
-  generateMapCanvas(getRef: (a:CanvasAPI, b:HTMLCanvasElement) => void): HTMLCanvasElement {
+  generateMapCanvas(getRef: (a: CanvasAPI, b: HTMLCanvasElement) => void): ReactElement<HTMLCanvasElement> {
     return (
       <canvas
         className='viewMap'
@@ -363,7 +387,12 @@ class GameCanvas {
           this.viewMapCanvas = el;
           document.removeEventListener('mousemove', this.updateViewMapCursorPosition);
           document.addEventListener('mousemove', this.updateViewMapCursorPosition);
+
+
+
+          // @ts-ignore For some reason there's a misamtch between the event types TODO - can this be improved?
           el.removeEventListener('touchmove', this.handleTouchMove, false);
+          // @ts-ignore For some reason there's a misamtch between the event types TODO - can this be improved?
           el.addEventListener('touchmove', this.handleTouchMove, false);
 
           this.mapAPI = new CanvasAPI(el.getContext('2d'));
@@ -381,7 +410,7 @@ class GameCanvas {
     );
   }
 
-  generateMiniMapCanvas(getRef: (a:CanvasAPI, b:HTMLCanvasElement) => void): HTMLCanvasElement {
+  generateMiniMapCanvas(getRef: (a: CanvasAPI, b: HTMLCanvasElement) => void): ReactElement<HTMLCanvasElement> {
     return (
       <canvas
         className='minimap'
@@ -391,6 +420,7 @@ class GameCanvas {
           }
 
           if (process.env.NODE_ENV === 'test' && !el.removeEventListener) {
+            // @ts-ignore Test mode voodoo
             el = el._reactInternalFiber.child.stateNode; // eslint-disable-line
           }
 

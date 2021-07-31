@@ -1,9 +1,4 @@
-/* global describe */
-/* global it */
-/* global expect */
-/* global beforeEach */
-import *  as React from 'react';
-import SelectedBox from 'lib/GameCanvas/SelectedBox/SelectedBox';
+import SelectedBox from "../../../../src/lib/GameCanvas/SelectedBox/SelectedBox";
 
 describe('Tests the selected box', () => {
   it('Initiates the selected box', () => {

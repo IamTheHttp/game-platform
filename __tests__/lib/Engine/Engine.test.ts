@@ -1,12 +1,7 @@
-/* global describe */
-/* global it */
-/* global expect */
-/* global beforeEach */
-
-import Engine from 'lib/Engine/Engine';
+import {Engine} from "../../../src";
 
 describe('Tests the Engine class', () => {
-  let engine;
+  let engine: Engine;
   beforeEach(() => {
     engine = new Engine();
   });

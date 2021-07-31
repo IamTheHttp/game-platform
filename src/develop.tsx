@@ -1,3 +1,5 @@
+import {IMouseClickInterface} from "./lib/interfaces";
+
 const imgURL = require('./planet.png');
 
 import *  as React from 'react';
@@ -23,7 +25,7 @@ let gameCanvas = new GameCanvas({
   onMiniMapMove: () => {
   },
   onViewMapClick: (mouseClickInfo) => {
-    let mouseClickInfoInterface = {
+    let mouseClickInfoInterface:IMouseClickInterface = {
       // The library only detects hits against circles, it ignores all other shapes
       // you can implement your own click detection system
       hits: [], // array of shape IDs that were clicked on
@@ -72,10 +74,13 @@ interface Foo {
   b: CanvasAPI;
 }
 
-let apis = {
+let apis: {
+  main: CanvasAPI;
+  mini: CanvasAPI
+} = {
   main: null,
   mini: null
-};
+}
 // these functions return React Element instances
 // their callback provides a way to access the internal Canvas API
 let mainMap = gameCanvas.generateMapCanvas((API, el) => {
@@ -166,7 +171,7 @@ render(
 
     apis.main.addShape({
       id: '0 to 45deg',
-      drawFn: (ctx) => {
+      render: (ctx: CanvasRenderingContext2D) => {
         ctx.strokeStyle = 'green';
         ctx.lineWidth = 1;
 
@@ -182,7 +187,7 @@ render(
 
     apis.main.addShape({
       id: '0 to 180',
-      drawFn: (ctx) => {
+      render: (ctx) => {
         ctx.strokeStyle = 'black';
         ctx.lineWidth = 1;
 

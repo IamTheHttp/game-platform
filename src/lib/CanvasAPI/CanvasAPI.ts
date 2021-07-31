@@ -4,10 +4,22 @@
  * Provides abstraction for some common shapes in Canvas
  */
 
-import {Circle, Shapes} from "./Shapes/Shapes";
+import {Circle, Shape} from "./Shapes/Shape";
 
 
-import {ILayers, IRect, IWriteToCanvas, IPanOffset, ICircle, IArc, IWriteTextBubble} from '../interfaces';
+import {
+  ILayers,
+  IRect,
+  IWriteToCanvas,
+  IPanOffset,
+  ICircle,
+  IArc,
+  IWriteTextBubble,
+  IAddImageData
+} from '../interfaces';
+
+
+
 
 class CanvasAPI {
   layers: ILayers;
@@ -15,7 +27,7 @@ class CanvasAPI {
   panX: number;
   panY: number;
 
-  constructor(ctx, strokeStyle = 'white') {
+  constructor(ctx: CanvasRenderingContext2D, strokeStyle = 'white') {
     if (!ctx) {
       throw 'Cannot create layer, no initial context found';
     }
@@ -30,7 +42,7 @@ class CanvasAPI {
     ctx.strokeStyle = strokeStyle;
   }
 
-  addLayer(name) {
+  addLayer(name: string) {
     let originCanvas = this.layers.initial.ctx.canvas;
 
     let parentNode = originCanvas.parentNode;
@@ -45,7 +57,7 @@ class CanvasAPI {
     };
   }
 
-  removeLayer(name) {
+  removeLayer(name:string) {
     let originCanvas = this.layers.initial.ctx.canvas;
     let parentNode = originCanvas.parentNode;
 
@@ -75,7 +87,7 @@ class CanvasAPI {
    * @param id
    * @param layerName
    */
-  remove(id, layerName = 'initial') {
+  remove(id: string, layerName = 'initial') {
     let layer = this.layers[layerName];
     let shapes = layer.shapes;
     shapes.delete(id);
@@ -90,12 +102,12 @@ class CanvasAPI {
              cropStartX, cropStartY, cropSizeX, cropSizeY,
              rotation, // in radians
              layerName = 'initial'
-           }) {
+           }: IAddImageData) {
     let layer = this.layers[layerName];
     let ctx = layer.ctx;
     let shapes = layer.shapes;
 
-    shapes.set(id, new Shapes(() => {
+    shapes.set(id, new Shape(() => {
       ctx.beginPath();
       ctx.save();
       ctx.translate(x + width / 2, y + height / 2);
@@ -116,13 +128,13 @@ class CanvasAPI {
     }));
   }
 
-  addShape({id, drawFn, layerName = 'initial'}) {
+  addShape({id, render, layerName = 'initial'}:  Shape) {
     let layer = this.layers[layerName];
     let ctx = layer.ctx;
     let shapes = layer.shapes;
 
-    shapes.set(id, new Shapes(() => {
-      drawFn(ctx);
+    shapes.set(id, new Shape(() => {
+      render(ctx);
     }));
   }
 
@@ -192,7 +204,7 @@ class CanvasAPI {
     let ctx = layer.ctx;
     let shapes = layer.shapes;
 
-    shapes.set(id, new Shapes(() => {
+    shapes.set(id, new Shape(() => {
       ctx.strokeStyle = strokeStyle;
       ctx.lineWidth = lineWidth;
       ctx.beginPath();
@@ -223,7 +235,7 @@ class CanvasAPI {
     let ctx = layer.ctx;
     let shapes = layer.shapes;
 
-    shapes.set(id, new Shapes(() => {
+    shapes.set(id, new Shape(() => {
       ctx.strokeStyle = color;
       ctx.lineWidth = lineWidth;
 
@@ -252,7 +264,7 @@ class CanvasAPI {
   /**
    * Method allows us to pan around the canvas
    */
-  pan(x, y) {
+  pan(x:number, y:number) {
     this.panX = x;
     this.panY = y;
 
@@ -292,7 +304,7 @@ class CanvasAPI {
     let layer = this.layers[layerName];
     let ctx = layer.ctx;
     let shapes = layer.shapes;
-    shapes.set(id, new Shapes(() => {
+    shapes.set(id, new Shape(() => {
       ctx.beginPath();
       ctx.font = font;
       ctx.textBaseline = textBaseline;
@@ -318,7 +330,7 @@ class CanvasAPI {
     ctx.restore();
 
     for (let shape of shapes.values()) {
-      shape.draw();
+      shape.render(ctx);
       ctx.strokeStyle = this.defaultStrokeStyle;
     }
   }

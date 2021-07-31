@@ -1,13 +1,14 @@
 import isPosInsideCircle from './isPosInsideCircle';
+import {IHit, IShapes} from "../../interfaces";
 
 
 /**
  * Function used for getting all shapes hit from a single click (not from a selection box)
  */
-function getShapesFromClick(shapes, layerName, x, y) {
-  let hits = [];
+function getShapesFromClick(shapes:IShapes, layerName: string, x:number, y:number) {
+  let hits: IHit[] = [];
 
-  shapes.forEach((shape, id) => {
+  shapes.forEach((shape, id: string) => {
     if (id === 'selectedBox') {
       return;
     }

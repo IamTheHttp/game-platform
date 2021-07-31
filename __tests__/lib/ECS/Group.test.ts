@@ -1,16 +1,15 @@
-/* global describe */
-/* global it */
-/* global expect */
-/* global beforeEach */
-import Group from 'lib/ECS/Group';
-import Entity from 'lib/ECS/Entity';
+import {Entity} from "../../../src";
+import Group from "../../../src/lib/ECS/Group";
+
 describe('Tests a component', () => {
   beforeEach(() => {
     Entity.reset();
   });
 
   it('resets the groups to an empty object', () => {
-    Group.groups =  [1, 2, 3, 4];
+    Group.groups = {
+      'foo': new Group(['foo'])
+    }
     Group.reset();
     expect(Group.groups).toEqual({});
   });

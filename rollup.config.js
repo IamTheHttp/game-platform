@@ -6,7 +6,7 @@ import image from '@rollup/plugin-image';
 
 export default [{
   external: ['react'],
-  input: 'src/index.ts',
+  input: 'dist/index.js',
   output: [{
     file: "dist/build.js",
     format: 'commonjs'

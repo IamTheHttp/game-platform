@@ -23,7 +23,7 @@ interface Mocked2DContext {
   canvas: HTMLCanvasElement
 }
 
-  
+
 
 
 
@@ -40,10 +40,10 @@ describe('Tests the CanvasAPI', () => {
     canvas.width = canvasWidth;
     canvas.height = canvasHeight;
     canvasAPI = new CanvasAPI({
-      measureText() {
+      measureText(a: string) {
         return {
           width: 100
-        }
+        } as TextMetrics;
       },
       font: '10px ariel',
       save: jest.fn(),
@@ -58,8 +58,8 @@ describe('Tests the CanvasAPI', () => {
       stroke: jest.fn(),
       closePath: jest.fn(),
       moveTo: jest.fn(),
-      canvas
-    });
+      canvas,
+    } as unknown as CanvasRenderingContext2D);
   });
 
   it('cannot instantiate without ctx', () => {

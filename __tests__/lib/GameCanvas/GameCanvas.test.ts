@@ -1,10 +1,7 @@
-/* global describe */
-/* global it */
-/* global expect */
-/* global beforeEach */
-import GameCanvas from 'lib/GameCanvas/GameCanvas';
-import {mount} from 'enzyme';
 import CanvasAPI from "../../../src/lib/CanvasAPI/CanvasAPI";
+import {GameCanvas} from "../../../src";
+import {mount} from "enzyme";
+import {MouseEvent, TouchEvent} from "react";
 
 interface APIs {
   mapAPI: CanvasAPI,
@@ -188,7 +185,7 @@ describe('Tests Game canvas', () => {
     gameCanvas.miniMapX = 50;
     gameCanvas.miniMapY = 50;
     let mocked = jest.spyOn(apis.mapAPI, 'pan');
-    gameCanvas.handleMiniMapClick({});
+    gameCanvas.handleMiniMapClick({} as MouseEvent<HTMLCanvasElement>);
 
     expect(mocked.mock.calls.length).toBe(1);
     expect(mocked.mock.calls[0]).toEqual([-25, -25]);
@@ -203,7 +200,7 @@ describe('Tests Game canvas', () => {
     gameCanvas.mapWidth = MAP_WIDTH;
     gameCanvas.mapHeight = MAP_HEIGHT;
 
-    let event = {
+    let event: TouchEvent = {
       preventDefault: () => {},
       touches: [
         {
@@ -211,7 +208,7 @@ describe('Tests Game canvas', () => {
           clientY: 0
         }
       ]
-    };
+    } as unknown as TouchEvent<HTMLCanvasElement>;
 
     let canvas = {
       width: MAP_WIDTH / 10, // this is how big the canvas element is, not logically what's inside it
@@ -233,7 +230,7 @@ describe('Tests Game canvas', () => {
           panY: 0
         };
       },
-      pan(x, y) {}
+      pan(x: number, y: number) {}
     };
 
     gameCanvas.viewMapCanvas = canvas as HTMLCanvasElement; // for tests we just want a small subset, so any is ok

@@ -3,16 +3,19 @@
 /* global expect */
 /* global beforeEach */
 import ObjectPool from 'lib/ObjectPool/ObjectPool';
+
+class Foo {
+  isAlive:boolean;
+  constructor() {
+    this.isAlive = true;
+  }
+}
+
 describe('Tests a component', () => {
-  let pool: ObjectPool;
+  let pool: ObjectPool<Foo>;
 
   beforeEach(() => {
-    class Foo {
-      isAlive:boolean;
-      constructor() {
-        this.isAlive = true;
-      }
-    }
+
     pool = new ObjectPool(Foo);
   });
 
