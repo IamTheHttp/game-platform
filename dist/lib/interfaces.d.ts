@@ -1,7 +1,8 @@
-import Entity from "./ECS/Entity";
-import { Shapes } from "./CanvasAPI/Shapes/Shapes";
-export interface IEntityMap {
-    [key: number]: Entity;
+import { Shape } from "./CanvasAPI/Shapes/Shape";
+import { MouseEvent } from "react";
+import Group from "./ECS/Group";
+export interface IEntityMap<T> {
+    [key: number]: T;
 }
 export interface IComponent {
     name: string;
@@ -15,7 +16,7 @@ export interface TMP {
 }
 export interface ILayer {
     ctx: CanvasRenderingContext2D;
-    shapes: Map<string, Shapes>;
+    shapes: Map<string, Shape>;
 }
 export interface IPanOffset {
     panX: number;
@@ -100,8 +101,8 @@ export interface IGameCanvasOptions {
     viewWidth: number;
     onViewMapClick?: (arg: IViewClickInfo) => void;
     onViewMapMove?: (arg: IViewMoveInfo) => void;
-    onMiniMapClick?: (e: MouseEvent) => void;
-    onMiniMapMove?: (e: MouseEvent) => void;
+    onMiniMapClick?: (e: MouseEvent<HTMLCanvasElement>) => void;
+    onMiniMapMove?: (e: MouseEvent<HTMLCanvasElement>) => void;
     enableSelectBox?: boolean;
 }
 export interface ISelectedBoxData {
@@ -118,8 +119,31 @@ export interface IViewMoveInfo {
     selectedBox: ISelectedBoxData;
 }
 export interface IViewClickInfo extends IViewMoveInfo {
-    hits: Array<{
-        id: string;
-        layerName: string;
-    }>;
+    hits: IHit[];
 }
+export interface IHit {
+    id: string;
+    layerName: string;
+}
+export interface IAddImageData {
+    id: string;
+    image: CanvasImageSource;
+    x: number;
+    y: number;
+    height: number;
+    width: number;
+    cropStartX: number;
+    cropStartY: number;
+    cropSizeX: number;
+    cropSizeY: number;
+    rotation: number;
+    layerName?: string;
+}
+export declare type IShapes = Map<string, Shape>;
+export interface IMouseClickInterface {
+    hits: IHit[];
+    dbClick: boolean;
+    isMouseDown: boolean;
+    selectedBox: ISelectedBoxData;
+}
+export declare type IEmptyGroup = Partial<Group>;

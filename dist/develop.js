@@ -1,10 +1,34 @@
+"use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
 var imgURL = require('./planet.png');
-import * as React from 'react';
-import { render } from 'react-dom';
-import './index.scss';
-import Engine from "./lib/Engine/Engine";
-import GameCanvas from "./lib/GameCanvas/GameCanvas";
-var gameCanvas = new GameCanvas({
+var React = __importStar(require("react"));
+var react_dom_1 = require("react-dom");
+require("./index.scss");
+var Engine_1 = __importDefault(require("./lib/Engine/Engine"));
+var GameCanvas_1 = __importDefault(require("./lib/GameCanvas/GameCanvas"));
+var gameCanvas = new GameCanvas_1.default({
     // The mapHeight/width determine the size of the map,
     // while viewHeight/width determine the size visible on the screen.
     // these are not CSS attributes, but rather canvas html properties
@@ -77,7 +101,7 @@ var miniMap = gameCanvas.generateMiniMapCanvas(function (API, el) {
 // Unfortunate, as we can only expose the APIs once the canvas ctx exists
 // but we also can't have the canvas ctx until we render
 // We render our new canvas react elements with React
-render(React.createElement("div", null,
+react_dom_1.render(React.createElement("div", null,
     React.createElement("h1", null, "Main Map"),
     React.createElement("div", { className: 'main-canvas-container' }, mainMap),
     React.createElement("h1", null, "Mini Map - Click to move around the map"),
@@ -184,7 +208,7 @@ render(React.createElement("div", null,
     /** ================================
      ==========DEFINING ENGINE==========
      =================================*/
-    var eng = new Engine();
+    var eng = new Engine_1.default();
     var direction = 0;
     eng.addSystem(function (systemArgs) {
         direction = direction + 0.01;

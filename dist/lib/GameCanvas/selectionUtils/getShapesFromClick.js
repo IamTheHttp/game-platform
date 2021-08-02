@@ -1,4 +1,9 @@
-import isPosInsideCircle from './isPosInsideCircle';
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var isPosInsideCircle_1 = __importDefault(require("./isPosInsideCircle"));
 /**
  * Function used for getting all shapes hit from a single click (not from a selection box)
  */
@@ -15,7 +20,7 @@ function getShapesFromClick(shapes, layerName, x, y) {
         var width = shapeMetaData.width;
         var height = shapeMetaData.height;
         var type = shapeMetaData.type;
-        if (type === 'circle' && isPosInsideCircle(x, y, shapeX, shapeY, radius)) {
+        if (type === 'circle' && isPosInsideCircle_1.default(x, y, shapeX, shapeY, radius)) {
             hits.push({
                 id: id,
                 layerName: layerName
@@ -35,4 +40,4 @@ function getShapesFromClick(shapes, layerName, x, y) {
     });
     return hits;
 }
-export default getShapesFromClick;
+exports.default = getShapesFromClick;

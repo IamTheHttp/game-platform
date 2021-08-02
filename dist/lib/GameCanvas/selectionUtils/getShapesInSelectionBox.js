@@ -1,3 +1,5 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 function getShapesInSelectionBox(shapes, layerName, selectedData) {
     var minX = Math.min(selectedData.start.x, selectedData.end.x);
     var maxX = Math.max(selectedData.start.x, selectedData.end.x);
@@ -42,4 +44,4 @@ function getShapesInSelectionBox(shapes, layerName, selectedData) {
     });
     return hits;
 }
-export default getShapesInSelectionBox;
+exports.default = getShapesInSelectionBox;

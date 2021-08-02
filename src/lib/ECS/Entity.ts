@@ -104,7 +104,10 @@ class Entity {
 
   // mixed, an actual component or just component name
   removeComponent(comp: string | IComponent) {
-    let component = typeof comp === 'string' ? this.components[comp] : comp;
+    let component = this.components[comp as string] || comp;
+    if (!component || typeof component === 'string') {
+      return;
+    }
     let compName = component.name;
 
     // we need to see if we need to remove entity from other groups

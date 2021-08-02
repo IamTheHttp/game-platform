@@ -1,7 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var ObjectPool = /** @class */ (function () {
     function ObjectPool(PooledClass, incrementWhenEmpty) {
         if (incrementWhenEmpty === void 0) { incrementWhenEmpty = 10; }
         this.type = PooledClass;
+        var foo = new this.type();
         this.freePool = [];
         this.stats = {
             free: 0,
@@ -45,4 +48,4 @@ var ObjectPool = /** @class */ (function () {
     };
     return ObjectPool;
 }());
-export default ObjectPool;
+exports.default = ObjectPool;

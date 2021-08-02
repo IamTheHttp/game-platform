@@ -1,3 +1,23 @@
+"use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __read = (this && this.__read) || function (o, n) {
     var m = typeof Symbol === "function" && o[Symbol.iterator];
     if (!m) return o;
@@ -14,15 +34,20 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-var __spread = (this && this.__spread) || function () {
-    for (var ar = [], i = 0; i < arguments.length; i++) ar = ar.concat(__read(arguments[i]));
-    return ar;
+var __spreadArray = (this && this.__spreadArray) || function (to, from) {
+    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
+        to[j] = from[i];
+    return to;
 };
-import * as React from 'react';
-import SelectedBox from './SelectedBox/SelectedBox';
-import getShapesFromClick from './selectionUtils/getShapesFromClick';
-import getShapesInSelectionBox from './selectionUtils/getShapesInSelectionBox';
-import CanvasAPI from "../CanvasAPI/CanvasAPI";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var React = __importStar(require("react"));
+var SelectedBox_1 = __importDefault(require("./SelectedBox/SelectedBox"));
+var getShapesFromClick_1 = __importDefault(require("./selectionUtils/getShapesFromClick"));
+var getShapesInSelectionBox_1 = __importDefault(require("./selectionUtils/getShapesInSelectionBox"));
+var CanvasAPI_1 = __importDefault(require("../CanvasAPI/CanvasAPI"));
 var GameCanvas = /** @class */ (function () {
     function GameCanvas(options) {
         var _this = this;
@@ -42,7 +67,7 @@ var GameCanvas = /** @class */ (function () {
         this.isMouseDown = false;
         this.dbClick = false;
         this.lastTap = 0;
-        this.selectedBox = new SelectedBox();
+        this.selectedBox = new SelectedBox_1.default();
         [
             'updateViewMapCursorPosition',
             'updateMiniMapCursorPosition',
@@ -135,10 +160,10 @@ var GameCanvas = /** @class */ (function () {
             if (selectedData.end.x === selectedData.start.x) {
                 var x = _this.lastKnownPositionInCanvasTermsX;
                 var y = _this.lastKnownPositionInCanvasTermsY;
-                hits = __spread(hits, getShapesFromClick(_this.mapAPI.layers[layerName].shapes, layerName, x, y));
+                hits = __spreadArray(__spreadArray([], __read(hits)), __read(getShapesFromClick_1.default(_this.mapAPI.layers[layerName].shapes, layerName, x, y)));
             }
             else {
-                hits = __spread(hits, getShapesInSelectionBox(_this.mapAPI.layers[layerName].shapes, layerName, selectedData));
+                hits = __spreadArray(__spreadArray([], __read(hits)), __read(getShapesInSelectionBox_1.default(_this.mapAPI.layers[layerName].shapes, layerName, selectedData)));
             }
         });
         this.mapAPI.addRect({
@@ -302,9 +327,11 @@ var GameCanvas = /** @class */ (function () {
                 _this.viewMapCanvas = el;
                 document.removeEventListener('mousemove', _this.updateViewMapCursorPosition);
                 document.addEventListener('mousemove', _this.updateViewMapCursorPosition);
+                // @ts-ignore For some reason there's a misamtch between the event types TODO - can this be improved?
                 el.removeEventListener('touchmove', _this.handleTouchMove, false);
+                // @ts-ignore For some reason there's a misamtch between the event types TODO - can this be improved?
                 el.addEventListener('touchmove', _this.handleTouchMove, false);
-                _this.mapAPI = new CanvasAPI(el.getContext('2d'));
+                _this.mapAPI = new CanvasAPI_1.default(el.getContext('2d'));
                 getRef(_this.mapAPI, el);
             }, height: this.viewHeight, width: this.viewWidth, onMouseDown: this.handleMapMouseDown, onTouchStart: this.handleTouchStart, onTouchEnd: this.handleMapTouchEnd, onMouseMove: this.handleMapMouseMove, onMouseUp: this.handleMapMouseUp, onMouseLeave: this.handleMapMouseLeave }));
     };
@@ -315,12 +342,13 @@ var GameCanvas = /** @class */ (function () {
                     return null;
                 }
                 if (process.env.NODE_ENV === 'test' && !el.removeEventListener) {
+                    // @ts-ignore Test mode voodoo
                     el = el._reactInternalFiber.child.stateNode; // eslint-disable-line
                 }
                 _this.miniMapCanvas = el;
                 document.removeEventListener('mousemove', _this.updateMiniMapCursorPosition);
                 document.addEventListener('mousemove', _this.updateMiniMapCursorPosition);
-                _this.miniMapAPI = new CanvasAPI(el.getContext('2d'));
+                _this.miniMapAPI = new CanvasAPI_1.default(el.getContext('2d'));
                 // updateMiniMapSquare depends on mapAPI to be defined
                 // due to some race conditions this might happen before mapAPI was defined
                 // An interval is used to detect when mapAPI is defined
@@ -335,4 +363,4 @@ var GameCanvas = /** @class */ (function () {
     };
     return GameCanvas;
 }());
-export default GameCanvas;
+exports.default = GameCanvas;

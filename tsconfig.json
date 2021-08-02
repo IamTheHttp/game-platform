@@ -1,21 +1,20 @@
 {
   "compilerOptions": {
     "noImplicitAny": true,
-    "module": "es6",
+    "module": "CommonJS",
     "target": "es5",
     "jsx": "react",
     "moduleResolution": "node",
     "downlevelIteration": true,
     "esModuleInterop" : true,
+    "declaration": true,
     "baseUrl": "src/",
     "outDir": "dist"
   },
   "include": [
-    "./src/**/*",
-    "./__tests__/**/*"
+    "./src/**/*"
   ],
   "exclude": [
-    "./src/.dll/**/*",
     "node_modules"
   ]
 }

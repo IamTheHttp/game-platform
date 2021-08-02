@@ -2,15 +2,15 @@ interface IStats {
     free: number;
     used: number;
 }
-declare class ObjectPool {
-    type: () => void;
+declare class ObjectPool<T> {
+    type: new () => T;
     freePool: Array<any>;
     stats: IStats;
     incrementWhenEmpty: number;
-    constructor(PooledClass: any, incrementWhenEmpty?: number);
+    constructor(PooledClass: new () => T, incrementWhenEmpty?: number);
     reset(): void;
-    generate(amount: any): void;
+    generate(amount: number): void;
     acquire(): any;
-    release(object: any): void;
+    release(object: T): void;
 }
 export default ObjectPool;

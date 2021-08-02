@@ -1,2 +1,2 @@
-declare let spliceOne: (arr: any, index?: number) => void;
+declare let spliceOne: (arr: unknown[], index?: number) => void;
 export default spliceOne;

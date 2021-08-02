@@ -1,3 +1,4 @@
+"use strict";
 /**
  * Library for working with Canvas,
  * Works by using a 2D context as an argument
@@ -14,7 +15,8 @@ var __values = (this && this.__values) || function(o) {
     };
     throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
 };
-import { Circle, Shapes } from "./Shapes/Shapes";
+Object.defineProperty(exports, "__esModule", { value: true });
+var Shape_1 = require("./Shapes/Shape");
 var CanvasAPI = /** @class */ (function () {
     function CanvasAPI(ctx, strokeStyle) {
         if (strokeStyle === void 0) { strokeStyle = 'white'; }
@@ -84,7 +86,7 @@ var CanvasAPI = /** @class */ (function () {
         var layer = this.layers[layerName];
         var ctx = layer.ctx;
         var shapes = layer.shapes;
-        shapes.set(id, new Shapes(function () {
+        shapes.set(id, new Shape_1.Shape(function () {
             ctx.beginPath();
             ctx.save();
             ctx.translate(x + width / 2, y + height / 2);
@@ -103,12 +105,12 @@ var CanvasAPI = /** @class */ (function () {
         }));
     };
     CanvasAPI.prototype.addShape = function (_a) {
-        var id = _a.id, drawFn = _a.drawFn, _b = _a.layerName, layerName = _b === void 0 ? 'initial' : _b;
+        var id = _a.id, render = _a.render, _b = _a.layerName, layerName = _b === void 0 ? 'initial' : _b;
         var layer = this.layers[layerName];
         var ctx = layer.ctx;
         var shapes = layer.shapes;
-        shapes.set(id, new Shapes(function () {
-            drawFn(ctx);
+        shapes.set(id, new Shape_1.Shape(function () {
+            render(ctx);
         }));
     };
     CanvasAPI.prototype.writeBubble = function (_a) {
@@ -156,7 +158,7 @@ var CanvasAPI = /** @class */ (function () {
         }
         var ctx = layer.ctx;
         var shapes = layer.shapes;
-        shapes.set(id, new Shapes(function () {
+        shapes.set(id, new Shape_1.Shape(function () {
             ctx.strokeStyle = strokeStyle;
             ctx.lineWidth = lineWidth;
             ctx.beginPath();
@@ -181,7 +183,7 @@ var CanvasAPI = /** @class */ (function () {
         var layer = this.layers[layerName];
         var ctx = layer.ctx;
         var shapes = layer.shapes;
-        shapes.set(id, new Shapes(function () {
+        shapes.set(id, new Shape_1.Shape(function () {
             ctx.strokeStyle = color;
             ctx.lineWidth = lineWidth;
             var startArc = direction - (size / 2);
@@ -201,7 +203,7 @@ var CanvasAPI = /** @class */ (function () {
         var layer = this.layers[layerName];
         var ctx = layer.ctx;
         var shapes = layer.shapes;
-        shapes.set(id, new Circle(id, x, y, radius, lineWidth, fillColor, color, ctx));
+        shapes.set(id, new Shape_1.Circle(id, x, y, radius, lineWidth, fillColor, color, ctx));
     };
     /**
      * Method allows us to pan around the canvas
@@ -233,7 +235,7 @@ var CanvasAPI = /** @class */ (function () {
         var layer = this.layers[layerName];
         var ctx = layer.ctx;
         var shapes = layer.shapes;
-        shapes.set(id, new Shapes(function () {
+        shapes.set(id, new Shape_1.Shape(function () {
             ctx.beginPath();
             ctx.font = font;
             ctx.textBaseline = textBaseline;
@@ -260,7 +262,7 @@ var CanvasAPI = /** @class */ (function () {
         try {
             for (var _b = __values(shapes.values()), _c = _b.next(); !_c.done; _c = _b.next()) {
                 var shape = _c.value;
-                shape.draw();
+                shape.render(ctx);
                 ctx.strokeStyle = this.defaultStrokeStyle;
             }
         }
@@ -280,4 +282,4 @@ if (process.env.NODE_ENV === 'test') {
     CanvasAPI.prototype.addImage = function () {
     };
 }
-export default CanvasAPI;
+exports.default = CanvasAPI;

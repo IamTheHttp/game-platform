@@ -132,4 +132,9 @@ describe('Tests for entities', () => {
     let resp = Entity.getByComps(['test1'], 'array') as any;
     expect(resp.length).toBe(0);
   });
+
+  it('Does not crash when an unknown component is removed', () => {
+    let e = new Entity(null);
+    e.removeComponent('foo');
+  });
 });

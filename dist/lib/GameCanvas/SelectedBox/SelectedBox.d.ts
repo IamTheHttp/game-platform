@@ -11,7 +11,7 @@ declare class SelectedBox {
     getData(): ISelectedBoxData;
     getHeight(): number;
     getWidth(): number;
-    setStart(x: any, y: any): void;
-    setEnd(x: any, y: any): void;
+    setStart(x: number, y: number): void;
+    setEnd(x: number, y: number): void;
 }
 export default SelectedBox;

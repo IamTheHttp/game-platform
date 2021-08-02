@@ -1,3 +1,5 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var spliceOne = function (arr, index) {
     if (index === void 0) { index = 0; }
     var idx = index;
@@ -11,4 +13,4 @@ var spliceOne = function (arr, index) {
     }
     arr.length--;
 };
-export default spliceOne;
+exports.default = spliceOne;

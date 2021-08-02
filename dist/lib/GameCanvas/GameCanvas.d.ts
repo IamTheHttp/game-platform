@@ -1,6 +1,8 @@
+import * as React from 'react';
 import SelectedBox from './SelectedBox/SelectedBox';
 import { IViewClickInfo, IViewMoveInfo, IGameCanvasOptions, IClientViewCoordinates } from "../interfaces";
 import CanvasAPI from "../CanvasAPI/CanvasAPI";
+import { MouseEvent, ReactElement, TouchEvent } from "react";
 declare class GameCanvas {
     selectedBoxColor: string;
     mapHeight: number;
@@ -9,8 +11,8 @@ declare class GameCanvas {
     viewWidth: number;
     onViewMapClick: (arg: IViewClickInfo) => void;
     onViewMapMove: (arg: IViewMoveInfo) => void;
-    onMiniMapClick: (e: MouseEvent) => void;
-    onMiniMapMove: (e: MouseEvent) => void;
+    onMiniMapClick: (e: MouseEvent | TouchEvent) => void;
+    onMiniMapMove: (e: MouseEvent | TouchEvent) => void;
     enableSelectBox: boolean;
     lastClick: number;
     dbClick: boolean;
@@ -48,19 +50,19 @@ declare class GameCanvas {
         getMapRef: (a: CanvasAPI) => void;
         getMiniRef: (a: CanvasAPI) => void;
     }): {
-        map: HTMLCanvasElement;
-        minimap: HTMLCanvasElement;
+        map: React.ReactElement<HTMLCanvasElement, string | React.JSXElementConstructor<any>>;
+        minimap: React.ReactElement<HTMLCanvasElement, string | React.JSXElementConstructor<any>>;
     };
-    handleMiniMapMove(event: MouseEvent): void;
-    handleMiniMapClick(event: any): void;
+    handleMiniMapMove(event: MouseEvent<HTMLCanvasElement>): void;
+    handleMiniMapClick(event: MouseEvent | TouchEvent): void;
     updateMiniMapSquare(): void;
     handleMapMouseDown(): void;
     setSelectBox(): void;
     handleTouchStart(e: TouchEvent): void;
     handleMiniMapTouchStart(e: TouchEvent): void;
     ensureNegative(a: number): number;
-    handleTouchMove(e: any): void;
-    generateMapCanvas(getRef: (a: CanvasAPI, b: HTMLCanvasElement) => void): HTMLCanvasElement;
-    generateMiniMapCanvas(getRef: (a: CanvasAPI, b: HTMLCanvasElement) => void): HTMLCanvasElement;
+    handleTouchMove(e: TouchEvent): void;
+    generateMapCanvas(getRef: (a: CanvasAPI, b: HTMLCanvasElement) => void): ReactElement<HTMLCanvasElement>;
+    generateMiniMapCanvas(getRef: (a: CanvasAPI, b: HTMLCanvasElement) => void): ReactElement<HTMLCanvasElement>;
 }
 export default GameCanvas;

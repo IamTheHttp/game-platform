@@ -1,3 +1,5 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * Utility function to detect if a point is inside a circle
  * @param x
@@ -10,4 +12,4 @@
 function isPosInsideCircle(x, y, centerX, centerY, radius) {
     return Math.pow((x - centerX), 2) + Math.pow((y - centerY), 2) < Math.pow(radius, 2);
 }
-export default isPosInsideCircle;
+exports.default = isPosInsideCircle;

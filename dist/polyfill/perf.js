@@ -1,5 +1,7 @@
+"use strict";
 // @license http://opensource.org/licenses/MIT
 // copyright Paul Irish 2015
+Object.defineProperty(exports, "__esModule", { value: true });
 // Date.now() is supported everywhere except IE8. For IE8 we use the Date.now polyfill
 //   github.com/Financial-Times/polyfill-service/blob/master/polyfills/Date.now/polyfill.js
 // as Safari 6 doesn't have support for NavigationTiming, we use a Date.now() timestamp
@@ -26,4 +28,3 @@ var windowCopy = window;
         };
     }
 })();
-export {};

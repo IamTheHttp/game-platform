@@ -1,9 +1,11 @@
-export declare class Shapes {
-    draw: () => void;
-    metaData: {
+export declare class Shape {
+    id?: string;
+    layerName?: string;
+    metaData?: {
         [key: string]: any;
     };
-    constructor(draw: any, metaData?: {});
+    render: (ctx: CanvasRenderingContext2D) => void;
+    constructor(renderFn: (ctx: CanvasRenderingContext2D) => void, metaData?: {});
 }
 interface ICircleMetaData {
     id: string;
@@ -13,7 +15,7 @@ interface ICircleMetaData {
     type: string;
     [other: string]: any;
 }
-export declare class Circle extends Shapes {
+export declare class Circle extends Shape {
     metaData: ICircleMetaData;
     id: string;
     x: number;
@@ -24,6 +26,6 @@ export declare class Circle extends Shapes {
     color: string;
     ctx: CanvasRenderingContext2D;
     constructor(id: string, x: number, y: number, radius: number, lineWidth: number, fillColor: string, color: string, ctx: CanvasRenderingContext2D);
-    _draw(): void;
+    _render(): void;
 }
 export {};

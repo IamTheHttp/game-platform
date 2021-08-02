@@ -7,5 +7,5 @@
  * @param radius
  * @return {boolean}
  */
-declare function isPosInsideCircle(x: any, y: any, centerX: any, centerY: any, radius: any): boolean;
+declare function isPosInsideCircle(x: number, y: number, centerX: number, centerY: number, radius: number): boolean;
 export default isPosInsideCircle;

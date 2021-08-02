@@ -1,3 +1,5 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * Class that represents the current selected area by the user
  * Populated when the user click, holds and move the mouse
@@ -40,4 +42,4 @@ var SelectedBox = /** @class */ (function () {
     };
     return SelectedBox;
 }());
-export default SelectedBox;
+exports.default = SelectedBox;

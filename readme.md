@@ -6,6 +6,10 @@
 [ ] Add docs for the canvasAPI as a stand alone
 ---
 #Changelog
+### 02/08/2022
+Release version **2.1.1**
+- Refactor(build): Remove JARB and rollup dependency
+
 ### 31/07/2021
 Release version **2.1.0**
 - Fix(General): Fix all implicit any issues with typescript

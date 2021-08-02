@@ -1,3 +1,4 @@
+"use strict";
 var __read = (this && this.__read) || function (o, n) {
     var m = typeof Symbol === "function" && o[Symbol.iterator];
     if (!m) return o;
@@ -14,11 +15,16 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-var __spread = (this && this.__spread) || function () {
-    for (var ar = [], i = 0; i < arguments.length; i++) ar = ar.concat(__read(arguments[i]));
-    return ar;
+var __spreadArray = (this && this.__spreadArray) || function (to, from) {
+    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
+        to[j] = from[i];
+    return to;
 };
-import entityLoop from './util/entityLoop';
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var entityLoop_1 = __importDefault(require("./util/entityLoop"));
 // life cycle of a group!
 // 1. Adding a component adds a group with that one component.
 // 2. Adding 2nd component creates a group with that 2nd component
@@ -70,10 +76,10 @@ var Group = /** @class */ (function () {
             group = Group.groups[key] = new Group(compArray);
         }
         // insert the provided entities into this group...
-        entityLoop(entities, function (entity) {
+        entityLoop_1.default(entities, function (entity) {
             if (entity.hasComponents(compArray)) {
                 group.entities[entity.id] = entity;
-                group.array = __spread(group.array, [entity]);
+                group.array = __spreadArray(__spreadArray([], __read(group.array)), [entity]);
             }
         });
         return group;
@@ -82,4 +88,4 @@ var Group = /** @class */ (function () {
     Group.groups = {};
     return Group;
 }());
-export default Group;
+exports.default = Group;

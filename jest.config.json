@@ -30,7 +30,7 @@
     "\\.(css|less|scss)$": "<rootDir>/__mocks__/styleMock.ts"
   },
   "setupFiles": [
-    "<rootDir>/node_modules/jarb/lib/testSetup.js",
+    "<rootDir>/__tests__/setup.ts",
     "<rootDir>/src/polyfill/rAF.ts",
     "jest-canvas-mock"
   ],

@@ -1,3 +1,4 @@
+"use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -13,6 +14,8 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Circle = exports.Shape = void 0;
 var Shape = /** @class */ (function () {
     function Shape(renderFn, metaData) {
         if (metaData === void 0) { metaData = {}; }
@@ -22,7 +25,7 @@ var Shape = /** @class */ (function () {
     }
     return Shape;
 }());
-export { Shape };
+exports.Shape = Shape;
 var Circle = /** @class */ (function (_super) {
     __extends(Circle, _super);
     function Circle(id, x, y, radius, lineWidth, fillColor, color, ctx) {
@@ -56,4 +59,4 @@ var Circle = /** @class */ (function (_super) {
     };
     return Circle;
 }(Shape));
-export { Circle };
+exports.Circle = Circle;
