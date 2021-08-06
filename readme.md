@@ -6,6 +6,10 @@
 [ ] Add docs for the canvasAPI as a stand alone
 ---
 #Changelog
+### 06/08/2022
+Release version **2.1.2**
+- Fix(Regression) - Any shape that accepts strokeStyle will now also accepts color as an alias
+
 ### 02/08/2022
 Release version **2.1.1**
 - Update all dependencies to latest 

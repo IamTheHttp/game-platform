@@ -39,7 +39,8 @@ export interface IWriteToCanvas {
   font?:string,
   textBaseline: CanvasTextBaseline,
   fillStyle: string,
-  strokeStyle?:string,
+  color?: string, // alias to strokeStyle
+  strokeStyle?:string; // alias to color
   layerName?:string
 }
 
@@ -51,7 +52,6 @@ export interface IWriteTextBubble {
   font?:string,
   textBaseline?: CanvasTextBaseline,
   fillStyle?: string,
-  strokeStyle?:string,
   backgroundColor:string,
   borderColor: string,
   borderWidth: number,
@@ -72,7 +72,8 @@ export interface IArc {
   radius: number,
   direction: number,
   size: number
-  color?: string,
+  color?: string, // alias to strokeStyle
+  strokeStyle?:string; // alias to color
   lineWidth?: number,
   fillColor?: string,
   layerName?:string
@@ -85,7 +86,8 @@ export interface ICircle {
   y:number,
   radius:number,
   lineWidth?: number,
-  color?: string,
+  color?: string,       // alias to color
+  strokeStyle?: string; // alias to color
   fillColor?: string,
   layerName?:string
 }
@@ -96,7 +98,8 @@ export interface IRect {
   y:number,
   width:number,
   height: number,
-  strokeStyle?:string;
+  color?: string,       // alias to color
+  strokeStyle?: string; // alias to color
   lineWidth?: number,
   fillColor?: string,
   layerName?:string

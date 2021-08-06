@@ -190,13 +190,14 @@ class CanvasAPI {
         font: `${fontPxSize}px ${fontToUse}`,
         layerName,
         textBaseline: null,
-        strokeStyle: null
+        strokeStyle: null,
+        color: null
       });
     }
   }
 
-  addRect({id, x, y, width, height, strokeStyle, lineWidth, fillColor, layerName = 'initial'}: IRect) {
-    let layer = this.layers[layerName];
+  addRect({id, x, y, width, height, strokeStyle, color, lineWidth, fillColor, layerName}: IRect) {
+    let layer = this.layers[layerName || 'initial'];
     if (!layer) {
       throw `Could not find layer '${layerName}', are you sure you created the layer?`;
     }
@@ -205,7 +206,7 @@ class CanvasAPI {
     let shapes = layer.shapes;
 
     shapes.set(id, new Shape(() => {
-      ctx.strokeStyle = strokeStyle;
+      ctx.strokeStyle = strokeStyle || color;
       ctx.lineWidth = lineWidth;
       ctx.beginPath();
       ctx.rect(
@@ -230,13 +231,13 @@ class CanvasAPI {
     }));
   }
 
-  addArc({id, direction, size, color = 'black', fillColor, lineWidth = 1, x, y, radius, layerName = 'initial'}: IArc) {
+  addArc({id, direction, size, color = 'black', strokeStyle = 'black', fillColor, lineWidth = 1, x, y, radius, layerName = 'initial'}: IArc) {
     let layer = this.layers[layerName];
     let ctx = layer.ctx;
     let shapes = layer.shapes;
 
     shapes.set(id, new Shape(() => {
-      ctx.strokeStyle = color;
+      ctx.strokeStyle = strokeStyle || color;
       ctx.lineWidth = lineWidth;
 
       let startArc = direction - (size / 2);
@@ -253,12 +254,12 @@ class CanvasAPI {
     }));
   }
 
-  addCircle({id, x, y, radius, lineWidth, color, fillColor, layerName = 'initial'}: ICircle) {
-    let layer = this.layers[layerName];
+  addCircle(circleData: ICircle) {
+    let layer = this.layers[circleData.layerName || 'initial'];
     let ctx = layer.ctx;
     let shapes = layer.shapes;
 
-    shapes.set(id, new Circle(id, x, y, radius, lineWidth, fillColor,  color, ctx));
+    shapes.set(circleData.id, new Circle(circleData, ctx));
   }
 
   /**
@@ -299,6 +300,7 @@ class CanvasAPI {
           textBaseline,
           fillStyle,
           strokeStyle = '',
+          color = '',
           layerName = 'initial'
         }: IWriteToCanvas) {
     let layer = this.layers[layerName];
@@ -309,7 +311,7 @@ class CanvasAPI {
       ctx.font = font;
       ctx.textBaseline = textBaseline;
       ctx.fillStyle = fillStyle;
-      ctx.strokeStyle = strokeStyle;
+      ctx.strokeStyle = strokeStyle || color;
       ctx.fillText(text, x, y);
       ctx.closePath();
     }, {

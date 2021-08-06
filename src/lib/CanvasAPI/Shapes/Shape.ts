@@ -1,3 +1,5 @@
+import {ICircle} from "../../interfaces";
+
 export class Shape {
   id?: string;
   layerName?: string = 'initial';
@@ -33,7 +35,9 @@ export class Circle extends Shape {
   color:string;
   ctx: CanvasRenderingContext2D;
 
-  constructor(id: string, x: number, y: number, radius: number, lineWidth:number , fillColor: string, color:string, ctx:CanvasRenderingContext2D) {
+  constructor(data: ICircle, ctx:CanvasRenderingContext2D) {
+    const {id, x, y, radius, lineWidth, fillColor, color , strokeStyle} = data;
+
     let shapeMetaData = {id, x, y, radius, type:'circle'};
 
     super(() => this._render(), shapeMetaData);
@@ -46,7 +50,7 @@ export class Circle extends Shape {
     this.radius = radius;
     this.lineWidth = lineWidth;
     this.fillColor = fillColor;
-    this.color = color;
+    this.color = color || strokeStyle;
   }
 
   _render() {
