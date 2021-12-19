@@ -16,9 +16,10 @@ var __values = (this && this.__values) || function(o) {
     throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Painter = void 0;
 var Shape_1 = require("./Shapes/Shape");
-var CanvasAPI = /** @class */ (function () {
-    function CanvasAPI(ctx, strokeStyle) {
+var Painter = /** @class */ (function () {
+    function Painter(ctx, strokeStyle) {
         if (strokeStyle === void 0) { strokeStyle = 'white'; }
         if (!ctx) {
             throw 'Cannot create layer, no initial context found';
@@ -32,7 +33,12 @@ var CanvasAPI = /** @class */ (function () {
         this.defaultStrokeStyle = strokeStyle;
         ctx.strokeStyle = strokeStyle;
     }
-    CanvasAPI.prototype.addLayer = function (name) {
+    /**
+     * Add another layer that can be used for drawAllShapesInLayering.
+     * Internally this clones the existing canvas.
+     * @param name
+     */
+    Painter.prototype.addLayer = function (name) {
         var originCanvas = this.layers.initial.ctx.canvas;
         var parentNode = originCanvas.parentNode;
         var newCanvas = originCanvas.cloneNode();
@@ -43,41 +49,33 @@ var CanvasAPI = /** @class */ (function () {
             shapes: new Map()
         };
     };
-    CanvasAPI.prototype.removeLayer = function (name) {
+    Painter.prototype.removeLayer = function (name) {
         var originCanvas = this.layers.initial.ctx.canvas;
         var parentNode = originCanvas.parentNode;
-        parentNode.querySelector("#" + name).remove();
+        parentNode.querySelector("#".concat(name)).remove();
         delete this.layers[name];
     };
-    /**
-     * Clears all the shapes
-     */
-    CanvasAPI.prototype.clear = function (layerName) {
+    Painter.prototype.clearAllShapesInLayer = function (layerName) {
         if (layerName === void 0) { layerName = 'initial'; }
         var layer = this.layers[layerName];
         layer.shapes = new Map();
     };
-    CanvasAPI.prototype.clearAllLayers = function () {
+    Painter.prototype.clearAllLayers = function () {
         for (var layerName in this.layers) {
             if (!this.layers.hasOwnProperty(layerName)) {
                 continue;
             }
-            this.clear(layerName);
+            this.clearAllShapesInLayer(layerName);
         }
     };
-    /**
-     * Removes a shape by its ID
-     * @param id
-     * @param layerName
-     */
-    CanvasAPI.prototype.remove = function (id, layerName) {
+    Painter.prototype.removeShapeByID = function (id, layerName) {
         if (layerName === void 0) { layerName = 'initial'; }
         var layer = this.layers[layerName];
         var shapes = layer.shapes;
         shapes.delete(id);
     };
     /* istanbul ignore next */
-    CanvasAPI.prototype.addImage = function (_a) {
+    Painter.prototype.drawImage = function (_a) {
         var id = _a.id, image = _a.image, // the image to display
         x = _a.x, y = _a.y, // pos for x,y..
         height = _a.height, width = _a.width, cropStartX = _a.cropStartX, cropStartY = _a.cropStartY, cropSizeX = _a.cropSizeX, cropSizeY = _a.cropSizeY, rotation = _a.rotation, // in radians
@@ -104,7 +102,7 @@ var CanvasAPI = /** @class */ (function () {
             width: width
         }));
     };
-    CanvasAPI.prototype.addShape = function (_a) {
+    Painter.prototype.addShape = function (_a) {
         var id = _a.id, render = _a.render, _b = _a.layerName, layerName = _b === void 0 ? 'initial' : _b;
         var layer = this.layers[layerName];
         var ctx = layer.ctx;
@@ -113,20 +111,20 @@ var CanvasAPI = /** @class */ (function () {
             render(ctx);
         }));
     };
-    CanvasAPI.prototype.writeBubble = function (_a) {
+    Painter.prototype.drawTextBubble = function (_a) {
         var id = _a.id, text = _a.text, backgroundColor = _a.backgroundColor, borderColor = _a.borderColor, borderWidth = _a.borderWidth, fontSize = _a.fontSize, fontColor = _a.fontColor, x = _a.x, y = _a.y, fontFace = _a.fontFace, height = _a.height, width = _a.width, _b = _a.paddingLeft, paddingLeft = _b === void 0 ? 10 : _b, _c = _a.paddingTop, paddingTop = _c === void 0 ? 10 : _c, _d = _a.layerName, layerName = _d === void 0 ? 'initial' : _d;
         var longestTextWidth = 0;
         var linesOfText = text.split('\n');
         var fontPxSize = fontSize || +this.layers.initial.ctx.font.split('px')[0];
         var fontToUse = fontFace || +this.layers.initial.ctx.font.split('px')[1];
         // set it first for text-width calculations
-        this.layers.initial.ctx.font = fontPxSize + "px " + fontToUse;
+        this.layers.initial.ctx.font = "".concat(fontPxSize, "px ").concat(fontToUse);
         for (var i = 0; i < linesOfText.length; i++) {
             var width_1 = this.layers[layerName].ctx.measureText(linesOfText[i]).width;
             longestTextWidth = width_1 > longestTextWidth ? width_1 : longestTextWidth;
         }
-        this.addRect({
-            id: "" + id,
+        this.drawRect({
+            id: "".concat(id),
             x: x,
             y: y,
             height: Math.max(height, linesOfText.length * fontPxSize + paddingTop * 2),
@@ -137,29 +135,30 @@ var CanvasAPI = /** @class */ (function () {
             layerName: layerName
         });
         for (var i = 0; i < linesOfText.length; i++) {
-            this.write({
-                id: id + "-bubbleText-" + i,
+            this.drawText({
+                id: "".concat(id, "-bubbleText-").concat(i),
                 text: linesOfText[i],
                 x: x + paddingLeft,
                 y: y + fontPxSize + paddingTop + i * fontPxSize,
                 fillStyle: fontColor,
-                font: fontPxSize + "px " + fontToUse,
+                font: "".concat(fontPxSize, "px ").concat(fontToUse),
                 layerName: layerName,
                 textBaseline: null,
-                strokeStyle: null
+                strokeStyle: null,
+                color: null
             });
         }
     };
-    CanvasAPI.prototype.addRect = function (_a) {
-        var id = _a.id, x = _a.x, y = _a.y, width = _a.width, height = _a.height, strokeStyle = _a.strokeStyle, lineWidth = _a.lineWidth, fillColor = _a.fillColor, _b = _a.layerName, layerName = _b === void 0 ? 'initial' : _b;
-        var layer = this.layers[layerName];
+    Painter.prototype.drawRect = function (_a) {
+        var id = _a.id, x = _a.x, y = _a.y, width = _a.width, height = _a.height, strokeStyle = _a.strokeStyle, color = _a.color, lineWidth = _a.lineWidth, fillColor = _a.fillColor, layerName = _a.layerName;
+        var layer = this.layers[layerName || 'initial'];
         if (!layer) {
-            throw "Could not find layer '" + layerName + "', are you sure you created the layer?";
+            throw "Could not find layer '".concat(layerName, "', are you sure you created the layer?");
         }
         var ctx = layer.ctx;
         var shapes = layer.shapes;
         shapes.set(id, new Shape_1.Shape(function () {
-            ctx.strokeStyle = strokeStyle;
+            ctx.strokeStyle = strokeStyle || color;
             ctx.lineWidth = lineWidth;
             ctx.beginPath();
             ctx.rect(x, y, width, height);
@@ -178,13 +177,13 @@ var CanvasAPI = /** @class */ (function () {
             width: width
         }));
     };
-    CanvasAPI.prototype.addArc = function (_a) {
-        var id = _a.id, direction = _a.direction, size = _a.size, _b = _a.color, color = _b === void 0 ? 'black' : _b, fillColor = _a.fillColor, _c = _a.lineWidth, lineWidth = _c === void 0 ? 1 : _c, x = _a.x, y = _a.y, radius = _a.radius, _d = _a.layerName, layerName = _d === void 0 ? 'initial' : _d;
+    Painter.prototype.drawArc = function (_a) {
+        var id = _a.id, direction = _a.direction, size = _a.size, _b = _a.color, color = _b === void 0 ? 'black' : _b, _c = _a.strokeStyle, strokeStyle = _c === void 0 ? 'black' : _c, fillColor = _a.fillColor, _d = _a.lineWidth, lineWidth = _d === void 0 ? 1 : _d, x = _a.x, y = _a.y, radius = _a.radius, _e = _a.layerName, layerName = _e === void 0 ? 'initial' : _e;
         var layer = this.layers[layerName];
         var ctx = layer.ctx;
         var shapes = layer.shapes;
         shapes.set(id, new Shape_1.Shape(function () {
-            ctx.strokeStyle = color;
+            ctx.strokeStyle = strokeStyle || color;
             ctx.lineWidth = lineWidth;
             var startArc = direction - (size / 2);
             var endArc = direction + (size / 2);
@@ -198,17 +197,16 @@ var CanvasAPI = /** @class */ (function () {
             ctx.closePath();
         }));
     };
-    CanvasAPI.prototype.addCircle = function (_a) {
-        var id = _a.id, x = _a.x, y = _a.y, radius = _a.radius, lineWidth = _a.lineWidth, color = _a.color, fillColor = _a.fillColor, _b = _a.layerName, layerName = _b === void 0 ? 'initial' : _b;
-        var layer = this.layers[layerName];
+    Painter.prototype.drawCircle = function (circleData) {
+        var layer = this.layers[circleData.layerName || 'initial'];
         var ctx = layer.ctx;
         var shapes = layer.shapes;
-        shapes.set(id, new Shape_1.Circle(id, x, y, radius, lineWidth, fillColor, color, ctx));
+        shapes.set(circleData.id, new Shape_1.Circle(circleData, ctx));
     };
     /**
      * Method allows us to pan around the canvas
      */
-    CanvasAPI.prototype.pan = function (x, y) {
+    Painter.prototype.panCamera = function (x, y) {
         this.panX = x;
         this.panY = y;
         for (var layerName in this.layers) {
@@ -220,18 +218,18 @@ var CanvasAPI = /** @class */ (function () {
             ctx.setTransform(1, 0, 0, 1, x, y);
             // non initial layers are drawn much less often, so we need a manual one here.
             if (layerName !== 'initial') {
-                this.draw(layerName); // pan requires a draw to all non initial layers
+                this.drawAllShapesInLayer(layerName); // pan requires a draw to all non initial layers
             }
         }
     };
-    CanvasAPI.prototype.getPan = function () {
+    Painter.prototype.getCurrentPanValue = function () {
         return {
             panX: this.panX || 0,
             panY: this.panY || 0,
         };
     };
-    CanvasAPI.prototype.write = function (_a) {
-        var id = _a.id, text = _a.text, x = _a.x, y = _a.y, _b = _a.font, font = _b === void 0 ? '' : _b, textBaseline = _a.textBaseline, fillStyle = _a.fillStyle, _c = _a.strokeStyle, strokeStyle = _c === void 0 ? '' : _c, _d = _a.layerName, layerName = _d === void 0 ? 'initial' : _d;
+    Painter.prototype.drawText = function (_a) {
+        var id = _a.id, text = _a.text, x = _a.x, y = _a.y, _b = _a.font, font = _b === void 0 ? '' : _b, textBaseline = _a.textBaseline, fillStyle = _a.fillStyle, _c = _a.strokeStyle, strokeStyle = _c === void 0 ? '' : _c, _d = _a.color, color = _d === void 0 ? '' : _d, _e = _a.layerName, layerName = _e === void 0 ? 'initial' : _e;
         var layer = this.layers[layerName];
         var ctx = layer.ctx;
         var shapes = layer.shapes;
@@ -240,7 +238,7 @@ var CanvasAPI = /** @class */ (function () {
             ctx.font = font;
             ctx.textBaseline = textBaseline;
             ctx.fillStyle = fillStyle;
-            ctx.strokeStyle = strokeStyle;
+            ctx.strokeStyle = strokeStyle || color;
             ctx.fillText(text, x, y);
             ctx.closePath();
         }, {
@@ -249,7 +247,7 @@ var CanvasAPI = /** @class */ (function () {
             y: y
         }));
     };
-    CanvasAPI.prototype.draw = function (layerName) {
+    Painter.prototype.drawAllShapesInLayer = function (layerName) {
         var e_1, _a;
         if (layerName === void 0) { layerName = 'initial'; }
         var layer = this.layers[layerName];
@@ -274,12 +272,12 @@ var CanvasAPI = /** @class */ (function () {
             finally { if (e_1) throw e_1.error; }
         }
     };
-    return CanvasAPI;
+    return Painter;
 }());
-// adding an image causes segmentation fault for some reason :)
+exports.Painter = Painter;
+// adding an image causes segmentation fault for some reason.
 /* istanbul ignore next */
 if (process.env.NODE_ENV === 'test') {
-    CanvasAPI.prototype.addImage = function () {
+    Painter.prototype.drawImage = function () {
     };
 }
-exports.default = CanvasAPI;

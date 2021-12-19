@@ -20,7 +20,7 @@ function getShapesFromClick(shapes, layerName, x, y) {
         var width = shapeMetaData.width;
         var height = shapeMetaData.height;
         var type = shapeMetaData.type;
-        if (type === 'circle' && isPosInsideCircle_1.default(x, y, shapeX, shapeY, radius)) {
+        if (type === 'circle' && (0, isPosInsideCircle_1.default)(x, y, shapeX, shapeY, radius)) {
             hits.push({
                 id: id,
                 layerName: layerName

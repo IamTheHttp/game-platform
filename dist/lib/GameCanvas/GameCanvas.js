@@ -34,10 +34,14 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-var __spreadArray = (this && this.__spreadArray) || function (to, from) {
-    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
-        to[j] = from[i];
-    return to;
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
@@ -47,7 +51,10 @@ var React = __importStar(require("react"));
 var SelectedBox_1 = __importDefault(require("./SelectedBox/SelectedBox"));
 var getShapesFromClick_1 = __importDefault(require("./selectionUtils/getShapesFromClick"));
 var getShapesInSelectionBox_1 = __importDefault(require("./selectionUtils/getShapesInSelectionBox"));
-var CanvasAPI_1 = __importDefault(require("../CanvasAPI/CanvasAPI"));
+var Painter_1 = require("../PainterAPI/Painter");
+/**
+ * This class is responsible for hooking the canvas events to the PainterAPI.
+ */
 var GameCanvas = /** @class */ (function () {
     function GameCanvas(options) {
         var _this = this;
@@ -91,9 +98,9 @@ var GameCanvas = /** @class */ (function () {
      *         Will return X,Y values in relative terms to the painted Canvas dimensions and includes panning
      * @param clientInputCoordinates
      * @param canvas
-     * @param canvasAPI
+     * @param PainterAPI
      */
-    GameCanvas.prototype.getCursorPositionInCanvasTerms = function (clientInputCoordinates, canvas, canvasAPI) {
+    GameCanvas.prototype.getCursorPositionInCanvasTerms = function (clientInputCoordinates, canvas, PainterAPI) {
         var rect = canvas.getBoundingClientRect();
         if (typeof clientInputCoordinates.x !== 'number' || typeof clientInputCoordinates.y !== 'number') {
             throw 'Invalid inputCoordinates provided, missing X or Y';
@@ -111,8 +118,8 @@ var GameCanvas = /** @class */ (function () {
         var scaledX = Math.max(0, Math.round(rawXOnCanvasElement * WIDTH_RATIO));
         var scaledY = Math.max(0, Math.round(rawYyOnCanvasElement * HEIGHT_RATIO));
         // Now we're in scaled canvas X,Y terms, we can safely subtract the Pan to get the right position
-        var x = scaledX - canvasAPI.getPan().panX;
-        var y = scaledY - canvasAPI.getPan().panY;
+        var x = scaledX - PainterAPI.getCurrentPanValue().panX;
+        var y = scaledY - PainterAPI.getCurrentPanValue().panY;
         return { x: x, y: y };
     };
     GameCanvas.prototype.handleMapMouseMove = function () {
@@ -123,7 +130,7 @@ var GameCanvas = /** @class */ (function () {
             else {
                 this.selectedBox.setEnd(this.lastKnownPositionInCanvasTermsX, this.lastKnownPositionInCanvasTermsY);
                 var data = this.selectedBox.getData();
-                this.mapAPI.addRect({
+                this.mapAPI.drawRect({
                     id: 'selectedBox',
                     x: data.start.x,
                     y: data.start.y,
@@ -160,13 +167,13 @@ var GameCanvas = /** @class */ (function () {
             if (selectedData.end.x === selectedData.start.x) {
                 var x = _this.lastKnownPositionInCanvasTermsX;
                 var y = _this.lastKnownPositionInCanvasTermsY;
-                hits = __spreadArray(__spreadArray([], __read(hits)), __read(getShapesFromClick_1.default(_this.mapAPI.layers[layerName].shapes, layerName, x, y)));
+                hits = __spreadArray(__spreadArray([], __read(hits), false), __read((0, getShapesFromClick_1.default)(_this.mapAPI.layers[layerName].shapes, layerName, x, y)), false);
             }
             else {
-                hits = __spreadArray(__spreadArray([], __read(hits)), __read(getShapesInSelectionBox_1.default(_this.mapAPI.layers[layerName].shapes, layerName, selectedData)));
+                hits = __spreadArray(__spreadArray([], __read(hits), false), __read((0, getShapesInSelectionBox_1.default)(_this.mapAPI.layers[layerName].shapes, layerName, selectedData)), false);
             }
         });
-        this.mapAPI.addRect({
+        this.mapAPI.drawRect({
             fillColor: null,
             layerName: "initial",
             lineWidth: 1,
@@ -225,18 +232,18 @@ var GameCanvas = /** @class */ (function () {
         var height = this.mapHeight;
         calcPanX = calcPanX + this.viewWidth < width ? calcPanX : width - this.viewWidth;
         calcPanY = calcPanY + this.viewHeight < height ? calcPanY : height - this.viewHeight;
-        this.mapAPI.pan(-calcPanX, -calcPanY);
+        this.mapAPI.panCamera(-calcPanX, -calcPanY);
         // draw the minimap square box
         this.updateMiniMapSquare();
         this.onMiniMapClick(event);
     };
     GameCanvas.prototype.updateMiniMapSquare = function () {
-        this.miniMapAPI.addRect({
+        this.miniMapAPI.drawRect({
             fillColor: null,
             layerName: "initial",
             id: 'currentMap',
-            x: -this.mapAPI.getPan().panX,
-            y: -this.mapAPI.getPan().panY,
+            x: -this.mapAPI.getCurrentPanValue().panX,
+            y: -this.mapAPI.getCurrentPanValue().panY,
             width: this.viewWidth,
             height: this.viewHeight,
             strokeStyle: 'green',
@@ -293,7 +300,7 @@ var GameCanvas = /** @class */ (function () {
             y: e.touches[0].clientY
         };
         var _a = this.getCursorPositionInCanvasTerms(coords, this.viewMapCanvas, this.mapAPI), x = _a.x, y = _a.y;
-        var _b = this.mapAPI.getPan(), currentPanX = _b.panX, currentPanY = _b.panY;
+        var _b = this.mapAPI.getCurrentPanValue(), currentPanX = _b.panX, currentPanY = _b.panY;
         // example: current is 5, lastKnown is 20, we moved -15.
         var xPxChange = x - this.lastKnownPositionInCanvasTermsX;
         var yPxChange = y - this.lastKnownPositionInCanvasTermsY;
@@ -312,7 +319,7 @@ var GameCanvas = /** @class */ (function () {
         // our panning is always negative, as don't allow to scroll off the edges
         // (if panning could be positive, we the canvas edge would be in the mainView)
         // This is equal to MIN_ALLOWED_X_PANNING = 0;
-        this.mapAPI.pan(this.ensureNegative(newPanX), this.ensureNegative(newPanY));
+        this.mapAPI.panCamera(this.ensureNegative(newPanX), this.ensureNegative(newPanY));
     };
     GameCanvas.prototype.generateMapCanvas = function (getRef) {
         var _this = this;
@@ -331,7 +338,7 @@ var GameCanvas = /** @class */ (function () {
                 el.removeEventListener('touchmove', _this.handleTouchMove, false);
                 // @ts-ignore For some reason there's a misamtch between the event types TODO - can this be improved?
                 el.addEventListener('touchmove', _this.handleTouchMove, false);
-                _this.mapAPI = new CanvasAPI_1.default(el.getContext('2d'));
+                _this.mapAPI = new Painter_1.Painter(el.getContext('2d'));
                 getRef(_this.mapAPI, el);
             }, height: this.viewHeight, width: this.viewWidth, onMouseDown: this.handleMapMouseDown, onTouchStart: this.handleTouchStart, onTouchEnd: this.handleMapTouchEnd, onMouseMove: this.handleMapMouseMove, onMouseUp: this.handleMapMouseUp, onMouseLeave: this.handleMapMouseLeave }));
     };
@@ -348,7 +355,7 @@ var GameCanvas = /** @class */ (function () {
                 _this.miniMapCanvas = el;
                 document.removeEventListener('mousemove', _this.updateMiniMapCursorPosition);
                 document.addEventListener('mousemove', _this.updateMiniMapCursorPosition);
-                _this.miniMapAPI = new CanvasAPI_1.default(el.getContext('2d'));
+                _this.miniMapAPI = new Painter_1.Painter(el.getContext('2d'));
                 // updateMiniMapSquare depends on mapAPI to be defined
                 // due to some race conditions this might happen before mapAPI was defined
                 // An interval is used to detect when mapAPI is defined

@@ -28,8 +28,9 @@ var Shape = /** @class */ (function () {
 exports.Shape = Shape;
 var Circle = /** @class */ (function (_super) {
     __extends(Circle, _super);
-    function Circle(id, x, y, radius, lineWidth, fillColor, color, ctx) {
+    function Circle(data, ctx) {
         var _this = this;
+        var id = data.id, x = data.x, y = data.y, radius = data.radius, lineWidth = data.lineWidth, fillColor = data.fillColor, color = data.color, strokeStyle = data.strokeStyle;
         var shapeMetaData = { id: id, x: x, y: y, radius: radius, type: 'circle' };
         _this = _super.call(this, function () { return _this._render(); }, shapeMetaData) || this;
         _this.metaData = shapeMetaData;
@@ -40,7 +41,7 @@ var Circle = /** @class */ (function (_super) {
         _this.radius = radius;
         _this.lineWidth = lineWidth;
         _this.fillColor = fillColor;
-        _this.color = color;
+        _this.color = color || strokeStyle;
         return _this;
     }
     Circle.prototype._render = function () {

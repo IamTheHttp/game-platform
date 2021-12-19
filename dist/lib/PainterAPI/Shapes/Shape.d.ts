@@ -1,3 +1,4 @@
+import { ICircle } from "../../interfaces";
 export declare class Shape {
     id?: string;
     layerName?: string;
@@ -25,7 +26,7 @@ export declare class Circle extends Shape {
     fillColor: string;
     color: string;
     ctx: CanvasRenderingContext2D;
-    constructor(id: string, x: number, y: number, radius: number, lineWidth: number, fillColor: string, color: string, ctx: CanvasRenderingContext2D);
+    constructor(data: ICircle, ctx: CanvasRenderingContext2D);
     _render(): void;
 }
 export {};

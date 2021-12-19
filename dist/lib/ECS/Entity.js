@@ -16,7 +16,7 @@ var Entity = /** @class */ (function () {
         Entity.counter++;
     }
     Entity.reset = function () {
-        entityLoop_1.default(Entity.entities, function (entity) {
+        (0, entityLoop_1.default)(Entity.entities, function (entity) {
             entity.destroy();
         });
         Group_1.default.reset();
@@ -101,7 +101,7 @@ var Entity = /** @class */ (function () {
             // if this ent does not have all the other comps, skip..
             if (group.entities[this.id] && compInGroup && entHasReqComps) {
                 delete group.entities[this.id];
-                spliceOne_1.default(group.array, group.array.indexOf(this));
+                (0, spliceOne_1.default)(group.array, group.array.indexOf(this));
             }
         }
         delete this.components[compName];

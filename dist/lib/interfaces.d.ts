@@ -1,4 +1,4 @@
-import { Shape } from "./CanvasAPI/Shapes/Shape";
+import { Shape } from "./PainterAPI/Shapes/Shape";
 import { MouseEvent } from "react";
 import Group from "./ECS/Group";
 export interface IEntityMap<T> {
@@ -30,6 +30,7 @@ export interface IWriteToCanvas {
     font?: string;
     textBaseline: CanvasTextBaseline;
     fillStyle: string;
+    color?: string;
     strokeStyle?: string;
     layerName?: string;
 }
@@ -41,7 +42,6 @@ export interface IWriteTextBubble {
     font?: string;
     textBaseline?: CanvasTextBaseline;
     fillStyle?: string;
-    strokeStyle?: string;
     backgroundColor: string;
     borderColor: string;
     borderWidth: number;
@@ -62,6 +62,7 @@ export interface IArc {
     direction: number;
     size: number;
     color?: string;
+    strokeStyle?: string;
     lineWidth?: number;
     fillColor?: string;
     layerName?: string;
@@ -73,6 +74,7 @@ export interface ICircle {
     radius: number;
     lineWidth?: number;
     color?: string;
+    strokeStyle?: string;
     fillColor?: string;
     layerName?: string;
 }
@@ -82,6 +84,7 @@ export interface IRect {
     y: number;
     width: number;
     height: number;
+    color?: string;
     strokeStyle?: string;
     lineWidth?: number;
     fillColor?: string;

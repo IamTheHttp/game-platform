@@ -9,9 +9,9 @@ var windowCopy = window;
     var lastTime = 0;
     var vendors = ['ms', 'moz', 'webkit', 'o'];
     for (var x = 0; x < vendors.length && !windowCopy.requestAnimationFrame; ++x) {
-        windowCopy.requestAnimationFrame = windowCopy[vendors[x] + "RequestAnimationFrame"];
-        windowCopy.cancelAnimationFrame = windowCopy[vendors[x] + "CancelAnimationFrame"]
-            || windowCopy[vendors[x] + "CancelRequestAnimationFrame"];
+        windowCopy.requestAnimationFrame = windowCopy["".concat(vendors[x], "RequestAnimationFrame")];
+        windowCopy.cancelAnimationFrame = windowCopy["".concat(vendors[x], "CancelAnimationFrame")]
+            || windowCopy["".concat(vendors[x], "CancelRequestAnimationFrame")];
     }
     if (!windowCopy.requestAnimationFrame) {
         windowCopy.requestAnimationFrame = function (callback) {

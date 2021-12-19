@@ -101,7 +101,7 @@ var miniMap = gameCanvas.generateMiniMapCanvas(function (API, el) {
 // Unfortunate, as we can only expose the APIs once the canvas ctx exists
 // but we also can't have the canvas ctx until we render
 // We render our new canvas react elements with React
-react_dom_1.render(React.createElement("div", null,
+(0, react_dom_1.render)(React.createElement("div", null,
     React.createElement("h1", null, "Main Map"),
     React.createElement("div", { className: 'main-canvas-container' }, mainMap),
     React.createElement("h1", null, "Mini Map - Click to move around the map"),
@@ -110,7 +110,7 @@ react_dom_1.render(React.createElement("div", null,
     /** ================================
      ==========ADDING SHAPES===========
      ================================= */
-    apis.main.addRect({
+    apis.main.drawRect({
         fillColor: null,
         layerName: "initial",
         lineWidth: 1,
@@ -121,7 +121,7 @@ react_dom_1.render(React.createElement("div", null,
         height: 35,
         strokeStyle: 'blue'
     });
-    apis.main.addRect({
+    apis.main.drawRect({
         fillColor: null, lineWidth: 1,
         id: 'SomeRectBackground',
         x: 10,
@@ -131,14 +131,14 @@ react_dom_1.render(React.createElement("div", null,
         strokeStyle: 'blue',
         layerName: 'background'
     });
-    apis.main.addCircle({
+    apis.main.drawCircle({
         id: 'ExampleID',
         x: 50,
         y: 50,
         radius: 15,
         color: 'red'
     });
-    apis.main.writeBubble({
+    apis.main.drawTextBubble({
         id: 'bubbleTextExampleID',
         text: 'It is dangerous to go alone! \ntake this!',
         backgroundColor: 'green',
@@ -151,7 +151,7 @@ react_dom_1.render(React.createElement("div", null,
         width: 0,
         fontSize: 16
     });
-    apis.main.addCircle({
+    apis.main.drawCircle({
         id: 'ExampleID222',
         x: 0,
         y: 0,
@@ -195,7 +195,7 @@ react_dom_1.render(React.createElement("div", null,
     var img = new Image;
     img.src = imgURL;
     img.onload = function () {
-        apis.main.addImage({
+        apis.main.drawImage({
             id: 'my-image',
             image: img,
             x: 100, y: 100,
@@ -212,8 +212,8 @@ react_dom_1.render(React.createElement("div", null,
     var direction = 0;
     eng.addSystem(function (systemArgs) {
         direction = direction + 0.01;
-        apis.main.draw();
-        apis.main.draw('background');
+        apis.main.drawAllShapesInLayer();
+        apis.main.drawAllShapesInLayer('background');
         // apis.mini.draw();
     });
     eng.run({});

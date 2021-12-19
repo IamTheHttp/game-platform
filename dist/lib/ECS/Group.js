@@ -15,10 +15,14 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-var __spreadArray = (this && this.__spreadArray) || function (to, from) {
-    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
-        to[j] = from[i];
-    return to;
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
@@ -76,10 +80,10 @@ var Group = /** @class */ (function () {
             group = Group.groups[key] = new Group(compArray);
         }
         // insert the provided entities into this group...
-        entityLoop_1.default(entities, function (entity) {
+        (0, entityLoop_1.default)(entities, function (entity) {
             if (entity.hasComponents(compArray)) {
                 group.entities[entity.id] = entity;
-                group.array = __spreadArray(__spreadArray([], __read(group.array)), [entity]);
+                group.array = __spreadArray(__spreadArray([], __read(group.array), false), [entity], false);
             }
         });
         return group;
