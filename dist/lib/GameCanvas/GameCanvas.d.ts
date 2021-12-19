@@ -1,8 +1,6 @@
-import * as React from 'react';
 import SelectedBox from './SelectedBox/SelectedBox';
 import { IViewClickInfo, IViewMoveInfo, IGameCanvasOptions, IClientViewCoordinates } from "../interfaces";
 import { Painter } from "../PainterAPI/Painter";
-import { MouseEvent, ReactElement, TouchEvent } from "react";
 /**
  * This class is responsible for hooking the canvas events to the PainterAPI.
  */
@@ -14,8 +12,8 @@ declare class GameCanvas {
     viewWidth: number;
     onViewMapClick: (arg: IViewClickInfo) => void;
     onViewMapMove: (arg: IViewMoveInfo) => void;
-    onMiniMapClick: (e: MouseEvent | TouchEvent) => void;
-    onMiniMapMove: (e: MouseEvent | TouchEvent) => void;
+    onMiniMapClick: (e: MouseEventInit | TouchEventInit) => void;
+    onMiniMapMove: (e: MouseEventInit | TouchEventInit) => void;
     enableSelectBox: boolean;
     lastClick: number;
     dbClick: boolean;
@@ -49,23 +47,20 @@ declare class GameCanvas {
     handleMapMouseUp(): void;
     updateViewMapCursorPosition(inputCoordinates: IClientViewCoordinates): IClientViewCoordinates;
     updateMiniMapCursorPosition(inputCoordinates: IClientViewCoordinates): void;
-    getNewCanvasPairs({ getMapRef, getMiniRef }: {
-        getMapRef: (a: Painter) => void;
-        getMiniRef: (a: Painter) => void;
-    }): {
-        map: React.ReactElement<HTMLCanvasElement, string | React.JSXElementConstructor<any>>;
-        minimap: React.ReactElement<HTMLCanvasElement, string | React.JSXElementConstructor<any>>;
-    };
-    handleMiniMapMove(event: MouseEvent<HTMLCanvasElement>): void;
-    handleMiniMapClick(event: MouseEvent | TouchEvent): void;
+    handleMiniMapMove(event: MouseEventInit): void;
+    handleMiniMapClick(event: MouseEventInit | TouchEventInit): void;
     updateMiniMapSquare(): void;
     handleMapMouseDown(): void;
     setSelectBox(): void;
     handleTouchStart(e: TouchEvent): void;
-    handleMiniMapTouchStart(e: TouchEvent): void;
+    handleMiniMapTouchStart(e: TouchEventInit): void;
     ensureNegative(a: number): number;
     handleTouchMove(e: TouchEvent): void;
-    generateMapCanvas(getRef: (a: Painter, b: HTMLCanvasElement) => void): ReactElement<HTMLCanvasElement>;
-    generateMiniMapCanvas(getRef: (a: Painter, b: HTMLCanvasElement) => void): ReactElement<HTMLCanvasElement>;
+    registerCanvasPair(mainMapCanvas: HTMLCanvasElement, miniMapCanvas: HTMLCanvasElement): {
+        map: Painter;
+        minimap: Painter;
+    };
+    registerMinimapCanvas(canvas: HTMLCanvasElement): Painter;
+    registerMapCanvas(canvas: HTMLCanvasElement): Painter;
 }
 export default GameCanvas;

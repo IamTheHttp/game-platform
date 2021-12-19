@@ -10,22 +10,7 @@ import {
   IHit
 } from "../interfaces";
 import {Painter} from "../PainterAPI/Painter";
-import {MouseEvent, ReactElement, ReactHTMLElement, TouchEvent, TouchEventHandler} from "react";
-
-
-type FUNCTIONS = 'updateViewMapCursorPosition' |
-  'updateMiniMapCursorPosition' |
-  'handleMapMouseUp' |
-  'handleMapMouseDown' |
-  'handleMiniMapClick' |
-  'handleMiniMapMove' |
-  'handleMapMouseMove' |
-  'handleMapMouseLeave' |
-  'handleTouchMove' |
-  'handleTouchStart' |
-  'handleMapTouchEnd' |
-  'handleMiniMapTouchStart';
-
+import {ReactElement} from "react";
 
 /**
  * This class is responsible for hooking the canvas events to the PainterAPI.
@@ -38,8 +23,8 @@ class GameCanvas {
   viewWidth: number;
   onViewMapClick: (arg: IViewClickInfo) => void;
   onViewMapMove: (arg: IViewMoveInfo) => void;
-  onMiniMapClick: (e: MouseEvent | TouchEvent) => void;
-  onMiniMapMove: (e: MouseEvent | TouchEvent) => void;
+  onMiniMapClick: (e: MouseEventInit | TouchEventInit) => void;
+  onMiniMapMove: (e: MouseEventInit | TouchEventInit) => void;
   enableSelectBox: boolean;
   lastClick: number;
   dbClick: boolean;
@@ -58,8 +43,7 @@ class GameCanvas {
 
 
   constructor(options: IGameCanvasOptions) {
-    let noop = () => {
-    };
+    let noop = () => {};
     this.selectedBoxColor = options.selectedBoxColor || 'blue';
     this.mapHeight = options.mapHeight;
     this.mapWidth = options.mapWidth;
@@ -76,23 +60,18 @@ class GameCanvas {
     this.lastTap = 0;
     this.selectedBox = new SelectedBox();
 
-    [
-      'updateViewMapCursorPosition',
-      'updateMiniMapCursorPosition',
-      'handleMapMouseUp',
-      'handleMapMouseDown',
-      'handleMapMouseDown',
-      'handleMiniMapClick',
-      'handleMiniMapMove',
-      'handleMapMouseMove',
-      'handleMapMouseLeave',
-      'handleTouchMove',
-      'handleTouchStart',
-      'handleMapTouchEnd',
-      'handleMiniMapTouchStart'
-    ].forEach((fn: FUNCTIONS) => {
-      this[fn] = this[fn].bind(this);
-    });
+    this.updateViewMapCursorPosition = this.updateViewMapCursorPosition.bind(this);
+    this.updateMiniMapCursorPosition = this.updateMiniMapCursorPosition.bind(this);
+    this.handleMapMouseUp = this.handleMapMouseUp.bind(this);
+    this.handleMapMouseDown = this.handleMapMouseDown.bind(this);
+    this.handleMiniMapClick = this.handleMiniMapClick.bind(this);
+    this.handleMiniMapMove = this.handleMiniMapMove.bind(this);
+    this.handleMapMouseMove = this.handleMapMouseMove.bind(this);
+    this.handleMapMouseLeave = this.handleMapMouseLeave.bind(this);
+    this.handleTouchMove = this.handleTouchMove.bind(this);
+    this.handleTouchStart = this.handleTouchStart.bind(this);
+    this.handleMapTouchEnd = this.handleMapTouchEnd.bind(this);
+    this.handleMiniMapTouchStart = this.handleMiniMapTouchStart.bind(this);
   }
 
   /**
@@ -232,18 +211,14 @@ class GameCanvas {
     this.miniMapY = y;
   }
 
-  getNewCanvasPairs({ getMapRef, getMiniRef }: { getMapRef: (a: Painter) => void, getMiniRef: (a: Painter) => void }) {
-    return {
-      map: this.generateMapCanvas(getMapRef),
-      minimap: this.generateMiniMapCanvas(getMiniRef)
-    };
-  }
 
-  handleMiniMapMove(event: MouseEvent<HTMLCanvasElement>) {
+
+
+  handleMiniMapMove(event: MouseEventInit) {
     this.onMiniMapMove(event);
   }
 
-  handleMiniMapClick(event: MouseEvent | TouchEvent) {
+  handleMiniMapClick(event: MouseEventInit | TouchEventInit) {
     let x = this.miniMapX;
     let y = this.miniMapY;
     // Handle negative overflows, both numbers should be positive
@@ -314,7 +289,7 @@ class GameCanvas {
     this.setSelectBox();
   }
 
-  handleMiniMapTouchStart(e: TouchEvent) {
+  handleMiniMapTouchStart(e: TouchEventInit) {
     let coords = {
       x: e.touches[0].clientX,
       y: e.touches[0].clientY
@@ -371,87 +346,180 @@ class GameCanvas {
     this.mapAPI.panCamera(this.ensureNegative(newPanX), this.ensureNegative(newPanY));
   }
 
-  generateMapCanvas(getRef: (a: Painter, b: HTMLCanvasElement) => void): ReactElement<HTMLCanvasElement> {
-    return (
-      <canvas
-        className='viewMap'
-        ref={(el: HTMLCanvasElement) => {
-          if (!el) {
-            return null;
-          }
 
-          if (process.env.NODE_ENV === 'test' && !el.removeEventListener) {
-            // @ts-ignore
-            el = el._reactInternalFiber.child.stateNode; // eslint-disable-line
-          }
-
-          this.viewMapCanvas = el;
-          document.removeEventListener('mousemove', this.updateViewMapCursorPosition);
-          document.addEventListener('mousemove', this.updateViewMapCursorPosition);
-
-
-
-          // @ts-ignore For some reason there's a misamtch between the event types TODO - can this be improved?
-          el.removeEventListener('touchmove', this.handleTouchMove, false);
-          // @ts-ignore For some reason there's a misamtch between the event types TODO - can this be improved?
-          el.addEventListener('touchmove', this.handleTouchMove, false);
-
-          this.mapAPI = new Painter(el.getContext('2d'));
-          getRef(this.mapAPI, el);
-        }}
-        height={this.viewHeight}
-        width={this.viewWidth}
-        onMouseDown={this.handleMapMouseDown}
-        onTouchStart={this.handleTouchStart}
-        onTouchEnd={this.handleMapTouchEnd}
-        onMouseMove={this.handleMapMouseMove}
-        onMouseUp={this.handleMapMouseUp}
-        onMouseLeave={this.handleMapMouseLeave}
-      />
-    );
+  registerCanvasPair(mainMapCanvas:HTMLCanvasElement, miniMapCanvas:HTMLCanvasElement) {
+    return {
+      map: this.registerMapCanvas(mainMapCanvas),
+      minimap: this.registerMinimapCanvas(miniMapCanvas)
+    }
   }
 
-  generateMiniMapCanvas(getRef: (a: Painter, b: HTMLCanvasElement) => void): ReactElement<HTMLCanvasElement> {
-    return (
-      <canvas
-        className='minimap'
-        ref={(el) => {
-          if (!el) {
-            return null;
-          }
+  registerMinimapCanvas(canvas: HTMLCanvasElement) {
+    this.miniMapCanvas = canvas;
 
-          if (process.env.NODE_ENV === 'test' && !el.removeEventListener) {
-            // @ts-ignore Test mode voodoo
-            el = el._reactInternalFiber.child.stateNode; // eslint-disable-line
-          }
+    document.removeEventListener('mousemove', this.updateMiniMapCursorPosition);
+    document.addEventListener('mousemove', this.updateMiniMapCursorPosition);
 
-          this.miniMapCanvas = el;
-          document.removeEventListener('mousemove', this.updateMiniMapCursorPosition);
-          document.addEventListener('mousemove', this.updateMiniMapCursorPosition);
-
-          this.miniMapAPI = new Painter(el.getContext('2d'));
+    // updateMiniMapSquare depends on mapAPI to be defined
+    // due to some race conditions this might happen before mapAPI was defined
+    // An interval is used to detect when mapAPI is defined
+    let key = setInterval(() => {
+      if (this.mapAPI) {
+        this.updateMiniMapSquare();
+        clearInterval(key);
+      }
+    }, 100);
 
 
-          // updateMiniMapSquare depends on mapAPI to be defined
-          // due to some race conditions this might happen before mapAPI was defined
-          // An interval is used to detect when mapAPI is defined
-          let key = setInterval(() => {
-            if (this.mapAPI) {
-              this.updateMiniMapSquare();
-              clearInterval(key);
-            }
-          }, 100);
+    canvas.height = this.mapHeight;
+    canvas.width = this.mapWidth;
 
-          getRef(this.miniMapAPI, el);
-        }}
-        height={this.mapHeight}
-        width={this.mapWidth}
-        onMouseMove={this.handleMiniMapMove}
-        onMouseDown={this.handleMiniMapClick}
-        onTouchStart={this.handleMiniMapTouchStart}
-      />
-    );
+    // @ts-ignore For some reason there's a misamtch between the event types TODO - can this be improved?
+    canvas.addEventListener('mousemove', this.handleMiniMapMove);
+    // @ts-ignore For some reason there's a misamtch between the event types TODO - can this be improved?
+    canvas.addEventListener('mousedown', this.handleMiniMapClick);
+    // @ts-ignore For some reason there's a misamtch between the event types TODO - can this be improved?
+    canvas.addEventListener('touchstart', this.handleMiniMapTouchStart);
+
+
+    this.miniMapAPI = new Painter(canvas.getContext('2d'));
+    return this.miniMapAPI;
   }
+
+  registerMapCanvas(canvas: HTMLCanvasElement) {
+    this.viewMapCanvas = canvas;
+    document.removeEventListener('mousemove', this.updateViewMapCursorPosition);
+    document.addEventListener('mousemove', this.updateViewMapCursorPosition);
+
+
+    // @ts-ignore For some reason there's a misamtch between the event types TODO - can this be improved?
+    canvas.removeEventListener('touchmove', this.handleTouchMove, false);
+    // @ts-ignore For some reason there's a misamtch between the event types TODO - can this be improved?
+    canvas.addEventListener('touchmove', this.handleTouchMove, false);
+
+    canvas.height = this.viewHeight;
+    canvas.width = this.viewWidth;
+
+    canvas.addEventListener('mousedown', this.handleMapMouseDown);
+    canvas.addEventListener('mousemove', this.handleMapMouseMove);
+
+
+    // @ts-ignore For some reason there's a misamtch between the event types TODO - can this be improved?
+    canvas.addEventListener('touchstart', this.handleTouchStart);
+    canvas.addEventListener('touchend', this.handleMapTouchEnd);
+
+    canvas.addEventListener('mouseup', this.handleMapMouseUp);
+    canvas.addEventListener('mouseleave', this.handleMapMouseLeave);
+
+    this.mapAPI = new Painter(canvas.getContext('2d'));
+    return this.mapAPI;
+  }
+
+  // /**
+  //  * @deprecated
+  //  * To be removed soon as this class will no longer genereate JSX canvas elements
+  //  * @param getRef
+  //  */
+  // generateMapCanvas(getRef: (a: Painter, b: HTMLCanvasElement) => void): ReactElement<HTMLCanvasElement> {
+  //   return (
+  //     <canvas
+  //       className='viewMap'
+  //       ref={(el: HTMLCanvasElement) => {
+  //         if (!el) {
+  //           return null;
+  //         }
+  //
+  //         if (process.env.NODE_ENV === 'test' && !el.removeEventListener) {
+  //           // @ts-ignore
+  //           el = el._reactInternalFiber.child.stateNode; // eslint-disable-line
+  //         }
+  //
+  //         this.viewMapCanvas = el;
+  //         document.removeEventListener('mousemove', this.updateViewMapCursorPosition);
+  //         document.addEventListener('mousemove', this.updateViewMapCursorPosition);
+  //
+  //
+  //
+  //         // @ts-ignore For some reason there's a misamtch between the event types TODO - can this be improved?
+  //         el.removeEventListener('touchmove', this.handleTouchMove, false);
+  //         // @ts-ignore For some reason there's a misamtch between the event types TODO - can this be improved?
+  //         el.addEventListener('touchmove', this.handleTouchMove, false);
+  //
+  //         this.mapAPI = new Painter(el.getContext('2d'));
+  //         getRef(this.mapAPI, el);
+  //       }}
+  //       height={this.viewHeight}
+  //       width={this.viewWidth}
+  //       onMouseDown={this.handleMapMouseDown}
+  //       onTouchStart={this.handleTouchStart}
+  //       onTouchEnd={this.handleMapTouchEnd}
+  //       onMouseMove={this.handleMapMouseMove}
+  //       onMouseUp={this.handleMapMouseUp}
+  //       onMouseLeave={this.handleMapMouseLeave}
+  //     />
+  //   );
+  // }
+  //
+  // /**
+  //  * @deprecated
+  //  * To be removed soon as this class will no longer genereate JSX canvas elements
+  //  * @param getRef
+  //  */
+  // generateMiniMapCanvas(getRef: (a: Painter, b: HTMLCanvasElement) => void): ReactElement<HTMLCanvasElement> {
+  //   return (
+  //     <canvas
+  //       className='minimap'
+  //       ref={(el) => {
+  //         if (!el) {
+  //           return null;
+  //         }
+  //
+  //         if (process.env.NODE_ENV === 'test' && !el.removeEventListener) {
+  //           // @ts-ignore Test mode voodoo
+  //           el = el._reactInternalFiber.child.stateNode; // eslint-disable-line
+  //         }
+  //
+  //         this.miniMapCanvas = el;
+  //         document.removeEventListener('mousemove', this.updateMiniMapCursorPosition);
+  //         document.addEventListener('mousemove', this.updateMiniMapCursorPosition);
+  //
+  //         this.miniMapAPI = new Painter(el.getContext('2d'));
+  //
+  //
+  //         // updateMiniMapSquare depends on mapAPI to be defined
+  //         // due to some race conditions this might happen before mapAPI was defined
+  //         // An interval is used to detect when mapAPI is defined
+  //         let key = setInterval(() => {
+  //           if (this.mapAPI) {
+  //             this.updateMiniMapSquare();
+  //             clearInterval(key);
+  //           }
+  //         }, 100);
+  //
+  //         getRef(this.miniMapAPI, el);
+  //       }}
+  //       height={this.mapHeight}
+  //       width={this.mapWidth}
+  //       onMouseMove={this.handleMiniMapMove}
+  //       onMouseDown={this.handleMiniMapClick}
+  //       onTouchStart={this.handleMiniMapTouchStart}
+  //     />
+  //   );
+  // }
+
+
+  // /**
+  //  * @deprecated
+  //  * To be removed soon as this class will no longer genereate JSX canvas elements
+  //  * @param getRef
+  //  */
+  // getNewCanvasPairs({ getMapRef, getMiniRef }: { getMapRef: (a: Painter) => void, getMiniRef: (a: Painter) => void }) {
+  //   return {
+  //     map: this.generateMapCanvas(getMapRef),
+  //     minimap: this.generateMiniMapCanvas(getMiniRef)
+  //   };
+  // }
+
 }
 
 export default GameCanvas;

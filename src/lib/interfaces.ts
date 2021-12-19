@@ -122,8 +122,8 @@ export interface IGameCanvasOptions {
   viewWidth: number,
   onViewMapClick?: (arg: IViewClickInfo) => void;
   onViewMapMove?: (arg: IViewMoveInfo) => void;
-  onMiniMapClick?: (e: MouseEvent<HTMLCanvasElement>) => void,
-  onMiniMapMove?: (e: MouseEvent<HTMLCanvasElement>) => void,
+  onMiniMapClick?: (e: MouseEventInit) => void,
+  onMiniMapMove?: (e: MouseEventInit) => void,
   enableSelectBox?: boolean,
 }
 

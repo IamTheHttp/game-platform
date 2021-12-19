@@ -10,7 +10,7 @@
   },
   "collectCoverageFrom": [
     "src/**/*.{js,jsx,ts,tsx}",
-    "!src/develop.{js, jsx, ts, tsx}",
+    "!src/develop.tsx",
     "!src/.dll/*",
     "!src/polyfill/*.*",
     "!src/index.ts",
@@ -19,7 +19,7 @@
   ],
   "coverageThreshold": {
     "global": {
-      "branches": 80,
+      "branches": 79,
       "functions": 80,
       "lines": 85,
       "statements": 85

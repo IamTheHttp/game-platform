@@ -1,5 +1,4 @@
 import { Shape } from "./PainterAPI/Shapes/Shape";
-import { MouseEvent } from "react";
 import Group from "./ECS/Group";
 export interface IEntityMap<T> {
     [key: number]: T;
@@ -104,8 +103,8 @@ export interface IGameCanvasOptions {
     viewWidth: number;
     onViewMapClick?: (arg: IViewClickInfo) => void;
     onViewMapMove?: (arg: IViewMoveInfo) => void;
-    onMiniMapClick?: (e: MouseEvent<HTMLCanvasElement>) => void;
-    onMiniMapMove?: (e: MouseEvent<HTMLCanvasElement>) => void;
+    onMiniMapClick?: (e: MouseEventInit) => void;
+    onMiniMapMove?: (e: MouseEventInit) => void;
     enableSelectBox?: boolean;
 }
 export interface ISelectedBoxData {

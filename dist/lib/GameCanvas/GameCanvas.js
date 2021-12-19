@@ -1,23 +1,4 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __read = (this && this.__read) || function (o, n) {
     var m = typeof Symbol === "function" && o[Symbol.iterator];
     if (!m) return o;
@@ -47,7 +28,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var React = __importStar(require("react"));
 var SelectedBox_1 = __importDefault(require("./SelectedBox/SelectedBox"));
 var getShapesFromClick_1 = __importDefault(require("./selectionUtils/getShapesFromClick"));
 var getShapesInSelectionBox_1 = __importDefault(require("./selectionUtils/getShapesInSelectionBox"));
@@ -57,9 +37,7 @@ var Painter_1 = require("../PainterAPI/Painter");
  */
 var GameCanvas = /** @class */ (function () {
     function GameCanvas(options) {
-        var _this = this;
-        var noop = function () {
-        };
+        var noop = function () { };
         this.selectedBoxColor = options.selectedBoxColor || 'blue';
         this.mapHeight = options.mapHeight;
         this.mapWidth = options.mapWidth;
@@ -75,23 +53,18 @@ var GameCanvas = /** @class */ (function () {
         this.dbClick = false;
         this.lastTap = 0;
         this.selectedBox = new SelectedBox_1.default();
-        [
-            'updateViewMapCursorPosition',
-            'updateMiniMapCursorPosition',
-            'handleMapMouseUp',
-            'handleMapMouseDown',
-            'handleMapMouseDown',
-            'handleMiniMapClick',
-            'handleMiniMapMove',
-            'handleMapMouseMove',
-            'handleMapMouseLeave',
-            'handleTouchMove',
-            'handleTouchStart',
-            'handleMapTouchEnd',
-            'handleMiniMapTouchStart'
-        ].forEach(function (fn) {
-            _this[fn] = _this[fn].bind(_this);
-        });
+        this.updateViewMapCursorPosition = this.updateViewMapCursorPosition.bind(this);
+        this.updateMiniMapCursorPosition = this.updateMiniMapCursorPosition.bind(this);
+        this.handleMapMouseUp = this.handleMapMouseUp.bind(this);
+        this.handleMapMouseDown = this.handleMapMouseDown.bind(this);
+        this.handleMiniMapClick = this.handleMiniMapClick.bind(this);
+        this.handleMiniMapMove = this.handleMiniMapMove.bind(this);
+        this.handleMapMouseMove = this.handleMapMouseMove.bind(this);
+        this.handleMapMouseLeave = this.handleMapMouseLeave.bind(this);
+        this.handleTouchMove = this.handleTouchMove.bind(this);
+        this.handleTouchStart = this.handleTouchStart.bind(this);
+        this.handleMapTouchEnd = this.handleMapTouchEnd.bind(this);
+        this.handleMiniMapTouchStart = this.handleMiniMapTouchStart.bind(this);
     }
     /**
      * @desc - Gets the x,y position inside the canvas based on a mouse event with clientX and clientY
@@ -210,13 +183,6 @@ var GameCanvas = /** @class */ (function () {
         this.miniMapX = x;
         this.miniMapY = y;
     };
-    GameCanvas.prototype.getNewCanvasPairs = function (_a) {
-        var getMapRef = _a.getMapRef, getMiniRef = _a.getMiniRef;
-        return {
-            map: this.generateMapCanvas(getMapRef),
-            minimap: this.generateMiniMapCanvas(getMiniRef)
-        };
-    };
     GameCanvas.prototype.handleMiniMapMove = function (event) {
         this.onMiniMapMove(event);
     };
@@ -321,52 +287,56 @@ var GameCanvas = /** @class */ (function () {
         // This is equal to MIN_ALLOWED_X_PANNING = 0;
         this.mapAPI.panCamera(this.ensureNegative(newPanX), this.ensureNegative(newPanY));
     };
-    GameCanvas.prototype.generateMapCanvas = function (getRef) {
-        var _this = this;
-        return (React.createElement("canvas", { className: 'viewMap', ref: function (el) {
-                if (!el) {
-                    return null;
-                }
-                if (process.env.NODE_ENV === 'test' && !el.removeEventListener) {
-                    // @ts-ignore
-                    el = el._reactInternalFiber.child.stateNode; // eslint-disable-line
-                }
-                _this.viewMapCanvas = el;
-                document.removeEventListener('mousemove', _this.updateViewMapCursorPosition);
-                document.addEventListener('mousemove', _this.updateViewMapCursorPosition);
-                // @ts-ignore For some reason there's a misamtch between the event types TODO - can this be improved?
-                el.removeEventListener('touchmove', _this.handleTouchMove, false);
-                // @ts-ignore For some reason there's a misamtch between the event types TODO - can this be improved?
-                el.addEventListener('touchmove', _this.handleTouchMove, false);
-                _this.mapAPI = new Painter_1.Painter(el.getContext('2d'));
-                getRef(_this.mapAPI, el);
-            }, height: this.viewHeight, width: this.viewWidth, onMouseDown: this.handleMapMouseDown, onTouchStart: this.handleTouchStart, onTouchEnd: this.handleMapTouchEnd, onMouseMove: this.handleMapMouseMove, onMouseUp: this.handleMapMouseUp, onMouseLeave: this.handleMapMouseLeave }));
+    GameCanvas.prototype.registerCanvasPair = function (mainMapCanvas, miniMapCanvas) {
+        return {
+            map: this.registerMapCanvas(mainMapCanvas),
+            minimap: this.registerMinimapCanvas(miniMapCanvas)
+        };
     };
-    GameCanvas.prototype.generateMiniMapCanvas = function (getRef) {
+    GameCanvas.prototype.registerMinimapCanvas = function (canvas) {
         var _this = this;
-        return (React.createElement("canvas", { className: 'minimap', ref: function (el) {
-                if (!el) {
-                    return null;
-                }
-                if (process.env.NODE_ENV === 'test' && !el.removeEventListener) {
-                    // @ts-ignore Test mode voodoo
-                    el = el._reactInternalFiber.child.stateNode; // eslint-disable-line
-                }
-                _this.miniMapCanvas = el;
-                document.removeEventListener('mousemove', _this.updateMiniMapCursorPosition);
-                document.addEventListener('mousemove', _this.updateMiniMapCursorPosition);
-                _this.miniMapAPI = new Painter_1.Painter(el.getContext('2d'));
-                // updateMiniMapSquare depends on mapAPI to be defined
-                // due to some race conditions this might happen before mapAPI was defined
-                // An interval is used to detect when mapAPI is defined
-                var key = setInterval(function () {
-                    if (_this.mapAPI) {
-                        _this.updateMiniMapSquare();
-                        clearInterval(key);
-                    }
-                }, 100);
-                getRef(_this.miniMapAPI, el);
-            }, height: this.mapHeight, width: this.mapWidth, onMouseMove: this.handleMiniMapMove, onMouseDown: this.handleMiniMapClick, onTouchStart: this.handleMiniMapTouchStart }));
+        this.miniMapCanvas = canvas;
+        document.removeEventListener('mousemove', this.updateMiniMapCursorPosition);
+        document.addEventListener('mousemove', this.updateMiniMapCursorPosition);
+        // updateMiniMapSquare depends on mapAPI to be defined
+        // due to some race conditions this might happen before mapAPI was defined
+        // An interval is used to detect when mapAPI is defined
+        var key = setInterval(function () {
+            if (_this.mapAPI) {
+                _this.updateMiniMapSquare();
+                clearInterval(key);
+            }
+        }, 100);
+        canvas.height = this.mapHeight;
+        canvas.width = this.mapWidth;
+        // @ts-ignore For some reason there's a misamtch between the event types TODO - can this be improved?
+        canvas.addEventListener('mousemove', this.handleMiniMapMove);
+        // @ts-ignore For some reason there's a misamtch between the event types TODO - can this be improved?
+        canvas.addEventListener('mousedown', this.handleMiniMapClick);
+        // @ts-ignore For some reason there's a misamtch between the event types TODO - can this be improved?
+        canvas.addEventListener('touchstart', this.handleMiniMapTouchStart);
+        this.miniMapAPI = new Painter_1.Painter(canvas.getContext('2d'));
+        return this.miniMapAPI;
+    };
+    GameCanvas.prototype.registerMapCanvas = function (canvas) {
+        this.viewMapCanvas = canvas;
+        document.removeEventListener('mousemove', this.updateViewMapCursorPosition);
+        document.addEventListener('mousemove', this.updateViewMapCursorPosition);
+        // @ts-ignore For some reason there's a misamtch between the event types TODO - can this be improved?
+        canvas.removeEventListener('touchmove', this.handleTouchMove, false);
+        // @ts-ignore For some reason there's a misamtch between the event types TODO - can this be improved?
+        canvas.addEventListener('touchmove', this.handleTouchMove, false);
+        canvas.height = this.viewHeight;
+        canvas.width = this.viewWidth;
+        canvas.addEventListener('mousedown', this.handleMapMouseDown);
+        canvas.addEventListener('mousemove', this.handleMapMouseMove);
+        // @ts-ignore For some reason there's a misamtch between the event types TODO - can this be improved?
+        canvas.addEventListener('touchstart', this.handleTouchStart);
+        canvas.addEventListener('touchend', this.handleMapTouchEnd);
+        canvas.addEventListener('mouseup', this.handleMapMouseUp);
+        canvas.addEventListener('mouseleave', this.handleMapMouseLeave);
+        this.mapAPI = new Painter_1.Painter(canvas.getContext('2d'));
+        return this.mapAPI;
     };
     return GameCanvas;
 }());

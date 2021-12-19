@@ -1,7 +1,5 @@
 import {Painter} from "../../../src/lib/PainterAPI/Painter";
 import {GameCanvas} from "../../../src";
-import {mount} from "enzyme";
-import {MouseEvent, TouchEvent} from "react";
 
 interface APIs {
   mapAPI: Painter,
@@ -47,14 +45,8 @@ describe('Tests Game canvas', () => {
       onMiniMapClick
     });
 
-    let {map, minimap} = gameCanvas.getNewCanvasPairs({
-      getMapRef: (API) => {
-        apis.mapAPI = API;
-      },
-      getMiniRef: (API) => {
-        apis.minimapAPI = API;
-      }
-    });
+    apis.mapAPI = gameCanvas.registerMapCanvas(document.createElement('canvas'));
+    apis.minimapAPI = gameCanvas.registerMinimapCanvas(document.createElement('canvas'));
 
     HTMLCanvasElement.prototype.getBoundingClientRect = () => {
       return {
@@ -70,8 +62,6 @@ describe('Tests Game canvas', () => {
         }
       }
     };
-    mount(map);
-    mount(minimap);
   });
 
   it('Tests optional arguments for click and move (No errors)', () => {
@@ -82,17 +72,7 @@ describe('Tests Game canvas', () => {
       viewWidth: 50
     });
 
-    let {map, minimap} = gameCanvas.getNewCanvasPairs({
-      getMapRef: (API) => {
-        apis.mapAPI = API;
-      },
-      getMiniRef: (API) => {
-        apis.minimapAPI = API;
-      }
-    });
-
-    mount(map);
-    mount(minimap);
+    apis.mapAPI = gameCanvas.registerMapCanvas(document.createElement('canvas'));
   });
 
 
@@ -185,7 +165,7 @@ describe('Tests Game canvas', () => {
     gameCanvas.miniMapX = 50;
     gameCanvas.miniMapY = 50;
     let mocked = jest.spyOn(apis.mapAPI, 'panCamera');
-    gameCanvas.handleMiniMapClick({} as MouseEvent<HTMLCanvasElement>);
+    gameCanvas.handleMiniMapClick({} as MouseEventInit);
 
     expect(mocked.mock.calls.length).toBe(1);
     expect(mocked.mock.calls[0]).toEqual([-25, -25]);
@@ -209,7 +189,7 @@ describe('Tests Game canvas', () => {
           clientY: 0
         }
       ]
-    } as unknown as TouchEvent<HTMLCanvasElement>;
+    } as unknown as TouchEvent;
 
     let canvas = {
       width: MAP_WIDTH / 10, // this is how big the canvas element is, not logically what's inside it
