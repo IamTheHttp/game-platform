@@ -1,5 +1,5 @@
 import Entity from "./ECS/Entity";
-import {Shape} from "./CanvasAPI/Shapes/Shape";
+import {Shape} from "./PainterAPI/Shapes/Shape";
 import {MouseEvent} from "react";
 import Group from "./ECS/Group";
 

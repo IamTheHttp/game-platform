@@ -3,7 +3,8 @@
 /* global expect */
 /* global beforeEach */
 
-import CanvasAPI from 'lib/CanvasAPI/CanvasAPI';
+
+import {Painter} from "../../../src/lib/PainterAPI/Painter";
 
 interface Mocked2DContext {
   measureText: (text: 'string') => object
@@ -27,9 +28,9 @@ interface Mocked2DContext {
 
 
 
-describe('Tests the CanvasAPI', () => {
+describe('Tests the PainterAPI', () => {
 
-  let canvasAPI : CanvasAPI;
+  let PainterAPI : Painter;
   let canvasWidth = 200;
   let canvasHeight = 500;
   beforeEach(() => {
@@ -39,7 +40,7 @@ describe('Tests the CanvasAPI', () => {
 
     canvas.width = canvasWidth;
     canvas.height = canvasHeight;
-    canvasAPI = new CanvasAPI({
+    PainterAPI = new Painter({
       measureText(a: string) {
         return {
           width: 100
@@ -64,20 +65,20 @@ describe('Tests the CanvasAPI', () => {
 
   it('cannot instantiate without ctx', () => {
     expect(() => {
-      new CanvasAPI(null, null);
+      new Painter(null, null);
     }).toThrow();
   });
 
-  it('inits CanvasAPI', () => {
-    let {ctx} = canvasAPI.layers.initial;
-    let layer = canvasAPI.layers.initial;
+  it('inits PainterAPI', () => {
+    let {ctx} = PainterAPI.layers.initial;
+    let layer = PainterAPI.layers.initial;
 
     expect(ctx.strokeStyle).toBe('white');
     expect(layer.shapes.size).toBe(0);
   });
 
   it('Adds a shape, renders, and clears', () => {
-    let layer = canvasAPI.layers.initial;
+    let layer = PainterAPI.layers.initial;
     let ctx = layer.ctx as unknown as Mocked2DContext;
 
     let x = 15;
@@ -85,7 +86,7 @@ describe('Tests the CanvasAPI', () => {
     let width = 100;
     let height = 50;
     expect(layer.shapes.size).toBe(0);
-    canvasAPI.addRect({
+    PainterAPI.drawRect({
       id: 'rect',
       x,
       y,
@@ -93,30 +94,30 @@ describe('Tests the CanvasAPI', () => {
       height
     });
     expect(layer.shapes.size).toBe(1);
-    canvasAPI.draw();
+    PainterAPI.drawAllShapesInLayer();
 
     expect(ctx.clearRect.mock.calls[0]).toEqual([0, 0, canvasWidth, canvasHeight]);
     expect(ctx.rect.mock.calls[0]).toEqual([x, y, width, height]);
 
-    canvasAPI.clear();
+    PainterAPI.clearAllShapesInLayer();
     expect(layer.shapes.size).toBe(0);
   });
 
   it('Adds a circle, renders  and remove it', () => {
-    let layer = canvasAPI.layers.initial;
+    let layer = PainterAPI.layers.initial;
     let ctx = layer.ctx as unknown as Mocked2DContext;
 
     let x = 15;
     let y = 10;
     let radius = 500;
     expect(layer.shapes.size).toBe(0);
-    canvasAPI.addCircle({
+    PainterAPI.drawCircle({
       id: 'circle',
       x,
       y,
       radius
     });
-    canvasAPI.addCircle({
+    PainterAPI.drawCircle({
       id: 'yellowCircle',
       x,
       y,
@@ -124,22 +125,22 @@ describe('Tests the CanvasAPI', () => {
       fillColor: 'yellow'
     });
     expect(layer.shapes.size).toBe(2);
-    canvasAPI.draw();
+    PainterAPI.drawAllShapesInLayer();
 
     expect(ctx.arc.mock.calls[0]).toEqual([x, y, radius, 0, Math.PI * 2]);
     expect(ctx.fill.mock.calls[0]).toBeDefined();
-    canvasAPI.remove('circle');
+    PainterAPI.removeShapeByID('circle');
     expect(layer.shapes.size).toBe(1);
   });
 
   it('write a text', () => {
-    let layer = canvasAPI.layers.initial;
+    let layer = PainterAPI.layers.initial;
     let ctx = layer.ctx as unknown as Mocked2DContext;
     let x = 15;
     let y = 10;
 
     expect(layer.shapes.size).toBe(0);
-    canvasAPI.write({
+    PainterAPI.drawText({
       id: 'text',
       text: 'test', // the image to display
       x, y, // pos for x,y..
@@ -147,47 +148,47 @@ describe('Tests the CanvasAPI', () => {
       fillStyle: 'white'
     });
     expect(layer.shapes.size).toBe(1);
-    canvasAPI.draw();
+    PainterAPI.drawAllShapesInLayer();
 
     expect(ctx.fillText.mock.calls[0]).toEqual(['test', x, y]);
 
-    canvasAPI.remove('text');
+    PainterAPI.removeShapeByID('text');
     expect(layer.shapes.size).toBe(0);
   });
 
   it('Sets and get pan values', () => {
-    let layer = canvasAPI.layers.initial;
+    let layer = PainterAPI.layers.initial;
     let ctx = layer.ctx as unknown as Mocked2DContext;
 
-    expect(canvasAPI.getPan()).toEqual({
+    expect(PainterAPI.getCurrentPanValue()).toEqual({
       panX: 0,
       panY: 0
     });
 
-    canvasAPI.pan(100, 100);
+    PainterAPI.panCamera(100, 100);
     expect(ctx.setTransform.mock.calls[0]).toEqual([1, 0, 0, 1, 100, 100]);
 
-    expect(canvasAPI.getPan()).toEqual({
+    expect(PainterAPI.getCurrentPanValue()).toEqual({
       panX: 100,
       panY: 100
     });
   });
 
   it('Adds a circle to a different layer, clearing one layer should not clear the other', () => {
-    let layer = canvasAPI.layers.initial;
+    let layer = PainterAPI.layers.initial;
     let x = 15;
     let y = 10;
     let radius = 5;
 
-    canvasAPI.addCircle({
+    PainterAPI.drawCircle({
       id: 'circle',
       x,
       y,
       radius
     });
 
-    canvasAPI.addLayer('otherLayer');
-    canvasAPI.addCircle({
+    PainterAPI.addLayer('otherLayer');
+    PainterAPI.drawCircle({
       id: 'circle',
       x,
       y,
@@ -196,29 +197,29 @@ describe('Tests the CanvasAPI', () => {
     });
     expect(layer.shapes.size).toBe(1);
 
-    canvasAPI.clear();
+    PainterAPI.clearAllShapesInLayer();
     expect(layer.shapes.size).toBe(0);
 
 
-    expect(canvasAPI.layers.otherLayer.shapes.size).toBe(1);
+    expect(PainterAPI.layers.otherLayer.shapes.size).toBe(1);
   });
 
   it('Can remove a layer once it was added', () => {
-    canvasAPI.addLayer('otherLayer');
-    canvasAPI.addCircle({
+    PainterAPI.addLayer('otherLayer');
+    PainterAPI.drawCircle({
       id: 'circle',
       x: 5,
       y: 5,
       radius: 5,
       layerName: 'otherLayer'
     });
-    canvasAPI.removeLayer('otherLayer');
+    PainterAPI.removeLayer('otherLayer');
 
-    expect(canvasAPI.layers.otherLayer).toBeFalsy();
+    expect(PainterAPI.layers.otherLayer).toBeFalsy();
   });
 
   it('Adds an arc to the shapes', () => {
-    let layer = canvasAPI.layers.initial;
+    let layer = PainterAPI.layers.initial;
     let ctx = layer.ctx as unknown as Mocked2DContext;
     let x = 100;
     let y = 100;
@@ -227,7 +228,7 @@ describe('Tests the CanvasAPI', () => {
     let size = 1;
     let fillColor = 'green';
 
-    canvasAPI.addArc({
+    PainterAPI.drawArc({
       id: 'myArc',
       x,
       y,
@@ -238,13 +239,13 @@ describe('Tests the CanvasAPI', () => {
     });
 
     expect(layer.shapes.size).toBe(1);
-    canvasAPI.draw();
+    PainterAPI.drawAllShapesInLayer();
     expect(ctx.arc.mock.calls[0]).toEqual([x, y, radius, (direction - size / 2) * Math.PI, (direction + size / 2) * Math.PI]);
     expect(ctx.fill.mock.calls[0]).toBeDefined();
   });
 
   it('Adds an arc without FillColor', () => {
-    let layer = canvasAPI.layers.initial;
+    let layer = PainterAPI.layers.initial;
     let ctx = layer.ctx as unknown as Mocked2DContext;
 
     let x = 100;
@@ -253,7 +254,7 @@ describe('Tests the CanvasAPI', () => {
     let direction = 1;
     let size = 1;
 
-    canvasAPI.addArc({
+    PainterAPI.drawArc({
       id: 'myArc',
       x,
       y,
@@ -262,16 +263,16 @@ describe('Tests the CanvasAPI', () => {
       size
     });
 
-    canvasAPI.draw();
+    PainterAPI.drawAllShapesInLayer();
     expect(ctx.arc.mock.calls.length).toBeGreaterThan(0);
     expect(ctx.fill.mock.calls[0]).toBeUndefined();
   });
 
   it('clear all layers', () => {
-    canvasAPI.addLayer('otherLayer');
-    canvasAPI.addLayer('otherLayer2');
+    PainterAPI.addLayer('otherLayer');
+    PainterAPI.addLayer('otherLayer2');
 
-    canvasAPI.addCircle({
+    PainterAPI.drawCircle({
       id: 'circle',
       x: 5,
       y: 5,
@@ -279,7 +280,7 @@ describe('Tests the CanvasAPI', () => {
       layerName: 'otherLayer'
     });
 
-    canvasAPI.addCircle({
+    PainterAPI.drawCircle({
       id: 'circle',
       x: 5,
       y: 5,
@@ -287,17 +288,17 @@ describe('Tests the CanvasAPI', () => {
       layerName: 'otherLayer2'
     });
 
-    expect(canvasAPI.layers.otherLayer.shapes.size).toBeTruthy();
-    expect(canvasAPI.layers.otherLayer2.shapes.size).toBeTruthy();
+    expect(PainterAPI.layers.otherLayer.shapes.size).toBeTruthy();
+    expect(PainterAPI.layers.otherLayer2.shapes.size).toBeTruthy();
 
 
-    canvasAPI.clearAllLayers();
-    expect(canvasAPI.layers.otherLayer.shapes.size).toBeFalsy();
-    expect(canvasAPI.layers.otherLayer2.shapes.size).toBeFalsy();
+    PainterAPI.clearAllLayers();
+    expect(PainterAPI.layers.otherLayer.shapes.size).toBeFalsy();
+    expect(PainterAPI.layers.otherLayer2.shapes.size).toBeFalsy();
   });
 
   it('Writes a bubble text to the canvas', () => {
-    canvasAPI.writeBubble({
+    PainterAPI.drawTextBubble({
       id: 'testBubbleText',
       text: 'It is dangerous to go alone! \ntake this!',
       backgroundColor: 'green',
@@ -314,13 +315,13 @@ describe('Tests the CanvasAPI', () => {
     });
 
     // even though 0 height and 0 width were given, the string length and many lines force some size
-    let shape = canvasAPI.layers.initial.shapes.get('testBubbleText');
+    let shape = PainterAPI.layers.initial.shapes.get('testBubbleText');
     expect(shape.metaData.height).toBeGreaterThan(0);
     expect(shape.metaData.width).toBe(100);
   });
 
   it('Writes a bubble text to the canvas - Takes into account padding for height calculations', () => {
-    canvasAPI.writeBubble({
+    PainterAPI.drawTextBubble({
       id: 'testBubbleText',
       text: 'It is dangerous to go alone! \ntake this!',
       backgroundColor: 'green',
@@ -337,13 +338,13 @@ describe('Tests the CanvasAPI', () => {
     });
 
     // even though 0 height and 0 width were given, the string length and many lines force some size
-    let shape = canvasAPI.layers.initial.shapes.get('testBubbleText');
+    let shape = PainterAPI.layers.initial.shapes.get('testBubbleText');
     expect(shape.metaData.height).toBeGreaterThan(0);
     expect(shape.metaData.width).toBe(205); // + padding * 2 + border + 100 from mock measureText
   });
 
   it('Works without missing default arguments', () => {
-    canvasAPI.writeBubble({
+    PainterAPI.drawTextBubble({
       id: 'testBubbleText',
       text: 'It is dangerous to go alone! \ntake this!',
       backgroundColor: 'green',
@@ -357,7 +358,7 @@ describe('Tests the CanvasAPI', () => {
     });
 
     // even though 0 height and 0 width were given, the string length and many lines force some size
-    let shape = canvasAPI.layers.initial.shapes.get('testBubbleText');
+    let shape = PainterAPI.layers.initial.shapes.get('testBubbleText');
     expect(shape.metaData.height).toBeGreaterThan(0);
     expect(shape.metaData.width).toBe(125); // + padding(default 10) * 2 + border + 100 from mock measureText
   });

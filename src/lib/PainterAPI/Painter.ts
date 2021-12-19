@@ -21,7 +21,11 @@ import {
 
 
 
-class CanvasAPI {
+
+
+
+
+export class Painter {
   layers: ILayers;
   defaultStrokeStyle: string;
   panX: number;
@@ -42,6 +46,11 @@ class CanvasAPI {
     ctx.strokeStyle = strokeStyle;
   }
 
+  /**
+   * Add another layer that can be used for drawAllShapesInLayering.
+   * Internally this clones the existing canvas.
+   * @param name
+   */
   addLayer(name: string) {
     let originCanvas = this.layers.initial.ctx.canvas;
 
@@ -65,10 +74,7 @@ class CanvasAPI {
     delete this.layers[name];
   }
 
-  /**
-   * Clears all the shapes
-   */
-  clear(layerName = 'initial') {
+  clearAllShapesInLayer(layerName = 'initial') {
     let layer = this.layers[layerName];
     layer.shapes = new Map();
   }
@@ -78,23 +84,18 @@ class CanvasAPI {
       if (!this.layers.hasOwnProperty(layerName)) {
         continue;
       }
-      this.clear(layerName);
+      this.clearAllShapesInLayer(layerName);
     }
   }
 
-  /**
-   * Removes a shape by its ID
-   * @param id
-   * @param layerName
-   */
-  remove(id: string, layerName = 'initial') {
+  removeShapeByID(id: string, layerName = 'initial') {
     let layer = this.layers[layerName];
     let shapes = layer.shapes;
     shapes.delete(id);
   }
 
   /* istanbul ignore next */
-  addImage({
+  drawImage({
              id,
              image, // the image to display
              x, y, // pos for x,y..
@@ -138,7 +139,7 @@ class CanvasAPI {
     }));
   }
 
-  writeBubble({
+  drawTextBubble({
                 id,
                 text,
                 backgroundColor,
@@ -168,7 +169,7 @@ class CanvasAPI {
       longestTextWidth = width > longestTextWidth ? width : longestTextWidth;
     }
 
-    this.addRect({
+    this.drawRect({
       id: `${id}`,
       x,
       y,
@@ -181,7 +182,7 @@ class CanvasAPI {
     });
 
     for (let i = 0; i < linesOfText.length; i++) {
-      this.write({
+      this.drawText({
         id: `${id}-bubbleText-${i}`,
         text: linesOfText[i],
         x: x + paddingLeft,
@@ -196,7 +197,7 @@ class CanvasAPI {
     }
   }
 
-  addRect({id, x, y, width, height, strokeStyle, color, lineWidth, fillColor, layerName}: IRect) {
+  drawRect({id, x, y, width, height, strokeStyle, color, lineWidth, fillColor, layerName}: IRect) {
     let layer = this.layers[layerName || 'initial'];
     if (!layer) {
       throw `Could not find layer '${layerName}', are you sure you created the layer?`;
@@ -231,7 +232,7 @@ class CanvasAPI {
     }));
   }
 
-  addArc({id, direction, size, color = 'black', strokeStyle = 'black', fillColor, lineWidth = 1, x, y, radius, layerName = 'initial'}: IArc) {
+  drawArc({id, direction, size, color = 'black', strokeStyle = 'black', fillColor, lineWidth = 1, x, y, radius, layerName = 'initial'}: IArc) {
     let layer = this.layers[layerName];
     let ctx = layer.ctx;
     let shapes = layer.shapes;
@@ -254,7 +255,7 @@ class CanvasAPI {
     }));
   }
 
-  addCircle(circleData: ICircle) {
+  drawCircle(circleData: ICircle) {
     let layer = this.layers[circleData.layerName || 'initial'];
     let ctx = layer.ctx;
     let shapes = layer.shapes;
@@ -265,7 +266,7 @@ class CanvasAPI {
   /**
    * Method allows us to pan around the canvas
    */
-  pan(x:number, y:number) {
+  panCamera(x:number, y:number) {
     this.panX = x;
     this.panY = y;
 
@@ -279,19 +280,19 @@ class CanvasAPI {
 
       // non initial layers are drawn much less often, so we need a manual one here.
       if (layerName !== 'initial') {
-        this.draw(layerName); // pan requires a draw to all non initial layers
+        this.drawAllShapesInLayer(layerName); // pan requires a draw to all non initial layers
       }
     }
   }
 
-  getPan(): IPanOffset {
+  getCurrentPanValue(): IPanOffset {
     return {
       panX: this.panX || 0,
       panY: this.panY || 0,
     }
   }
 
-  write({
+  drawText({
           id,
           text,
           x,
@@ -321,7 +322,7 @@ class CanvasAPI {
     }));
   }
 
-  draw(layerName = 'initial') {
+  drawAllShapesInLayer(layerName = 'initial') {
     let layer = this.layers[layerName];
     let ctx = layer.ctx;
     let shapes = layer.shapes;
@@ -338,10 +339,9 @@ class CanvasAPI {
   }
 }
 
-// adding an image causes segmentation fault for some reason :)
+// adding an image causes segmentation fault for some reason.
 /* istanbul ignore next */
 if (process.env.NODE_ENV === 'test') {
-  CanvasAPI.prototype.addImage = () => {
+  Painter.prototype.drawImage = () => {
   };
 }
-export default CanvasAPI;

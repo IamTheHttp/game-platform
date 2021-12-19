@@ -9,7 +9,7 @@ import {
   IClientViewCoordinates,
   IHit
 } from "../interfaces";
-import CanvasAPI from "../CanvasAPI/CanvasAPI";
+import {Painter} from "../PainterAPI/Painter";
 import {MouseEvent, ReactElement, ReactHTMLElement, TouchEvent, TouchEventHandler} from "react";
 
 
@@ -26,6 +26,10 @@ type FUNCTIONS = 'updateViewMapCursorPosition' |
   'handleMapTouchEnd' |
   'handleMiniMapTouchStart';
 
+
+/**
+ * This class is responsible for hooking the canvas events to the PainterAPI.
+ */
 class GameCanvas {
   selectedBoxColor: string;
   mapHeight: number;
@@ -43,8 +47,8 @@ class GameCanvas {
   lastTap: number;
   selectedBox: SelectedBox;
   isMouseDown: boolean;
-  mapAPI: CanvasAPI;
-  miniMapAPI: CanvasAPI;
+  mapAPI: Painter;
+  miniMapAPI: Painter;
   lastKnownPositionInCanvasTermsX: number;
   lastKnownPositionInCanvasTermsY: number;
   viewMapCanvas: HTMLCanvasElement;
@@ -96,9 +100,9 @@ class GameCanvas {
    *         Will return X,Y values in relative terms to the painted Canvas dimensions and includes panning
    * @param clientInputCoordinates
    * @param canvas
-   * @param canvasAPI
+   * @param PainterAPI
    */
-  getCursorPositionInCanvasTerms(clientInputCoordinates: IClientViewCoordinates, canvas: HTMLCanvasElement, canvasAPI: CanvasAPI): { x: number, y: number } {
+  getCursorPositionInCanvasTerms(clientInputCoordinates: IClientViewCoordinates, canvas: HTMLCanvasElement, PainterAPI: Painter): { x: number, y: number } {
     let rect = canvas.getBoundingClientRect();
 
     if (typeof clientInputCoordinates.x !== 'number' || typeof clientInputCoordinates.y !== 'number') {
@@ -122,8 +126,8 @@ class GameCanvas {
     let scaledY = Math.max(0, Math.round(rawYyOnCanvasElement * HEIGHT_RATIO));
 
     // Now we're in scaled canvas X,Y terms, we can safely subtract the Pan to get the right position
-    let x = scaledX - canvasAPI.getPan().panX;
-    let y = scaledY - canvasAPI.getPan().panY;
+    let x = scaledX - PainterAPI.getCurrentPanValue().panX;
+    let y = scaledY - PainterAPI.getCurrentPanValue().panY;
 
     return {x, y};
   }
@@ -136,7 +140,7 @@ class GameCanvas {
         this.selectedBox.setEnd(this.lastKnownPositionInCanvasTermsX, this.lastKnownPositionInCanvasTermsY);
         let data = this.selectedBox.getData();
 
-        this.mapAPI.addRect({
+        this.mapAPI.drawRect({
           id: 'selectedBox',
           x: data.start.x,
           y: data.start.y,
@@ -185,7 +189,7 @@ class GameCanvas {
       }
     });
 
-    this.mapAPI.addRect({
+    this.mapAPI.drawRect({
       fillColor: null,
       layerName: "initial",
       lineWidth: 1,
@@ -228,10 +232,7 @@ class GameCanvas {
     this.miniMapY = y;
   }
 
-  getNewCanvasPairs({
-                      getMapRef,
-                      getMiniRef
-                    }: { getMapRef: (a: CanvasAPI) => void, getMiniRef: (a: CanvasAPI) => void }) {
+  getNewCanvasPairs({ getMapRef, getMiniRef }: { getMapRef: (a: Painter) => void, getMiniRef: (a: Painter) => void }) {
     return {
       map: this.generateMapCanvas(getMapRef),
       minimap: this.generateMiniMapCanvas(getMiniRef)
@@ -257,7 +258,7 @@ class GameCanvas {
     calcPanX = calcPanX + this.viewWidth < width ? calcPanX : width - this.viewWidth;
     calcPanY = calcPanY + this.viewHeight < height ? calcPanY : height - this.viewHeight;
 
-    this.mapAPI.pan(-calcPanX, -calcPanY);
+    this.mapAPI.panCamera(-calcPanX, -calcPanY);
 
     // draw the minimap square box
     this.updateMiniMapSquare();
@@ -265,12 +266,12 @@ class GameCanvas {
   }
 
   updateMiniMapSquare() {
-    this.miniMapAPI.addRect({
+    this.miniMapAPI.drawRect({
       fillColor: null,
       layerName: "initial",
       id: 'currentMap',
-      x: -this.mapAPI.getPan().panX,
-      y: -this.mapAPI.getPan().panY,
+      x: -this.mapAPI.getCurrentPanValue().panX,
+      y: -this.mapAPI.getCurrentPanValue().panY,
       width: this.viewWidth,
       height: this.viewHeight,
       strokeStyle: 'green',
@@ -342,7 +343,7 @@ class GameCanvas {
     };
     let {x, y} = this.getCursorPositionInCanvasTerms(coords, this.viewMapCanvas, this.mapAPI);
 
-    let {panX: currentPanX, panY: currentPanY} = this.mapAPI.getPan();
+    let {panX: currentPanX, panY: currentPanY} = this.mapAPI.getCurrentPanValue();
 
     // example: current is 5, lastKnown is 20, we moved -15.
     let xPxChange = x - this.lastKnownPositionInCanvasTermsX;
@@ -367,10 +368,10 @@ class GameCanvas {
     // our panning is always negative, as don't allow to scroll off the edges
     // (if panning could be positive, we the canvas edge would be in the mainView)
     // This is equal to MIN_ALLOWED_X_PANNING = 0;
-    this.mapAPI.pan(this.ensureNegative(newPanX), this.ensureNegative(newPanY));
+    this.mapAPI.panCamera(this.ensureNegative(newPanX), this.ensureNegative(newPanY));
   }
 
-  generateMapCanvas(getRef: (a: CanvasAPI, b: HTMLCanvasElement) => void): ReactElement<HTMLCanvasElement> {
+  generateMapCanvas(getRef: (a: Painter, b: HTMLCanvasElement) => void): ReactElement<HTMLCanvasElement> {
     return (
       <canvas
         className='viewMap'
@@ -395,7 +396,7 @@ class GameCanvas {
           // @ts-ignore For some reason there's a misamtch between the event types TODO - can this be improved?
           el.addEventListener('touchmove', this.handleTouchMove, false);
 
-          this.mapAPI = new CanvasAPI(el.getContext('2d'));
+          this.mapAPI = new Painter(el.getContext('2d'));
           getRef(this.mapAPI, el);
         }}
         height={this.viewHeight}
@@ -410,7 +411,7 @@ class GameCanvas {
     );
   }
 
-  generateMiniMapCanvas(getRef: (a: CanvasAPI, b: HTMLCanvasElement) => void): ReactElement<HTMLCanvasElement> {
+  generateMiniMapCanvas(getRef: (a: Painter, b: HTMLCanvasElement) => void): ReactElement<HTMLCanvasElement> {
     return (
       <canvas
         className='minimap'
@@ -428,7 +429,7 @@ class GameCanvas {
           document.removeEventListener('mousemove', this.updateMiniMapCursorPosition);
           document.addEventListener('mousemove', this.updateMiniMapCursorPosition);
 
-          this.miniMapAPI = new CanvasAPI(el.getContext('2d'));
+          this.miniMapAPI = new Painter(el.getContext('2d'));
 
 
           // updateMiniMapSquare depends on mapAPI to be defined

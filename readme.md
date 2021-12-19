@@ -5,12 +5,14 @@
 [ ] Create real objects for mouseMoveDataInterface to make the interface easier to document\
 [ ] Add docs for the canvasAPI as a stand alone
 ---
-#Changelog
-### 06/08/2022
-Release version **2.1.2**
-- Fix(Regression) - Any shape that accepts strokeStyle will now also accepts color as an alias
 
-### 02/08/2022
+#Changelog
+### 19/12/2021
+Release version **3.0.0**
+- Refactor(CanvasAPI): Rename to Painter (new Painter())
+- Feature(Painter): Added event hooks into CanvasAPI allowing it to receive an initial canvas  
+
+### 02/08/2021
 Release version **2.1.1**
 - Update all dependencies to latest 
 
@@ -37,7 +39,7 @@ Release version **0.3.1:**
 ###29/10/2019
 Release version **0.3.0:**
 - Moved all layerName arguments into the objects for all functions (for functions that accept Objects)
-- Added a writeBubble() text function
+- Added a drawTextBubble() text function
 - Added click detection(for click and select box) against rect shapes (it was only circles)\
 - Added tests for click detection against rect\
 - onViewMapMove/click and onMinimapMove/click are now optional callbacks\
@@ -241,7 +243,7 @@ render(<div>
   let img = new Image;
   img.src = 'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png';
   img.onload = () => {
-    apis.main.addImage({
+    apis.main.drawImage({
       id : 'my-image',
       image:img, // the image to display
       x: 100, y: 100, // pos for x,y..
@@ -252,7 +254,7 @@ render(<div>
   };
   
   
-  apis.main.writeBubble({
+  apis.main.drawTextBubble({
     id: 'bubbleTextExampleID',
     text: 'It is dangerous to go alone! \ntake this!',
     backgroundColor: 'green',
@@ -268,10 +270,10 @@ render(<div>
 
   // in a game, you usually render in a loop, the API supports it by having deterministic draws
   setInterval(() => {
-    // Once we have all our shapes in place, we use the internal CanvasAPI to draw them
+    // Once we have all our shapes in place, we use the internal Painter to draw them
     // Internally this deletes the entire canvas, and re-renders all the shapes.
-    apis.main.draw();
-    apis.mini.draw();
+    apis.main.drawAllShapesInLayer();
+    apis.mini.drawAllShapesInLayer();
   }, 16);
 });
 ```

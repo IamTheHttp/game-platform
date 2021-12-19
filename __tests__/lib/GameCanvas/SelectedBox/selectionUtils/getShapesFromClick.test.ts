@@ -1,4 +1,4 @@
-import {Shape} from "../../../../../src/lib/CanvasAPI/Shapes/Shape";
+import {Shape} from "../../../../../src/lib/PainterAPI/Shapes/Shape";
 import getShapesFromClick from "../../../../../src/lib/GameCanvas/selectionUtils/getShapesFromClick";
 
 describe('Check click detection against various shapes', () => {

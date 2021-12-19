@@ -1,11 +1,11 @@
-import CanvasAPI from "../../../src/lib/CanvasAPI/CanvasAPI";
+import {Painter} from "../../../src/lib/PainterAPI/Painter";
 import {GameCanvas} from "../../../src";
 import {mount} from "enzyme";
 import {MouseEvent, TouchEvent} from "react";
 
 interface APIs {
-  mapAPI: CanvasAPI,
-  minimapAPI: CanvasAPI
+  mapAPI: Painter,
+  minimapAPI: Painter
 }
 
 
@@ -16,9 +16,9 @@ class MockedCanvas extends HTMLCanvasElement {
 
 
 class MockedGameCanvas extends GameCanvas {
-  onViewMapClick:jest.Mocked<any>;
-  onMiniMapClick:jest.Mocked<any>;
-  onViewMapMove:jest.Mocked<any>;
+  onViewMapClick: jest.Mocked<any>;
+  onMiniMapClick: jest.Mocked<any>;
+  onViewMapMove: jest.Mocked<any>;
   viewMapCanvas: MockedCanvas;
   lastKnownPositionInCanvasTermsY: number;
   lastKnownPositionInCanvasTermsX: number;
@@ -27,15 +27,14 @@ class MockedGameCanvas extends GameCanvas {
 describe('Tests Game canvas', () => {
   let gameCanvas: MockedGameCanvas;
   let apis: APIs = {
-    minimapAPI:null,
-    mapAPI:null
+    minimapAPI: null,
+    mapAPI: null
   };
 
   beforeEach(() => {
     let onViewMapClick = jest.fn();
     let onViewMapMove = jest.fn();
     let onMiniMapClick = jest.fn();
-
 
 
     gameCanvas = new GameCanvas({
@@ -65,9 +64,10 @@ describe('Tests Game canvas', () => {
         bottom: 100,
         width: 100,
         height: 100,
-        x:0,
+        x: 0,
         y: 0,
-        toJSON: () => {}
+        toJSON: () => {
+        }
       }
     };
     mount(map);
@@ -152,8 +152,8 @@ describe('Tests Game canvas', () => {
         };
       }
     };
-    let canvasAPI = {
-      getPan() {
+    let PainterAPI = {
+      getCurrentPanValue() {
         return {
           panX: 0,
           panY: 0
@@ -161,17 +161,17 @@ describe('Tests Game canvas', () => {
       }
     };
 
-     gameCanvas.viewMapCanvas = canvas as HTMLCanvasElement;
-    gameCanvas.mapAPI = canvasAPI as CanvasAPI;
+    gameCanvas.viewMapCanvas = canvas as HTMLCanvasElement;
+    gameCanvas.mapAPI = PainterAPI as Painter;
     gameCanvas.updateViewMapCursorPosition({
-      x:10, y:10
+      x: 10, y: 10
     });
     expect(gameCanvas.lastKnownPositionInCanvasTermsX).toBe(10);
     expect(gameCanvas.lastKnownPositionInCanvasTermsY).toBe(10);
   });
 
   it('tests updateMiniMapCursorPosition, should populate miniMapX and miniMapY', () => {
-    gameCanvas.updateMiniMapCursorPosition({x: 10, y:10});
+    gameCanvas.updateMiniMapCursorPosition({x: 10, y: 10});
     expect(gameCanvas.miniMapX).toBe(10);
     expect(gameCanvas.miniMapY).toBe(10);
   });
@@ -180,18 +180,18 @@ describe('Tests Game canvas', () => {
     gameCanvas.handleMapMouseDown();
   });
 
-  it('tests handleMiniMapClick, Should trigger pan on the canvasAPI', () => {
+  it('tests handleMiniMapClick, Should trigger pan on the PainterAPI', () => {
     // The point of this test is to "centralize" the current X,Y
     gameCanvas.miniMapX = 50;
     gameCanvas.miniMapY = 50;
-    let mocked = jest.spyOn(apis.mapAPI, 'pan');
+    let mocked = jest.spyOn(apis.mapAPI, 'panCamera');
     gameCanvas.handleMiniMapClick({} as MouseEvent<HTMLCanvasElement>);
 
     expect(mocked.mock.calls.length).toBe(1);
     expect(mocked.mock.calls[0]).toEqual([-25, -25]);
   });
 
-  it('tests handleTouchMove, Should trigger pan on the canvasAPI', () => {
+  it('tests handleTouchMove, Should trigger pan on the PainterAPI', () => {
     let MAP_WIDTH = 1000;
     let MAP_HEIGHT = 1000;
 
@@ -201,7 +201,8 @@ describe('Tests Game canvas', () => {
     gameCanvas.mapHeight = MAP_HEIGHT;
 
     let event: TouchEvent = {
-      preventDefault: () => {},
+      preventDefault: () => {
+      },
       touches: [
         {
           clientX: 0,
@@ -223,19 +224,20 @@ describe('Tests Game canvas', () => {
       }
     };
 
-    let canvasAPI = {
-      getPan() {
+    let PainterAPI = {
+      getCurrentPanValue() {
         return {
           panX: 0,
           panY: 0
         };
       },
-      pan(x: number, y: number) {}
+      panCamera(x: number, y: number) {
+      }
     };
 
     gameCanvas.viewMapCanvas = canvas as HTMLCanvasElement; // for tests we just want a small subset, so any is ok
-    gameCanvas.mapAPI = canvasAPI as CanvasAPI;
-    let mocked = jest.spyOn(gameCanvas.mapAPI, 'pan');
+    gameCanvas.mapAPI = PainterAPI as Painter;
+    let mocked = jest.spyOn(gameCanvas.mapAPI, 'panCamera');
 
     gameCanvas.handleTouchMove(event);
 
@@ -269,8 +271,8 @@ describe('Tests Game canvas', () => {
       }
     };
 
-    let canvasAPI = {
-      getPan() {
+    let PainterAPI = {
+      getCurrentPanValue() {
         return {
           panX: 0,
           panY: 0
@@ -279,7 +281,7 @@ describe('Tests Game canvas', () => {
     };
 
     gameCanvas.viewMapCanvas = canvas as HTMLCanvasElement; // for tests we just want a small subset, so any is ok
-    gameCanvas.mapAPI = canvasAPI as CanvasAPI; // for tests we just want a small subset, so any is ok
+    gameCanvas.mapAPI = PainterAPI as Painter; // for tests we just want a small subset, so any is ok
     gameCanvas.handleTouchStart(event as unknown as TouchEvent);
     expect(gameCanvas.lastKnownPositionInCanvasTermsX).toBe(10);
     expect(gameCanvas.lastKnownPositionInCanvasTermsY).toBe(10);

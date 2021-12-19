@@ -1,4 +1,4 @@
-import {Shape} from "../../../../../src/lib/CanvasAPI/Shapes/Shape";
+import {Shape} from "../../../../../src/lib/PainterAPI/Shapes/Shape";
 import getShapesInSelectionBox from "../../../../../src/lib/GameCanvas/selectionUtils/getShapesInSelectionBox";
 
 describe('Test selectionBox shape detection', () => {

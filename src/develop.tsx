@@ -6,7 +6,7 @@ import *  as React from 'react';
 import {render} from 'react-dom';
 import './index.scss';
 import Engine from "./lib/Engine/Engine";
-import CanvasAPI from "./lib/CanvasAPI/CanvasAPI";
+import {Painter} from "./lib/PainterAPI/Painter";
 import GameCanvas from "./lib/GameCanvas/GameCanvas";
 
 
@@ -71,12 +71,12 @@ let gameCanvas = new GameCanvas({
 
 interface Foo {
   a: number;
-  b: CanvasAPI;
+  b: Painter;
 }
 
 let apis: {
-  main: CanvasAPI;
-  mini: CanvasAPI
+  main: Painter;
+  mini: Painter
 } = {
   main: null,
   mini: null
@@ -113,7 +113,7 @@ render(
      ==========ADDING SHAPES===========
      ================================= */
 
-    apis.main.addRect({
+    apis.main.drawRect({
       fillColor: null,
       layerName: "initial",
       lineWidth: 1,
@@ -125,7 +125,7 @@ render(
       strokeStyle: 'blue'
     });
 
-    apis.main.addRect({
+    apis.main.drawRect({
       fillColor: null, lineWidth: 1,
       id: 'SomeRectBackground', // Must be Unique, as a Map is used internally
       x: 10,
@@ -136,7 +136,7 @@ render(
       layerName: 'background'
     });
 
-    apis.main.addCircle({
+    apis.main.drawCircle({
       id: 'ExampleID',
       x: 50,
       y: 50,
@@ -144,7 +144,7 @@ render(
       color: 'red'
     });
 
-    apis.main.writeBubble({
+    apis.main.drawTextBubble({
       id: 'bubbleTextExampleID',
       text: 'It is dangerous to go alone! \ntake this!',
       backgroundColor: 'green',
@@ -158,7 +158,7 @@ render(
       fontSize: 16
     });
 
-    apis.main.addCircle({
+    apis.main.drawCircle({
       id: 'ExampleID222', // needs to be unique per layer?
       x: 0,
       y: 0,
@@ -209,7 +209,7 @@ render(
     let img = new Image;
     img.src = imgURL;
     img.onload = () => {
-      apis.main.addImage({
+      apis.main.drawImage({
         id: 'my-image',
         image: img, // the image to display
         x: 100, y: 100, // pos for x,y..
@@ -229,8 +229,8 @@ render(
 
     eng.addSystem((systemArgs) => {
       direction = direction + 0.01;
-      apis.main.draw();
-      apis.main.draw('background');
+      apis.main.drawAllShapesInLayer();
+      apis.main.drawAllShapesInLayer('background');
       // apis.mini.draw();
     });
     eng.run({});
