@@ -1,6 +1,6 @@
 {
   "name": "game-platform",
-  "version": "2.1.2",
+  "version": "3.0.0",
   "description": "Common utility for Canvas games",
   "types": "./dist/index.d.ts",
   "keywords": [
