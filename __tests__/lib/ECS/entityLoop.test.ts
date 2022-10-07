@@ -5,7 +5,7 @@ describe('Tests the entity loop', () => {
     Entity.reset();
   });
   it ('does not crash when empty', () => {
-    new Entity(null);
+    new Entity();
     let runs = 0;
     entityLoop(Entity.getByComps(['lol']), () => {
       runs++;
@@ -15,7 +15,7 @@ describe('Tests the entity loop', () => {
   });
 
   it ('Loops on Entity arrays', () => {
-    let foo = new Entity(null);
+    let foo = new Entity();
 
     foo.addComponent({
       name : 'lol'
@@ -33,7 +33,7 @@ describe('Tests the entity loop', () => {
   });
 
   it('works on objects', () => {
-    new Entity(null);
+    new Entity();
 
     let runs = 0;
     let entities = entityLoop(Entity.entities, (ent) => {

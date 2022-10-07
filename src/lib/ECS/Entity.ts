@@ -15,10 +15,8 @@ class Entity {
     [key: string]: IComponent
   };
 
-  constructor(classRef: unknown) {
+  constructor() {
     this.id = Entity.counter;
-    // @ts-ignore TODO can this be improved?
-    this.constructor = classRef;
     this.components = {};
     Entity.entities[this.id] = this;
     Entity.counter++;

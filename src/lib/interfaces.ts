@@ -3,7 +3,7 @@ import {Shape} from "./PainterAPI/Shapes/Shape";
 import {MouseEvent} from "react";
 import Group from "./ECS/Group";
 
-export interface IEntityMap<T > {
+export interface IEntityMap<T> {
   [key: number]: T
 }
 

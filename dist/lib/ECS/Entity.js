@@ -7,10 +7,8 @@ var Group_1 = __importDefault(require("./Group"));
 var entityLoop_1 = __importDefault(require("./util/entityLoop"));
 var spliceOne_1 = __importDefault(require("./util/spliceOne"));
 var Entity = /** @class */ (function () {
-    function Entity(classRef) {
+    function Entity() {
         this.id = Entity.counter;
-        // @ts-ignore TODO can this be improved?
-        this.constructor = classRef;
         this.components = {};
         Entity.entities[this.id] = this;
         Entity.counter++;

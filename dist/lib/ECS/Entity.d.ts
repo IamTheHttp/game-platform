@@ -7,7 +7,7 @@ declare class Entity {
     components: {
         [key: string]: IComponent;
     };
-    constructor(classRef: unknown);
+    constructor();
     static reset(): void;
     static getByComps<T>(components: Array<string>): Array<T>;
     static getByComps<T>(components: Array<string>, type: 'map'): IEntityMap<T>;

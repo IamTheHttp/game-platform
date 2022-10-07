@@ -15,7 +15,7 @@ describe('Tests a component', () => {
   });
 
   it('Indexes a group correctly', () => {
-    let ent = new Entity(null);
+    let ent = new Entity();
     Group.indexGroup(['test1', 'test2', 'test3'], {[ent.id] : ent});
     // Group.reset();
     expect(Group.groups['test1-test2-test3']).not.toBeUndefined();
@@ -27,7 +27,7 @@ describe('Tests a component', () => {
   });
 
   it('ensure getGroup gets the correct group', () => {
-    let ent = new Entity(null);
+    let ent = new Entity();
 
     ent.addComponent({
       name: 'test1'

@@ -6,6 +6,21 @@ describe('Tests for entities', () => {
     Entity.reset();
   });
 
+  it ('Tests extending an Entity, this should not crash or not compile', () => {
+    class Foo extends Entity {
+      extending() {
+        this.addComponent({ name: 'FOOBAR'});
+      }
+    }
+    const foo = new Foo();
+
+    foo.extending();
+
+    const foos = Entity.getByComp<Foo>('FOOBAR');
+    // confirm it exists...
+    foos[0].extending();
+  })
+
   it('tests the spliceOne method', () => {
     let arr = [1, 2, 3];
     // no index defaults to index 0
@@ -33,15 +48,15 @@ describe('Tests for entities', () => {
   });
 
   it('Creates a new entity', () => {
-    let e = new Entity(null);
+    let e = new Entity();
     expect(e.id).not.toBeUndefined();
     expect(e.components).toEqual({});
   });
 
   it('Tests that internal groups are created correctly', () => {
-    let e = new Entity(null);
+    let e = new Entity();
     let comp = {name:'test', foo:'bar'};
-    let e2 = new Entity(null);
+    let e2 = new Entity();
     let comp2 = {name:'foo', foo:'test'};
 
     e.addComponent(comp);
@@ -52,7 +67,7 @@ describe('Tests for entities', () => {
   });
 
   it('Adds and removes components', () => {
-    let e = new Entity(null);
+    let e = new Entity();
     let comp = {name:'test', foo:'bar'};
     e.addComponent(comp);
     expect(e.components.test).toBe(comp);
@@ -61,7 +76,7 @@ describe('Tests for entities', () => {
   });
 
   it('Tests the hasComponent method', () => {
-    let e = new Entity(null);
+    let e = new Entity();
     let comp1 = {name:'test1', foo:'bar'};
     e.addComponent(comp1);
     let comp2 = {name:'test2', foo:'bar'};
@@ -76,14 +91,14 @@ describe('Tests for entities', () => {
   });
 
   it('Test the getByComp static method', () => {
-    let e = new Entity(null);
+    let e = new Entity();
 
     let comp1 = {name:'test1', foo:'bar'};
     e.addComponent(comp1);
     let comp2 = {name:'test2', foo:'bar'};
     e.addComponent(comp2);
 
-    let e2 = new Entity(null);
+    let e2 = new Entity();
 
     e2.addComponent(comp1);
     let resp;
@@ -111,14 +126,14 @@ describe('Tests for entities', () => {
     resp = Entity.getByComps(['test1', 'test2', 'nonExistent'], 'map');
     expect(resp).toEqual({});
 
-    // no components provided.. which means return all?
+    // no components provided... which means return all?
     resp = Entity.getByComps([], 'map');
     expect(resp[e.id]).toBe(e);
     expect(resp[e2.id]).toBe(e2);
   });
 
   it('Entity can destroy itself', () => {
-    let e = new Entity(null);
+    let e = new Entity();
     let comp1 = {name:'test1', foo:'bar'};
 
     e.addComponent(comp1);
@@ -134,7 +149,7 @@ describe('Tests for entities', () => {
   });
 
   it('Does not crash when an unknown component is removed', () => {
-    let e = new Entity(null);
+    let e = new Entity();
     e.removeComponent('foo');
   });
 });
