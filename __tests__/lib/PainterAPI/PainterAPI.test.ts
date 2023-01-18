@@ -142,7 +142,7 @@ describe('Tests the PainterAPI', () => {
     expect(layer.shapes.size).toBe(0);
     PainterAPI.drawText({
       id: 'text',
-      text: 'test', // the image to display
+      text: 'test',
       x, y, // pos for x,y..
       textBaseline: 'top',
       fillStyle: 'white'

@@ -1,6 +1,4 @@
-import Entity from "./ECS/Entity";
 import {Shape} from "./PainterAPI/Shapes/Shape";
-import {MouseEvent} from "react";
 import Group from "./ECS/Group";
 
 export interface IEntityMap<T> {
@@ -36,11 +34,11 @@ export interface IWriteToCanvas {
   text: string,
   x: number,
   y:number,
-  font?:string,
+  font?:'15px arial' | string,
   textBaseline: CanvasTextBaseline,
-  fillStyle: string,
-  color?: string, // alias to strokeStyle
-  strokeStyle?:string; // alias to color
+  fillStyle: 'white' | 'green' | 'color' | string,
+  color?: 'white' | 'green' | 'color' | string, // alias to strokeStyle
+  strokeStyle?:'white' | 'green' | 'color' | string; // alias to color
   layerName?:string
 }
 
