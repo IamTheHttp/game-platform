@@ -7,6 +7,11 @@ import spliceOne from './util/spliceOne';
 
 class Entity {
   static counter: number = 0;
+  static onEntityCreatedCallback: (entity: Entity) => void = () => {};
+  static onEntityDestroyedCallback: (entity: Entity) => void = () => {};
+  static onComponentAddedCallback: (entity: Entity, componentName: string) => void = () => {};
+  static onComponentRemovedCallback: (entity: Entity, componentName: string) => void = () => {};
+
   static entities: IEntityMap<Entity> = {}; // TODO can this be improved?
   id: number;
 
@@ -15,12 +20,51 @@ class Entity {
     [key: string]: IComponent
   };
 
+  /**
+   * Creates a new Entity
+   * onEntityCreatedCallback runs after an entity has been created, but before potential components were assigned
+   */
   constructor() {
     this.id = Entity.counter;
     this.components = {};
     Entity.entities[this.id] = this;
     Entity.counter++;
+    Entity.onEntityCreatedCallback(this);
   }
+
+
+  /**
+   * These are for notifications only, no state mutations should happen synchronously on the Entity or components
+   * @param fn
+   */
+  static onComponentAdded(fn: (entity: Entity, component: string) => void) {
+    Entity.onComponentAddedCallback = fn;
+  }
+
+  /**
+   * This is for notifications only, no state mutations should happen synchronously on the Entity or components
+   * @param fn
+   */
+  static onComponentRemoved(fn: (entity: Entity, component: string) => void) {
+    Entity.onComponentRemovedCallback = fn;
+  }
+
+  /**
+   * This is for notifications only, no state mutations should happen synchronously on the Entity or components
+   * @param fn
+   */
+  static onEntityCreated(fn: (entity: Entity) => void) {
+    Entity.onEntityCreatedCallback = fn;
+  }
+
+  /**
+   * This is for notifications only, no state mutations should happen synchronously on the Entity or components
+   * @param fn
+   */
+  static onEntityDestroyed(fn: (entity: Entity) => void) {
+    Entity.onEntityDestroyedCallback = fn;
+  }
+
 
   static reset() {
     entityLoop(Entity.entities, (entity) => {
@@ -88,6 +132,8 @@ class Entity {
         group.array = this.extendGroup(newGroup);
       }
     }
+
+    Entity.onComponentAddedCallback(this, component.name);
   }
 
   // that's not really copying the array now is it?
@@ -100,13 +146,19 @@ class Entity {
     return newGroup;
   }
 
-  // mixed, an actual component or just component name
+  /**
+   * Removes a component, accepts either a component name or a component object.
+   * Runs the onComponentRemovedCallback before the component is removed
+   * @param comp
+   */
   removeComponent(comp: string | IComponent) {
     let component = this.components[comp as string] || comp;
     if (!component || typeof component === 'string') {
       return;
     }
     let compName = component.name;
+
+    Entity.onComponentRemovedCallback(this, compName);
 
     // we need to see if we need to remove entity from other groups
     for (let groupKey in Group.groups) {
@@ -133,8 +185,10 @@ class Entity {
 
   /**
    * Destroying an entity means removing all its components and deleting it from the Entity Object
+   * the onEntityDestroyedCallback runs BEFORE state changes on the Entity
    */
   destroy() {
+    Entity.onEntityDestroyedCallback(this);
     Object.keys(this.components).forEach((compName) => {
       this.removeComponent(this.components[compName]);
     });

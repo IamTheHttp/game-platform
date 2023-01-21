@@ -26,11 +26,11 @@ export interface IWriteToCanvas {
     text: string;
     x: number;
     y: number;
-    font?: string;
+    font?: '15px arial' | string;
     textBaseline: CanvasTextBaseline;
-    fillStyle: string;
-    color?: string;
-    strokeStyle?: string;
+    fillStyle: 'white' | 'green' | 'color' | string;
+    color?: 'white' | 'green' | 'color' | string;
+    strokeStyle?: 'white' | 'green' | 'color' | string;
     layerName?: string;
 }
 export interface IWriteTextBubble {

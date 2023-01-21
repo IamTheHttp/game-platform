@@ -7,12 +7,45 @@ var Group_1 = __importDefault(require("./Group"));
 var entityLoop_1 = __importDefault(require("./util/entityLoop"));
 var spliceOne_1 = __importDefault(require("./util/spliceOne"));
 var Entity = /** @class */ (function () {
+    /**
+     * Creates a new Entity
+     * onEntityCreatedCallback runs after an entity has been created, but before potential components were assigned
+     */
     function Entity() {
         this.id = Entity.counter;
         this.components = {};
         Entity.entities[this.id] = this;
         Entity.counter++;
+        Entity.onEntityCreatedCallback(this);
     }
+    /**
+     * These are for notifications only, no state mutations should happen synchronously on the Entity or components
+     * @param fn
+     */
+    Entity.onComponentAdded = function (fn) {
+        Entity.onComponentAddedCallback = fn;
+    };
+    /**
+     * This is for notifications only, no state mutations should happen synchronously on the Entity or components
+     * @param fn
+     */
+    Entity.onComponentRemoved = function (fn) {
+        Entity.onComponentRemovedCallback = fn;
+    };
+    /**
+     * This is for notifications only, no state mutations should happen synchronously on the Entity or components
+     * @param fn
+     */
+    Entity.onEntityCreated = function (fn) {
+        Entity.onEntityCreatedCallback = fn;
+    };
+    /**
+     * This is for notifications only, no state mutations should happen synchronously on the Entity or components
+     * @param fn
+     */
+    Entity.onEntityDestroyed = function (fn) {
+        Entity.onEntityDestroyedCallback = fn;
+    };
     Entity.reset = function () {
         (0, entityLoop_1.default)(Entity.entities, function (entity) {
             entity.destroy();
@@ -71,6 +104,7 @@ var Entity = /** @class */ (function () {
                 group.array = this.extendGroup(newGroup);
             }
         }
+        Entity.onComponentAddedCallback(this, component.name);
     };
     // that's not really copying the array now is it?
     Entity.prototype.copyArray = function (group) {
@@ -80,13 +114,18 @@ var Entity = /** @class */ (function () {
         newGroup[newGroup.length] = this;
         return newGroup;
     };
-    // mixed, an actual component or just component name
+    /**
+     * Removes a component, accepts either a component name or a component object.
+     * Runs the onComponentRemovedCallback before the component is removed
+     * @param comp
+     */
     Entity.prototype.removeComponent = function (comp) {
         var component = this.components[comp] || comp;
         if (!component || typeof component === 'string') {
             return;
         }
         var compName = component.name;
+        Entity.onComponentRemovedCallback(this, compName);
         // we need to see if we need to remove entity from other groups
         for (var groupKey in Group_1.default.groups) {
             if (!Group_1.default.groups.hasOwnProperty(groupKey)) {
@@ -108,9 +147,11 @@ var Entity = /** @class */ (function () {
     };
     /**
      * Destroying an entity means removing all its components and deleting it from the Entity Object
+     * the onEntityDestroyedCallback runs BEFORE state changes on the Entity
      */
     Entity.prototype.destroy = function () {
         var _this = this;
+        Entity.onEntityDestroyedCallback(this);
         Object.keys(this.components).forEach(function (compName) {
             _this.removeComponent(_this.components[compName]);
         });
@@ -149,6 +190,10 @@ var Entity = /** @class */ (function () {
         }
     };
     Entity.counter = 0;
+    Entity.onEntityCreatedCallback = function () { };
+    Entity.onEntityDestroyedCallback = function () { };
+    Entity.onComponentAddedCallback = function () { };
+    Entity.onComponentRemovedCallback = function () { };
     Entity.entities = {}; // TODO can this be improved?
     return Entity;
 }());
