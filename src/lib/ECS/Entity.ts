@@ -35,6 +35,7 @@ class Entity {
 
   /**
    * These are for notifications only, no state mutations should happen synchronously on the Entity or components
+   * Runs after the component is added and cached in the group
    * @param fn
    */
   static onComponentAdded(fn: (entity: Entity, component: string) => void) {
@@ -43,6 +44,7 @@ class Entity {
 
   /**
    * This is for notifications only, no state mutations should happen synchronously on the Entity or components
+   * Runs before the component is removed, so it's still available for querying on the Entity
    * @param fn
    */
   static onComponentRemoved(fn: (entity: Entity, component: string) => void) {
@@ -51,6 +53,7 @@ class Entity {
 
   /**
    * This is for notifications only, no state mutations should happen synchronously on the Entity or components
+   * Runs as soon as an entity is created, but before components are set
    * @param fn
    */
   static onEntityCreated(fn: (entity: Entity) => void) {
@@ -59,6 +62,7 @@ class Entity {
 
   /**
    * This is for notifications only, no state mutations should happen synchronously on the Entity or components
+   * Runs before the entity logic, which means all components and caching groups are still available
    * @param fn
    */
   static onEntityDestroyed(fn: (entity: Entity) => void) {
