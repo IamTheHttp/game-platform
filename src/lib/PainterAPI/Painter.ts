@@ -27,7 +27,7 @@ import {
 
 export class Painter {
   layers: ILayers;
-  defaultStrokeStyle: string;
+  defaultStrokeStyle: 'white' | 'green' | 'color' | string; // alias to color
   panX: number;
   panY: number;
 

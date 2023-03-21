@@ -71,7 +71,7 @@ export interface IArc {
   direction: number,
   size: number
   color?: string, // alias to strokeStyle
-  strokeStyle?:string; // alias to color
+  strokeStyle?:'white' | 'green' | 'color' | string; // alias to color
   lineWidth?: number,
   fillColor?: string,
   layerName?:string
@@ -85,7 +85,7 @@ export interface ICircle {
   radius:number,
   lineWidth?: number,
   color?: string,       // alias to color
-  strokeStyle?: string; // alias to color
+  strokeStyle?:'white' | 'green' | 'color' | string; // alias to color
   fillColor?: string,
   layerName?:string
 }
@@ -97,7 +97,7 @@ export interface IRect {
   width:number,
   height: number,
   color?: string,       // alias to color
-  strokeStyle?: string; // alias to color
+  strokeStyle?:'white' | 'green' | 'color' | string; // alias to color
   lineWidth?: number,
   fillColor?: string,
   layerName?:string
