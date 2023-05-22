@@ -17,9 +17,6 @@
     "tdd": "jest --watch",
     "release": "release-it"
   },
-  "peerDependencies": {
-    "react": "16.8.2"
-  },
   "devDependencies": {
     "@babel/plugin-transform-runtime": "7.8.3",
     "jest-canvas-mock": "^2.3.1",
