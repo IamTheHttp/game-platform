@@ -3,34 +3,28 @@
 /* global expect */
 /* global beforeEach */
 
-
-import {Painter} from "../../../src/lib/PainterAPI/Painter";
+import {Painter} from '../../../src/lib/PainterAPI/Painter';
 
 interface Mocked2DContext {
-  measureText: (text: 'string') => object
-  font: string,
-  save: jest.Mocked<any>,
-  setTransform: jest.Mocked<any>,
-  clearRect: jest.Mocked<any>,
-  restore: jest.Mocked<any>,
-  beginPath: jest.Mocked<any>,
-  rect: jest.Mocked<any>,
-  fillText: jest.Mocked<any>,
-  fill: jest.Mocked<any>,
-  arc: jest.Mocked<any>,
-  stroke: jest.Mocked<any>,
-  closePath: jest.Mocked<any>,
-  moveTo: jest.Mocked<any>,
-  canvas: HTMLCanvasElement
+  measureText: (text: 'string') => object;
+  font: string;
+  save: jest.Mocked<any>;
+  setTransform: jest.Mocked<any>;
+  clearRect: jest.Mocked<any>;
+  restore: jest.Mocked<any>;
+  beginPath: jest.Mocked<any>;
+  rect: jest.Mocked<any>;
+  fillText: jest.Mocked<any>;
+  fill: jest.Mocked<any>;
+  arc: jest.Mocked<any>;
+  stroke: jest.Mocked<any>;
+  closePath: jest.Mocked<any>;
+  moveTo: jest.Mocked<any>;
+  canvas: HTMLCanvasElement;
 }
 
-
-
-
-
 describe('Tests the PainterAPI', () => {
-
-  let PainterAPI : Painter;
+  let PainterAPI: Painter;
   let canvasWidth = 200;
   let canvasHeight = 500;
   beforeEach(() => {
@@ -59,7 +53,7 @@ describe('Tests the PainterAPI', () => {
       stroke: jest.fn(),
       closePath: jest.fn(),
       moveTo: jest.fn(),
-      canvas,
+      canvas
     } as unknown as CanvasRenderingContext2D);
   });
 
@@ -143,7 +137,8 @@ describe('Tests the PainterAPI', () => {
     PainterAPI.drawText({
       id: 'text',
       text: 'test',
-      x, y, // pos for x,y..
+      x,
+      y, // pos for x,y..
       textBaseline: 'top',
       fillStyle: 'white'
     });
@@ -200,7 +195,6 @@ describe('Tests the PainterAPI', () => {
     PainterAPI.clearAllShapesInLayer();
     expect(layer.shapes.size).toBe(0);
 
-
     expect(PainterAPI.layers.otherLayer.shapes.size).toBe(1);
   });
 
@@ -240,7 +234,13 @@ describe('Tests the PainterAPI', () => {
 
     expect(layer.shapes.size).toBe(1);
     PainterAPI.drawAllShapesInLayer();
-    expect(ctx.arc.mock.calls[0]).toEqual([x, y, radius, (direction - size / 2) * Math.PI, (direction + size / 2) * Math.PI]);
+    expect(ctx.arc.mock.calls[0]).toEqual([
+      x,
+      y,
+      radius,
+      (direction - size / 2) * Math.PI,
+      (direction + size / 2) * Math.PI
+    ]);
     expect(ctx.fill.mock.calls[0]).toBeDefined();
   });
 
@@ -291,7 +291,6 @@ describe('Tests the PainterAPI', () => {
     expect(PainterAPI.layers.otherLayer.shapes.size).toBeTruthy();
     expect(PainterAPI.layers.otherLayer2.shapes.size).toBeTruthy();
 
-
     PainterAPI.clearAllLayers();
     expect(PainterAPI.layers.otherLayer.shapes.size).toBeFalsy();
     expect(PainterAPI.layers.otherLayer2.shapes.size).toBeFalsy();
@@ -310,8 +309,8 @@ describe('Tests the PainterAPI', () => {
       height: 0, // the minimum value is the text value within!
       width: 0, // the minimum value is the text value within!
       fontSize: 16,
-      paddingLeft:0,
-      paddingTop:0
+      paddingLeft: 0,
+      paddingTop: 0
     });
 
     // even though 0 height and 0 width were given, the string length and many lines force some size
@@ -333,8 +332,8 @@ describe('Tests the PainterAPI', () => {
       height: 0, // the minimum value is the text value within!
       width: 0, // the minimum value is the text value within!
       fontSize: 16,
-      paddingLeft:50,
-      paddingTop:0,
+      paddingLeft: 50,
+      paddingTop: 0
     });
 
     // even though 0 height and 0 width were given, the string length and many lines force some size
@@ -354,7 +353,7 @@ describe('Tests the PainterAPI', () => {
       x: 0,
       y: 0,
       height: 0, // the minimum value is the text value within!
-      width: 0, // the minimum value is the text value within!
+      width: 0 // the minimum value is the text value within!
     });
 
     // even though 0 height and 0 width were given, the string length and many lines force some size

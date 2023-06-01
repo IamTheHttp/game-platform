@@ -1,4 +1,4 @@
-import isPosInsideCircle from "../../../../../src/lib/GameCanvas/selectionUtils/isPosInsideCircle";
+import isPosInsideCircle from '../../../../../src/lib/GameCanvas/selectionUtils/isPosInsideCircle';
 
 describe('is a position inside a circle tests', () => {
   it('works', () => {

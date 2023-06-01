@@ -5,7 +5,7 @@
 import ObjectPool from 'lib/ObjectPool/ObjectPool';
 
 class Foo {
-  isAlive:boolean;
+  isAlive: boolean;
   constructor() {
     this.isAlive = true;
   }
@@ -15,7 +15,6 @@ describe('Tests a component', () => {
   let pool: ObjectPool<Foo>;
 
   beforeEach(() => {
-
     pool = new ObjectPool(Foo);
   });
 

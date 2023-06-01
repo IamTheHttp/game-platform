@@ -4,10 +4,4 @@ import ObjectPool from './lib/ObjectPool/ObjectPool';
 import GameCanvas from './lib/GameCanvas/GameCanvas';
 import Engine from './lib/Engine/Engine';
 
-export {
-  Entity,
-  entityLoop,
-  ObjectPool,
-  GameCanvas,
-  Engine
-}
+export {Entity, entityLoop, ObjectPool, GameCanvas, Engine};

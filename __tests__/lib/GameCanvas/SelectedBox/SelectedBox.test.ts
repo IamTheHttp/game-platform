@@ -1,4 +1,4 @@
-import SelectedBox from "../../../../src/lib/GameCanvas/SelectedBox/SelectedBox";
+import SelectedBox from '../../../../src/lib/GameCanvas/SelectedBox/SelectedBox';
 
 describe('Tests the selected box', () => {
   it('Initiates the selected box', () => {
@@ -20,7 +20,6 @@ describe('Tests the selected box', () => {
 
   it('sets start and end and then resets', () => {
     let selectedBox = new SelectedBox();
-
 
     selectedBox.setStart(5, 5);
     selectedBox.setEnd(100, 100);

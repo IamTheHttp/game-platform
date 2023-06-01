@@ -4,8 +4,7 @@
  * Provides abstraction for some common shapes in Canvas
  */
 
-import {Circle, Shape} from "./Shapes/Shape";
-
+import {Circle, Shape} from './Shapes/Shape';
 
 import {
   ILayers,
@@ -17,13 +16,6 @@ import {
   IWriteTextBubble,
   IAddImageData
 } from '../interfaces';
-
-
-
-
-
-
-
 
 export class Painter {
   layers: ILayers;
@@ -66,7 +58,7 @@ export class Painter {
     };
   }
 
-  removeLayer(name:string) {
+  removeLayer(name: string) {
     let originCanvas = this.layers.initial.ctx.canvas;
     let parentNode = originCanvas.parentNode;
 
@@ -96,66 +88,87 @@ export class Painter {
 
   /* istanbul ignore next */
   drawImage({
-             id,
-             image, // the image to display
-             x, y, // pos for x,y..
-             height, width,
-             cropStartX, cropStartY, cropSizeX, cropSizeY,
-             rotation, // in radians
-             layerName = 'initial'
-           }: IAddImageData) {
+    id,
+    image, // the image to display
+    x,
+    y, // pos for x,y..
+    height,
+    width,
+    cropStartX,
+    cropStartY,
+    cropSizeX,
+    cropSizeY,
+    rotation, // in radians
+    layerName = 'initial'
+  }: IAddImageData) {
     let layer = this.layers[layerName];
     let ctx = layer.ctx;
     let shapes = layer.shapes;
 
-    shapes.set(id, new Shape(() => {
-      ctx.beginPath();
-      ctx.save();
-      ctx.translate(x + width / 2, y + height / 2);
-      ctx.rotate(rotation);
-      ctx.drawImage(image,
-        cropStartX, cropStartY, cropSizeX, cropSizeY,
-        -width / 2, -height / 2,  // pos in canvas // at the top left of the canvas
-        width, height); // size in canvas
-      ctx.restore();
-      ctx.closePath();
-    }, {
+    shapes.set(
       id,
-      type: 'image',
-      x,
-      y,
-      height,
-      width
-    }));
+      new Shape(
+        () => {
+          ctx.beginPath();
+          ctx.save();
+          ctx.translate(x + width / 2, y + height / 2);
+          ctx.rotate(rotation);
+          ctx.drawImage(
+            image,
+            cropStartX,
+            cropStartY,
+            cropSizeX,
+            cropSizeY,
+            -width / 2,
+            -height / 2, // pos in canvas // at the top left of the canvas
+            width,
+            height
+          ); // size in canvas
+          ctx.restore();
+          ctx.closePath();
+        },
+        {
+          id,
+          type: 'image',
+          x,
+          y,
+          height,
+          width
+        }
+      )
+    );
   }
 
-  addShape({id, render, layerName = 'initial'}:  Shape) {
+  addShape({id, render, layerName = 'initial'}: Shape) {
     let layer = this.layers[layerName];
     let ctx = layer.ctx;
     let shapes = layer.shapes;
 
-    shapes.set(id, new Shape(() => {
-      render(ctx);
-    }));
+    shapes.set(
+      id,
+      new Shape(() => {
+        render(ctx);
+      })
+    );
   }
 
   drawTextBubble({
-                id,
-                text,
-                backgroundColor,
-                borderColor,
-                borderWidth,
-                fontSize,
-                fontColor,
-                x,
-                y,
-                fontFace,
-                height,
-                width,
-                paddingLeft = 10,
-                paddingTop = 10,
-                layerName = 'initial'
-              }: IWriteTextBubble) {
+    id,
+    text,
+    backgroundColor,
+    borderColor,
+    borderWidth,
+    fontSize,
+    fontColor,
+    x,
+    y,
+    fontFace,
+    height,
+    width,
+    paddingLeft = 10,
+    paddingTop = 10,
+    layerName = 'initial'
+  }: IWriteTextBubble) {
     let longestTextWidth = 0;
     let linesOfText = text.split('\n');
     let fontPxSize = fontSize || +this.layers.initial.ctx.font.split('px')[0];
@@ -206,53 +219,69 @@ export class Painter {
     let ctx = layer.ctx;
     let shapes = layer.shapes;
 
-    shapes.set(id, new Shape(() => {
-      ctx.strokeStyle = strokeStyle || color;
-      ctx.lineWidth = lineWidth;
-      ctx.beginPath();
-      ctx.rect(
-        x,
-        y,
-        width,
-        height
-      );
-      if (fillColor) {
-        ctx.fillStyle = fillColor;
-        ctx.fill();
-      }
-      ctx.stroke();
-      ctx.closePath();
-    }, {
+    shapes.set(
       id,
-      type: 'rect',
-      x,
-      y,
-      height,
-      width
-    }));
+      new Shape(
+        () => {
+          ctx.strokeStyle = strokeStyle || color;
+          ctx.lineWidth = lineWidth;
+          ctx.beginPath();
+          ctx.rect(x, y, width, height);
+          if (fillColor) {
+            ctx.fillStyle = fillColor;
+            ctx.fill();
+          }
+          ctx.stroke();
+          ctx.closePath();
+        },
+        {
+          id,
+          type: 'rect',
+          x,
+          y,
+          height,
+          width
+        }
+      )
+    );
   }
 
-  drawArc({id, direction, size, color = 'black', strokeStyle = 'black', fillColor, lineWidth = 1, x, y, radius, layerName = 'initial'}: IArc) {
+  drawArc({
+    id,
+    direction,
+    size,
+    color = 'black',
+    strokeStyle = 'black',
+    fillColor,
+    lineWidth = 1,
+    x,
+    y,
+    radius,
+    layerName = 'initial'
+  }: IArc) {
     let layer = this.layers[layerName];
     let ctx = layer.ctx;
     let shapes = layer.shapes;
 
-    shapes.set(id, new Shape(() => {
-      ctx.strokeStyle = strokeStyle || color;
-      ctx.lineWidth = lineWidth;
+    shapes.set(
+      id,
+      new Shape(() => {
+        ctx.strokeStyle = strokeStyle || color;
+        ctx.lineWidth = lineWidth;
 
-      let startArc = direction - (size / 2);
-      let endArc = direction + (size / 2);
+        let startArc = direction - size / 2;
+        let endArc = direction + size / 2;
 
-      ctx.beginPath();
-      ctx.arc(x, y, radius, startArc * Math.PI, endArc * Math.PI);
-      if (fillColor) {
-        ctx.fillStyle = fillColor;
-        ctx.fill();
-      }
-      ctx.stroke();
-      ctx.closePath();
-    }));
+        ctx.beginPath();
+        ctx.arc(x, y, radius, startArc * Math.PI, endArc * Math.PI);
+        if (fillColor) {
+          ctx.fillStyle = fillColor;
+          ctx.fill();
+        }
+        ctx.stroke();
+        ctx.closePath();
+      })
+    );
   }
 
   drawCircle(circleData: ICircle) {
@@ -266,7 +295,7 @@ export class Painter {
   /**
    * Method allows us to pan around the canvas
    */
-  panCamera(x:number, y:number) {
+  panCamera(x: number, y: number) {
     this.panX = x;
     this.panY = y;
 
@@ -288,38 +317,44 @@ export class Painter {
   getCurrentPanValue(): IPanOffset {
     return {
       panX: this.panX || 0,
-      panY: this.panY || 0,
-    }
+      panY: this.panY || 0
+    };
   }
 
   drawText({
-          id,
-          text,
-          x,
-          y,
-          font = '',
-          textBaseline,
-          fillStyle,
-          strokeStyle = '',
-          color = '',
-          layerName = 'initial'
-        }: IWriteToCanvas) {
+    id,
+    text,
+    x,
+    y,
+    font = '',
+    textBaseline,
+    fillStyle,
+    strokeStyle = '',
+    color = '',
+    layerName = 'initial'
+  }: IWriteToCanvas) {
     let layer = this.layers[layerName];
     let ctx = layer.ctx;
     let shapes = layer.shapes;
-    shapes.set(id, new Shape(() => {
-      ctx.beginPath();
-      ctx.font = font;
-      ctx.textBaseline = textBaseline;
-      ctx.fillStyle = fillStyle;
-      ctx.strokeStyle = strokeStyle || color;
-      ctx.fillText(text, x, y);
-      ctx.closePath();
-    }, {
+    shapes.set(
       id,
-      x,
-      y
-    }));
+      new Shape(
+        () => {
+          ctx.beginPath();
+          ctx.font = font;
+          ctx.textBaseline = textBaseline;
+          ctx.fillStyle = fillStyle;
+          ctx.strokeStyle = strokeStyle || color;
+          ctx.fillText(text, x, y);
+          ctx.closePath();
+        },
+        {
+          id,
+          x,
+          y
+        }
+      )
+    );
   }
 
   drawAllShapesInLayer(layerName = 'initial') {
@@ -342,6 +377,5 @@ export class Painter {
 // adding an image causes segmentation fault for some reason.
 /* istanbul ignore next */
 if (process.env.NODE_ENV === 'test') {
-  Painter.prototype.drawImage = () => {
-  };
+  Painter.prototype.drawImage = () => {};
 }

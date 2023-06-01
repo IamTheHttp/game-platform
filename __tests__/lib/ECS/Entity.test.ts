@@ -1,15 +1,15 @@
-import {Entity} from "../../../src";
-import spliceOne from "../../../src/lib/ECS/util/spliceOne";
+import {Entity} from '../../../src';
+import spliceOne from '../../../src/lib/ECS/util/spliceOne';
 
 describe('Tests for entities', () => {
   beforeEach(() => {
     Entity.reset();
   });
 
-  it ('Tests extending an Entity, this should not crash or not compile', () => {
+  it('Tests extending an Entity, this should not crash or not compile', () => {
     class Foo extends Entity {
       extending() {
-        this.addComponent({ name: 'FOOBAR'});
+        this.addComponent({name: 'FOOBAR'});
       }
     }
     const foo = new Foo();
@@ -19,7 +19,7 @@ describe('Tests for entities', () => {
     const foos = Entity.getByComp<Foo>('FOOBAR');
     // confirm it exists...
     foos[0].extending();
-  })
+  });
 
   it('tests the spliceOne method', () => {
     let arr = [1, 2, 3];
@@ -27,7 +27,6 @@ describe('Tests for entities', () => {
     spliceOne(arr);
     expect(arr.length).toBe(2);
     expect(arr[0]).toBe(2);
-
 
     // out of bound index shouldn't change anything
     arr = [1, 2, 3];
@@ -55,9 +54,9 @@ describe('Tests for entities', () => {
 
   it('Tests that internal groups are created correctly', () => {
     let e = new Entity();
-    let comp = {name:'test', foo:'bar'};
+    let comp = {name: 'test', foo: 'bar'};
     let e2 = new Entity();
-    let comp2 = {name:'foo', foo:'test'};
+    let comp2 = {name: 'foo', foo: 'test'};
 
     e.addComponent(comp);
     e2.addComponent(comp2);
@@ -68,7 +67,7 @@ describe('Tests for entities', () => {
 
   it('Adds and removes components', () => {
     let e = new Entity();
-    let comp = {name:'test', foo:'bar'};
+    let comp = {name: 'test', foo: 'bar'};
     e.addComponent(comp);
     expect(e.components.test).toBe(comp);
     e.removeComponent(comp);
@@ -77,9 +76,9 @@ describe('Tests for entities', () => {
 
   it('Tests the hasComponent method', () => {
     let e = new Entity();
-    let comp1 = {name:'test1', foo:'bar'};
+    let comp1 = {name: 'test1', foo: 'bar'};
     e.addComponent(comp1);
-    let comp2 = {name:'test2', foo:'bar'};
+    let comp2 = {name: 'test2', foo: 'bar'};
     e.addComponent(comp2);
 
     expect(e.hasComponents('test1')).toBe(true);
@@ -93,9 +92,9 @@ describe('Tests for entities', () => {
   it('Test the getByComp static method', () => {
     let e = new Entity();
 
-    let comp1 = {name:'test1', foo:'bar'};
+    let comp1 = {name: 'test1', foo: 'bar'};
     e.addComponent(comp1);
-    let comp2 = {name:'test2', foo:'bar'};
+    let comp2 = {name: 'test2', foo: 'bar'};
     e.addComponent(comp2);
 
     let e2 = new Entity();
@@ -109,10 +108,10 @@ describe('Tests for entities', () => {
     resp = Entity.getByComps(['test1']);
     expect(resp.length).toBe(2);
     // //
-    resp = Entity.getByComps(['test1'],  'map');
+    resp = Entity.getByComps(['test1'], 'map');
     expect(resp[e.id]).toBe(e);
     expect(resp[e2.id]).toBe(e2);
-    resp = Entity.getByComps(['test1'],  'array');
+    resp = Entity.getByComps(['test1'], 'array');
     expect(resp.length).toBe(2);
 
     // only the first entity has both of them
@@ -134,7 +133,7 @@ describe('Tests for entities', () => {
 
   it('Entity can destroy itself', () => {
     let e = new Entity();
-    let comp1 = {name:'test1', foo:'bar'};
+    let comp1 = {name: 'test1', foo: 'bar'};
 
     e.addComponent(comp1);
     // always returns a collection

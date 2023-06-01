@@ -1,16 +1,8 @@
-import * as React from 'react';
 import SelectedBox from './SelectedBox/SelectedBox';
 import getShapesFromClick from './selectionUtils/getShapesFromClick';
 import getShapesInSelectionBox from './selectionUtils/getShapesInSelectionBox';
-import {
-  IViewClickInfo,
-  IViewMoveInfo,
-  IGameCanvasOptions,
-  IClientViewCoordinates,
-  IHit
-} from "../interfaces";
-import {Painter} from "../PainterAPI/Painter";
-import {ReactElement} from "react";
+import {IViewClickInfo, IViewMoveInfo, IGameCanvasOptions, IClientViewCoordinates, IHit} from '../interfaces';
+import {Painter} from '../PainterAPI/Painter';
 
 /**
  * This class is responsible for hooking the canvas events to the PainterAPI.
@@ -40,7 +32,6 @@ class GameCanvas {
   miniMapCanvas: HTMLCanvasElement;
   miniMapX: number;
   miniMapY: number;
-
 
   constructor(options: IGameCanvasOptions) {
     let noop = () => {};
@@ -81,7 +72,11 @@ class GameCanvas {
    * @param canvas
    * @param PainterAPI
    */
-  getCursorPositionInCanvasTerms(clientInputCoordinates: IClientViewCoordinates, canvas: HTMLCanvasElement, PainterAPI: Painter): { x: number, y: number } {
+  getCursorPositionInCanvasTerms(
+    clientInputCoordinates: IClientViewCoordinates,
+    canvas: HTMLCanvasElement,
+    PainterAPI: Painter
+  ): {x: number; y: number} {
     let rect = canvas.getBoundingClientRect();
 
     if (typeof clientInputCoordinates.x !== 'number' || typeof clientInputCoordinates.y !== 'number') {
@@ -99,7 +94,6 @@ class GameCanvas {
     // this ratio will allow us to correctly set the X,Y touch point
     let WIDTH_RATIO = canvas.width / rect.width;
     let HEIGHT_RATIO = canvas.height / rect.height;
-
 
     let scaledX = Math.max(0, Math.round(rawXOnCanvasElement * WIDTH_RATIO));
     let scaledY = Math.max(0, Math.round(rawYyOnCanvasElement * HEIGHT_RATIO));
@@ -170,7 +164,7 @@ class GameCanvas {
 
     this.mapAPI.drawRect({
       fillColor: null,
-      layerName: "initial",
+      layerName: 'initial',
       lineWidth: 1,
       strokeStyle: null,
       id: 'selectedBox',
@@ -202,7 +196,7 @@ class GameCanvas {
     this.lastKnownPositionInCanvasTermsX = x;
     this.lastKnownPositionInCanvasTermsY = y;
 
-    return {x, y}
+    return {x, y};
   }
 
   updateMiniMapCursorPosition(inputCoordinates: IClientViewCoordinates) {
@@ -210,9 +204,6 @@ class GameCanvas {
     this.miniMapX = x;
     this.miniMapY = y;
   }
-
-
-
 
   handleMiniMapMove(event: MouseEventInit) {
     this.onMiniMapMove(event);
@@ -243,7 +234,7 @@ class GameCanvas {
   updateMiniMapSquare() {
     this.miniMapAPI.drawRect({
       fillColor: null,
-      layerName: "initial",
+      layerName: 'initial',
       id: 'currentMap',
       x: -this.mapAPI.getCurrentPanValue().panX,
       y: -this.mapAPI.getCurrentPanValue().panY,
@@ -257,7 +248,7 @@ class GameCanvas {
   handleMapMouseDown() {
     if (!this.lastTap) {
       let now = new Date().getTime();
-      this.dbClick = (now - this.lastClick) < 300;
+      this.dbClick = now - this.lastClick < 300;
       this.lastClick = now;
       this.isMouseDown = true;
       this.setSelectBox();
@@ -283,7 +274,7 @@ class GameCanvas {
     let {x, y} = this.getCursorPositionInCanvasTerms(coords, this.viewMapCanvas, this.mapAPI);
     let now = new Date().getTime();
 
-    this.dbTap = (now - this.lastTap) < 300;
+    this.dbTap = now - this.lastTap < 300;
     this.lastTap = now;
 
     this.setSelectBox();
@@ -301,7 +292,6 @@ class GameCanvas {
 
     this.handleMiniMapClick(e);
   }
-
 
   ensureNegative(a: number) {
     return Math.min(a, 0);
@@ -346,12 +336,11 @@ class GameCanvas {
     this.mapAPI.panCamera(this.ensureNegative(newPanX), this.ensureNegative(newPanY));
   }
 
-
-  registerCanvasPair(mainMapCanvas:HTMLCanvasElement, miniMapCanvas:HTMLCanvasElement) {
+  registerCanvasPair(mainMapCanvas: HTMLCanvasElement, miniMapCanvas: HTMLCanvasElement) {
     return {
       map: this.registerMapCanvas(mainMapCanvas),
       minimap: this.registerMinimapCanvas(miniMapCanvas)
-    }
+    };
   }
 
   registerMinimapCanvas(canvas: HTMLCanvasElement) {
@@ -370,7 +359,6 @@ class GameCanvas {
       }
     }, 100);
 
-
     canvas.height = this.mapHeight;
     canvas.width = this.mapWidth;
 
@@ -381,7 +369,6 @@ class GameCanvas {
     // @ts-ignore For some reason there's a misamtch between the event types TODO - can this be improved?
     canvas.addEventListener('touchstart', this.handleMiniMapTouchStart);
 
-
     this.miniMapAPI = new Painter(canvas.getContext('2d'));
     return this.miniMapAPI;
   }
@@ -390,7 +377,6 @@ class GameCanvas {
     this.viewMapCanvas = canvas;
     document.removeEventListener('mousemove', this.updateViewMapCursorPosition);
     document.addEventListener('mousemove', this.updateViewMapCursorPosition);
-
 
     // @ts-ignore For some reason there's a misamtch between the event types TODO - can this be improved?
     canvas.removeEventListener('touchmove', this.handleTouchMove, false);
@@ -403,7 +389,6 @@ class GameCanvas {
     canvas.addEventListener('mousedown', this.handleMapMouseDown);
     canvas.addEventListener('mousemove', this.handleMapMouseMove);
 
-
     // @ts-ignore For some reason there's a misamtch between the event types TODO - can this be improved?
     canvas.addEventListener('touchstart', this.handleTouchStart);
     canvas.addEventListener('touchend', this.handleMapTouchEnd);
@@ -414,112 +399,6 @@ class GameCanvas {
     this.mapAPI = new Painter(canvas.getContext('2d'));
     return this.mapAPI;
   }
-
-  // /**
-  //  * @deprecated
-  //  * To be removed soon as this class will no longer genereate JSX canvas elements
-  //  * @param getRef
-  //  */
-  // generateMapCanvas(getRef: (a: Painter, b: HTMLCanvasElement) => void): ReactElement<HTMLCanvasElement> {
-  //   return (
-  //     <canvas
-  //       className='viewMap'
-  //       ref={(el: HTMLCanvasElement) => {
-  //         if (!el) {
-  //           return null;
-  //         }
-  //
-  //         if (process.env.NODE_ENV === 'test' && !el.removeEventListener) {
-  //           // @ts-ignore
-  //           el = el._reactInternalFiber.child.stateNode; // eslint-disable-line
-  //         }
-  //
-  //         this.viewMapCanvas = el;
-  //         document.removeEventListener('mousemove', this.updateViewMapCursorPosition);
-  //         document.addEventListener('mousemove', this.updateViewMapCursorPosition);
-  //
-  //
-  //
-  //         // @ts-ignore For some reason there's a misamtch between the event types TODO - can this be improved?
-  //         el.removeEventListener('touchmove', this.handleTouchMove, false);
-  //         // @ts-ignore For some reason there's a misamtch between the event types TODO - can this be improved?
-  //         el.addEventListener('touchmove', this.handleTouchMove, false);
-  //
-  //         this.mapAPI = new Painter(el.getContext('2d'));
-  //         getRef(this.mapAPI, el);
-  //       }}
-  //       height={this.viewHeight}
-  //       width={this.viewWidth}
-  //       onMouseDown={this.handleMapMouseDown}
-  //       onTouchStart={this.handleTouchStart}
-  //       onTouchEnd={this.handleMapTouchEnd}
-  //       onMouseMove={this.handleMapMouseMove}
-  //       onMouseUp={this.handleMapMouseUp}
-  //       onMouseLeave={this.handleMapMouseLeave}
-  //     />
-  //   );
-  // }
-  //
-  // /**
-  //  * @deprecated
-  //  * To be removed soon as this class will no longer genereate JSX canvas elements
-  //  * @param getRef
-  //  */
-  // generateMiniMapCanvas(getRef: (a: Painter, b: HTMLCanvasElement) => void): ReactElement<HTMLCanvasElement> {
-  //   return (
-  //     <canvas
-  //       className='minimap'
-  //       ref={(el) => {
-  //         if (!el) {
-  //           return null;
-  //         }
-  //
-  //         if (process.env.NODE_ENV === 'test' && !el.removeEventListener) {
-  //           // @ts-ignore Test mode voodoo
-  //           el = el._reactInternalFiber.child.stateNode; // eslint-disable-line
-  //         }
-  //
-  //         this.miniMapCanvas = el;
-  //         document.removeEventListener('mousemove', this.updateMiniMapCursorPosition);
-  //         document.addEventListener('mousemove', this.updateMiniMapCursorPosition);
-  //
-  //         this.miniMapAPI = new Painter(el.getContext('2d'));
-  //
-  //
-  //         // updateMiniMapSquare depends on mapAPI to be defined
-  //         // due to some race conditions this might happen before mapAPI was defined
-  //         // An interval is used to detect when mapAPI is defined
-  //         let key = setInterval(() => {
-  //           if (this.mapAPI) {
-  //             this.updateMiniMapSquare();
-  //             clearInterval(key);
-  //           }
-  //         }, 100);
-  //
-  //         getRef(this.miniMapAPI, el);
-  //       }}
-  //       height={this.mapHeight}
-  //       width={this.mapWidth}
-  //       onMouseMove={this.handleMiniMapMove}
-  //       onMouseDown={this.handleMiniMapClick}
-  //       onTouchStart={this.handleMiniMapTouchStart}
-  //     />
-  //   );
-  // }
-
-
-  // /**
-  //  * @deprecated
-  //  * To be removed soon as this class will no longer genereate JSX canvas elements
-  //  * @param getRef
-  //  */
-  // getNewCanvasPairs({ getMapRef, getMiniRef }: { getMapRef: (a: Painter) => void, getMiniRef: (a: Painter) => void }) {
-  //   return {
-  //     map: this.generateMapCanvas(getMapRef),
-  //     minimap: this.generateMiniMapCanvas(getMiniRef)
-  //   };
-  // }
-
 }
 
 export default GameCanvas;

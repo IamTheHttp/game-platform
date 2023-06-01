@@ -2,7 +2,7 @@ declare module '*.png';
 declare module '*.json';
 
 interface Window {
-  Entity: new(...args: any) => any
+  Entity: new (...args: any) => any;
   game: any; // TODO this should not be any
   API: any; // TODO this should not be any
   stressTest: () => void;
@@ -11,5 +11,5 @@ interface Window {
 }
 
 interface Entity {
-  entities: Record<any, number>
+  entities: Record<any, number>;
 }

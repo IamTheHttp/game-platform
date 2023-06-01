@@ -1,4 +1,4 @@
-import {Engine} from "../../../src";
+import {Engine} from '../../../src';
 
 describe('Tests the Engine class', () => {
   let engine: Engine;

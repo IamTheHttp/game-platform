@@ -1,6 +1,6 @@
 import entityLoop from './util/entityLoop';
-import {IEmptyGroup, IEntityMap} from "../interfaces";
-import Entity from "./Entity";
+import {IEmptyGroup, IEntityMap} from '../interfaces';
+import Entity from './Entity';
 
 // life cycle of a group!
 
@@ -11,8 +11,7 @@ import Entity from "./Entity";
 
 class Group {
   static groups: Record<string, Group> = {};
-  constructor( public components: string[], public entities:IEntityMap<Entity> = {}, public array : any[] = []) {
-  }
+  constructor(public components: string[], public entities: IEntityMap<Entity> = {}, public array: any[] = []) {}
 
   static reset() {
     Group.groups = {};
@@ -38,7 +37,7 @@ class Group {
   }
 
   static indexGroup(compNames: Array<string> | string, entities: IEntityMap<Entity>) {
-    let compArray:string[] = [];
+    let compArray: string[] = [];
     if (typeof compNames === 'string') {
       compArray = [compNames];
     } else {
@@ -56,7 +55,7 @@ class Group {
       group = Group.groups[key] = new Group(compArray);
     }
 
-// insert the provided entities into this group...
+    // insert the provided entities into this group...
     entityLoop<Entity>(entities, (entity) => {
       if (entity.hasComponents(compArray)) {
         group.entities[entity.id] = entity;
@@ -65,8 +64,7 @@ class Group {
     });
 
     return group;
-  };
+  }
 }
-
 
 export default Group;

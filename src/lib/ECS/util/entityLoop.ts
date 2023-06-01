@@ -6,10 +6,10 @@
  * @param fn
  * @returns {Array}
  */
-import {IEntityMap} from "../../interfaces";
+import {IEntityMap} from '../../interfaces';
 
-export function entityLoop<T>(entities: T[] | IEntityMap<T>, fn: (ent:T) => boolean | void): T[] {
-  let ents:T[] = [];
+export function entityLoop<T>(entities: T[] | IEntityMap<T>, fn: (ent: T) => boolean | void): T[] {
+  let ents: T[] = [];
 
   if (Array.isArray(entities)) {
     entities.forEach((ent) => {

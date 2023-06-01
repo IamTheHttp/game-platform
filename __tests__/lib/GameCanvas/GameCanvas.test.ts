@@ -1,17 +1,15 @@
-import {Painter} from "../../../src/lib/PainterAPI/Painter";
-import {GameCanvas} from "../../../src";
+import {Painter} from '../../../src/lib/PainterAPI/Painter';
+import {GameCanvas} from '../../../src';
 
 interface APIs {
-  mapAPI: Painter,
-  minimapAPI: Painter
+  mapAPI: Painter;
+  minimapAPI: Painter;
 }
-
 
 class MockedCanvas extends HTMLCanvasElement {
   height: number;
   width: number;
 }
-
 
 class MockedGameCanvas extends GameCanvas {
   onViewMapClick: jest.Mocked<any>;
@@ -33,7 +31,6 @@ describe('Tests Game canvas', () => {
     let onViewMapClick = jest.fn();
     let onViewMapMove = jest.fn();
     let onMiniMapClick = jest.fn();
-
 
     gameCanvas = new GameCanvas({
       mapHeight: 100,
@@ -58,9 +55,8 @@ describe('Tests Game canvas', () => {
         height: 100,
         x: 0,
         y: 0,
-        toJSON: () => {
-        }
-      }
+        toJSON: () => {}
+      };
     };
   });
 
@@ -74,7 +70,6 @@ describe('Tests Game canvas', () => {
 
     apis.mapAPI = gameCanvas.registerMapCanvas(document.createElement('canvas'));
   });
-
 
   it('tests handleMapMouseMove', () => {
     gameCanvas.isMouseDown = true;
@@ -144,7 +139,8 @@ describe('Tests Game canvas', () => {
     gameCanvas.viewMapCanvas = canvas as HTMLCanvasElement;
     gameCanvas.mapAPI = PainterAPI as Painter;
     gameCanvas.updateViewMapCursorPosition({
-      x: 10, y: 10
+      x: 10,
+      y: 10
     });
     expect(gameCanvas.lastKnownPositionInCanvasTermsX).toBe(10);
     expect(gameCanvas.lastKnownPositionInCanvasTermsY).toBe(10);
@@ -181,8 +177,7 @@ describe('Tests Game canvas', () => {
     gameCanvas.mapHeight = MAP_HEIGHT;
 
     let event: TouchEvent = {
-      preventDefault: () => {
-      },
+      preventDefault: () => {},
       touches: [
         {
           clientX: 0,
@@ -211,8 +206,7 @@ describe('Tests Game canvas', () => {
           panY: 0
         };
       },
-      panCamera(x: number, y: number) {
-      }
+      panCamera(x: number, y: number) {}
     };
 
     gameCanvas.viewMapCanvas = canvas as HTMLCanvasElement; // for tests we just want a small subset, so any is ok

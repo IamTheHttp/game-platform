@@ -1,11 +1,10 @@
 import isPosInsideCircle from './isPosInsideCircle';
-import {IHit, IShapes} from "../../interfaces";
-
+import {IHit, IShapes} from '../../interfaces';
 
 /**
  * Function used for getting all shapes hit from a single click (not from a selection box)
  */
-function getShapesFromClick(shapes:IShapes, layerName: string, x:number, y:number) {
+function getShapesFromClick(shapes: IShapes, layerName: string, x: number, y: number) {
   let hits: IHit[] = [];
 
   shapes.forEach((shape, id: string) => {
@@ -34,7 +33,6 @@ function getShapesFromClick(shapes:IShapes, layerName: string, x:number, y:numbe
         // do nothing, no support for non circles
       }
     } else if (type !== 'circle') {
-
     }
   });
 

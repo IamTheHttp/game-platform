@@ -1,5 +1,5 @@
-import {Entity} from "../../../src";
-import Group from "../../../src/lib/ECS/Group";
+import {Entity} from '../../../src';
+import Group from '../../../src/lib/ECS/Group';
 
 describe('Tests a component', () => {
   beforeEach(() => {
@@ -8,15 +8,15 @@ describe('Tests a component', () => {
 
   it('resets the groups to an empty object', () => {
     Group.groups = {
-      'foo': new Group(['foo'])
-    }
+      foo: new Group(['foo'])
+    };
     Group.reset();
     expect(Group.groups).toEqual({});
   });
 
   it('Indexes a group correctly', () => {
     let ent = new Entity();
-    Group.indexGroup(['test1', 'test2', 'test3'], {[ent.id] : ent});
+    Group.indexGroup(['test1', 'test2', 'test3'], {[ent.id]: ent});
     // Group.reset();
     expect(Group.groups['test1-test2-test3']).not.toBeUndefined();
   });
@@ -38,7 +38,7 @@ describe('Tests a component', () => {
     ent.addComponent({
       name: 'test3'
     });
-    Group.indexGroup(['test1', 'test2', 'test3'], {[ent.id] : ent});
+    Group.indexGroup(['test1', 'test2', 'test3'], {[ent.id]: ent});
 
     let group = Group.getGroup(['test1', 'test2', 'test3']);
 

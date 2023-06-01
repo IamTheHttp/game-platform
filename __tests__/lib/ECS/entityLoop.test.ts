@@ -1,10 +1,10 @@
-import {Entity, entityLoop} from "../../../src";
+import {Entity, entityLoop} from '../../../src';
 
 describe('Tests the entity loop', () => {
   beforeEach(() => {
     Entity.reset();
   });
-  it ('does not crash when empty', () => {
+  it('does not crash when empty', () => {
     new Entity();
     let runs = 0;
     entityLoop(Entity.getByComps(['lol']), () => {
@@ -14,11 +14,11 @@ describe('Tests the entity loop', () => {
     expect(runs).toBe(0);
   });
 
-  it ('Loops on Entity arrays', () => {
+  it('Loops on Entity arrays', () => {
     let foo = new Entity();
 
     foo.addComponent({
-      name : 'lol'
+      name: 'lol'
     });
 
     let runs = 0;

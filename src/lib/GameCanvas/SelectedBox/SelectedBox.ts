@@ -1,5 +1,4 @@
-import {ISelectedBoxData, ICoordinates} from "../../interfaces";
-
+import {ISelectedBoxData, ICoordinates} from '../../interfaces';
 
 /**
  * Class that represents the current selected area by the user
@@ -26,10 +25,10 @@ class SelectedBox {
 
   getData(): ISelectedBoxData {
     return {
-      start : Object.assign({}, this.start),
-      end : Object.assign({}, this.end),
-      width : this.getWidth(),
-      height : this.getHeight()
+      start: Object.assign({}, this.start),
+      end: Object.assign({}, this.end),
+      width: this.getWidth(),
+      height: this.getHeight()
     };
   }
 
@@ -41,12 +40,12 @@ class SelectedBox {
     return this.end.x - this.start.x;
   }
 
-  setStart(x:number, y:number) {
+  setStart(x: number, y: number) {
     this.start.x = x;
     this.start.y = y;
   }
 
-  setEnd(x:number, y:number) {
+  setEnd(x: number, y: number) {
     this.end.x = x;
     this.end.y = y;
   }

@@ -6,7 +6,7 @@ class Engine {
     this.frameID = null;
   }
 
-  addSystem(system: (sysArgs: Record<string, any>) => void) : void{
+  addSystem(system: (sysArgs: Record<string, any>) => void): void {
     this.systems.push(system);
   }
 
@@ -32,6 +32,5 @@ class Engine {
     return this.frameID;
   }
 }
-
 
 export default Engine;

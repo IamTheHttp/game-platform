@@ -1,9 +1,7 @@
 import Group from './Group';
 import entityLoop from './util/entityLoop';
-import {IComponent, IEntityMap} from "../interfaces";
+import {IComponent, IEntityMap} from '../interfaces';
 import spliceOne from './util/spliceOne';
-
-
 
 class Entity {
   static counter: number = 0;
@@ -15,9 +13,8 @@ class Entity {
   static entities: IEntityMap<Entity> = {}; // TODO can this be improved?
   id: number;
 
-
   components: {
-    [key: string]: IComponent
+    [key: string]: IComponent;
   };
 
   /**
@@ -31,7 +28,6 @@ class Entity {
     Entity.counter++;
     Entity.onEntityCreatedCallback(this);
   }
-
 
   /**
    * These are for notifications only, no state mutations should happen synchronously on the Entity or components
@@ -69,13 +65,12 @@ class Entity {
     Entity.onEntityDestroyedCallback = fn;
   }
 
-
   static reset() {
     entityLoop(Entity.entities, (entity) => {
       entity.destroy();
     });
     Group.reset();
-  };
+  }
 
   // static if(value: any, condition: boolean): void;
   static getByComps<T>(components: Array<string>): Array<T>;
@@ -86,14 +81,14 @@ class Entity {
     Group.indexGroup(components, Entity.entities);
     let group = Group.getGroup(compNames);
     return type === 'map' ? group.entities : group.array.concat();
-  };
+  }
 
   static getByComp<T>(compName: string): Array<T>;
   static getByComp<T>(compName: string, type: 'map'): IEntityMap<T>;
   static getByComp<T>(compName: string, type: 'array'): Array<T>;
-  static getByComp<T>(compName: string, type= 'array'): IEntityMap<T>|Array<T> {
+  static getByComp<T>(compName: string, type = 'array'): IEntityMap<T> | Array<T> {
     return Entity.getByComps<T>([compName]);
-  };
+  }
 
   assignGroup(group: Group) {
     group.entities[this.id] = this;
